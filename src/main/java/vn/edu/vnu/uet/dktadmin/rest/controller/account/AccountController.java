@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
+import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
+import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
@@ -30,6 +32,9 @@ public class AccountController extends BaseController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AccountService accountService;
+
     private ObjectMapper mapper = new ObjectMapper();
 
     @PostMapping("/student")
@@ -46,12 +51,15 @@ public class AccountController extends BaseController {
             throw new FormValidateException("username/email", "account đã tồn tại");
         }
 
+        DktAdmin dktAdmin = accountService.getUserSession();
+
         String passwordEncode = passwordEncoder.encode(password);
         Student student = new Student();
         student.setEmail(request.getEmail());
         student.setUsername(request.getUsername());
         student.setCourses(request.getCourses());
         student.setPassword(passwordEncode);
+        student.setCreatedBy(dktAdmin.getUsername());
         Student saveStudent = studentDao.save(student);
         return AccountResponse.builder()
                 .id(saveStudent.getId())

@@ -21,8 +21,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(
-                        "/admin/auth/login",
-                        "/admin/generation/student")
+                        "/admin/auth/login")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and().csrf().disable();
