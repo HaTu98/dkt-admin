@@ -44,6 +44,9 @@ public class AuthenticationService {
         }
 
         Admin admin = this.getUsernameOrEmail(username);
+        if(admin == null) {
+            throw new UnauthorizedException("Tài khoản mật khẩu không chính xác");
+        }
 
         boolean result = passwordEncoder.matches( request.getPassword(), admin.getPassword());
         if (!result) {
