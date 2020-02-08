@@ -1,4 +1,4 @@
-package vn.edu.vnu.uet.dktadmin.dto.service;
+package vn.edu.vnu.uet.dktadmin.dto.service.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -20,9 +20,6 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 public class AuthenticationService {
     @Autowired
     private EmailValidator emailValidator;
-
-    /*@Autowired
-    private StudentDao studentDao;*/
 
     @Autowired
     private AdminDao adminDao;

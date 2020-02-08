@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.time.LocalDate;
 
 @Table(name = "students")
 @Entity
@@ -15,13 +14,15 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String username;
     private String email;
-    private String sex;
-    private LocalDate dateOfBirth;
     private String password;
-    private String courses;
+    private String fullName;
+    private String sex;
+    private String dateOfBirth;
+    private String course;
+    private Instant createdAt;
+    private Instant modifiedAt;
     private String createdBy;
-    private Instant createdOn;
+    private String modifiedBy;
 }

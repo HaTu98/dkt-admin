@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.edu.vnu.uet.dkt.rest.model.auth.LoginRequest;
 import vn.edu.vnu.uet.dkt.rest.model.auth.LoginResponse;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
-import vn.edu.vnu.uet.dktadmin.dto.service.AuthenticationService;
+import vn.edu.vnu.uet.dktadmin.dto.service.auth.AuthenticationService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
 
 import javax.validation.Valid;
