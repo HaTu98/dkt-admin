@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentRepository;
 
+import java.util.List;
+
 @Service
 public class StudentDaoImpl implements StudentDao{
     @Autowired
@@ -23,5 +25,10 @@ public class StudentDaoImpl implements StudentDao{
     @Override
     public Student save(Student student) {
         return studentRepository.save(student);
+    }
+
+    @Override
+    public List<Student> getAll() {
+        return studentRepository.findAll();
     }
 }

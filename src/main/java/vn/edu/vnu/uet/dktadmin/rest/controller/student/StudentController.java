@@ -11,6 +11,7 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
+import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 
@@ -53,6 +54,11 @@ public class StudentController extends BaseController {
             throw new FormValidateException(result);
         }
         return studentService.updateStudent(request);
+    }
+
+    @GetMapping("student")
+    public StudentListResponse getStudent() {
+        return studentService.getStudent();
     }
 }
 

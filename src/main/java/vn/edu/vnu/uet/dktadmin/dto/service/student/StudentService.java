@@ -1,5 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.student;
 
+import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,11 +11,14 @@ import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
-import vn.edu.vnu.uet.dktadmin.dto.repository.StudentRepository;
+import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -29,6 +33,9 @@ public class StudentService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private MapperFacade mapperFacade;
 
     @Transactional
     public StudentResponse createStudent(StudentRequest request) {
@@ -57,6 +64,12 @@ public class StudentService {
         return getResponse(saveStudent);
     }
 
+
+    public StudentListResponse getStudent() {
+        List<Student> listStudent =studentDao.getAll();
+        List<StudentResponse> studentResponses = listStudent.stream().map(student -> mapperFacade.map(student,StudentResponse.class)).collect(Collectors.toList());
+        return new StudentListResponse(studentResponses);
+    }
 
     public Student buildCreateStudent(StudentRequest studentRequest, DktAdmin dktAdmin) {
         Student student = this.student(studentRequest);
