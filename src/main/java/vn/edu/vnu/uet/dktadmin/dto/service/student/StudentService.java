@@ -1,5 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.student;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,7 +68,7 @@ public class StudentService {
 
     public StudentListResponse getStudent() {
         List<Student> listStudent =studentDao.getAll();
-        List<StudentResponse> studentResponses = listStudent.stream().map(student -> mapperFacade.map(student,StudentResponse.class)).collect(Collectors.toList());
+        List<StudentResponse> studentResponses = listStudent.stream().map(this::getResponse).collect(Collectors.toList());
         return new StudentListResponse(studentResponses);
     }
 
