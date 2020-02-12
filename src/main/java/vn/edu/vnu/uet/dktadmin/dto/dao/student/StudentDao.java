@@ -9,4 +9,5 @@ public interface StudentDao {
     Student getByUsername(String username);
     Student save(Student student);
     List<Student> getAll();
+    void saveAll(List<Student> students);
 }

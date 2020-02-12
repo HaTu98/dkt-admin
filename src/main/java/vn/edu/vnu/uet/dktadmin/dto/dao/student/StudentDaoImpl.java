@@ -31,4 +31,9 @@ public class StudentDaoImpl implements StudentDao{
     public List<Student> getAll() {
         return studentRepository.findAll();
     }
+
+    @Override
+    public void saveAll(List<Student> students) {
+        studentRepository.saveAll(students);
+    }
 }

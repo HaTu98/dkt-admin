@@ -1,11 +1,17 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.student;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ma.glasnost.orika.MapperFacade;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
@@ -16,9 +22,11 @@ import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -109,6 +117,64 @@ public class StudentService {
         return student;
     }
 
+    public void importStudent(MultipartFile file) throws IOException {
+        String error = "";
+        XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        List<Student> students = getStudentInSheet(sheet, error);
+
+        storeImport(students);
+    }
+
+    private List<Student> getStudentInSheet(XSSFSheet sheet, String error) {
+        List<Student> students = new ArrayList<>();
+        DktAdmin admin = accountService.getUserSession();
+
+        int rowNumber = sheet.getPhysicalNumberOfRows();
+        for (int i = 1;  i < rowNumber; i++) {
+            XSSFRow row = sheet.getRow(i);
+            try {
+                //String stt = getValueInCell(row.getCell(0)).trim();
+                Student student = new Student();
+                student.setFullName(getValueInCell(row.getCell(1)).trim());
+                student.setSex(getValueInCell(row.getCell(2)).trim());
+                student.setDateOfBirth(getValueInCell(row.getCell(3)).trim());
+                String username = getValueInCell(row.getCell(4)).trim();
+                student.setUsername(username);
+                student.setEmail(username+ Constant.BASE_EMAIL);
+                student.setCourse(getValueInCell(row.getCell(5)).trim());
+                student.setPassword(passwordEncoder.encode(username));
+                Instant now = Instant.now();
+                student.setCreatedAt(now);
+                student.setModifiedAt(now);
+                student.setCreatedBy(admin.getUsername());
+                student.setModifiedBy(admin.getUsername());
+
+                students.add(student);
+            } catch (Exception e) {
+                error += i + ", ";
+            }
+        }
+        return students;
+    }
+
+    @Transactional
+    void storeImport(List<Student> students){
+        Map<String,Student> dbStudents = studentDao.getAll().stream().collect(Collectors.toMap(Student::getUsername,s -> s ));
+        Map<String, Student> importStudents = students.stream().collect(Collectors.toMap(Student::getUsername,s -> s ));
+        importStudents.forEach((username, student) -> {
+            if (dbStudents.containsKey(username)) {
+                Student dbStudent = dbStudents.get(username);
+                student.setId(dbStudent.getId());
+                student.setPassword(dbStudent.getPassword());
+                student.setCreatedBy(dbStudent.getCreatedBy());
+                student.setCreatedAt(dbStudent.getCreatedAt());
+            }
+        });
+        List<Student> saveStudents = new ArrayList<>(importStudents.values());
+        studentDao.saveAll(saveStudents);
+
+    }
 
     private Student student(StudentRequest studentRequest) {
         Student student = new Student();
@@ -155,5 +221,18 @@ public class StudentService {
                 .fullName(student.getFullName())
                 .sex(student.getSex())
                 .build();
+    }
+
+    private String getValueInCell(Cell cell) {
+        if (cell == null) return null;
+        CellType type = cell.getCellType();
+        if (type == CellType.STRING) {
+            return cell.getStringCellValue();
+        } else if (type == CellType.NUMERIC) {
+            Double cellData = cell.getNumericCellValue();
+            return cellData.toString();
+        } else {
+            return null;
+        }
     }
 }

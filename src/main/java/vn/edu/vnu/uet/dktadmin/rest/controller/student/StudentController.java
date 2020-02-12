@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
@@ -16,6 +17,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @RequestMapping("/admin/generation")
 @RestController
@@ -56,9 +58,15 @@ public class StudentController extends BaseController {
         return studentService.updateStudent(request);
     }
 
-    @GetMapping("student")
+    @GetMapping("/student")
     public StudentListResponse getStudent() {
         return studentService.getStudent();
     }
+
+    @PostMapping("/student/import")
+    public String importStudent(@RequestParam("file") MultipartFile file) throws IOException {
+        studentService.importStudent(file);
+        return "success";
+}
 }
 
