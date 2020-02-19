@@ -15,6 +15,7 @@ public class Semester {
     private Long id;
 
     private String name;
+    private String code;
     private String title;
     private String description;
 }
