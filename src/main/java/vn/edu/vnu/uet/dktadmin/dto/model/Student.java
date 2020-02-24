@@ -17,8 +17,9 @@ public class Student {
     private String username;
     private String email;
     private String password;
+    private String studentCode;
     private String fullName;
-    private String sex;
+    private String gender;
     private String dateOfBirth;
     private String course;
     private Instant createdAt;

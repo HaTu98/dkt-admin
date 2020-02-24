@@ -6,6 +6,6 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 
 @Repository
 public interface RoomRepository  extends JpaRepository<Room, Long> {
-    Room findByName(String name);
-    Room findByCode(String code);
+    Room findByRoomName(String name);
+    Room findByRoomCode(String code);
 }

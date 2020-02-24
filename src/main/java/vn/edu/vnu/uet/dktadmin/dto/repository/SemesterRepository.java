@@ -6,5 +6,5 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 
 @Repository
 public interface SemesterRepository extends JpaRepository<Semester, Long> {
-    Semester findOneByCode(String semesterCode);
+    Semester findOneBySemesterCode(String semesterCode);
 }

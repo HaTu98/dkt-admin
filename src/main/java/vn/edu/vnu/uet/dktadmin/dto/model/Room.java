@@ -14,8 +14,8 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String code;
+    private String roomName;
+    private String roomCode;
     private String location;
     private String description;
     private Integer numberAvailable;

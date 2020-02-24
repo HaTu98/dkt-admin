@@ -6,8 +6,6 @@ import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.repository.RoomRepository;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -23,12 +21,12 @@ public class RoomDaoImpl implements RoomDao {
 
     @Override
     public Room getByName(String name) {
-        return roomRepository.findByName(name);
+        return roomRepository.findByRoomName(name);
     }
 
     @Override
     public Room getByCode(String code) {
-        return roomRepository.findByCode(code);
+        return roomRepository.findByRoomCode(code);
     }
 
     @Override

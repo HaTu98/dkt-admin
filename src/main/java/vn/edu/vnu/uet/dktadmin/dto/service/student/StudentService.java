@@ -137,7 +137,7 @@ public class StudentService {
                 //String stt = getValueInCell(row.getCell(0)).trim();
                 Student student = new Student();
                 student.setFullName(getValueInCell(row.getCell(1)).trim());
-                student.setSex(getValueInCell(row.getCell(2)).trim());
+                student.setGender(getValueInCell(row.getCell(2)).trim());
                 student.setDateOfBirth(getValueInCell(row.getCell(3)).trim());
                 String username = getValueInCell(row.getCell(4)).trim();
                 student.setUsername(username);
@@ -182,8 +182,9 @@ public class StudentService {
         student.setEmail(studentRequest.getEmail());
         student.setCourse(studentRequest.getCourse());
         student.setPassword(studentRequest.getPassword());
+        student.setStudentCode(studentRequest.getStudentCode());
         student.setFullName(studentRequest.getFullName());
-        student.setSex(studentRequest.getSex());
+        student.setGender(studentRequest.getGender());
         student.setDateOfBirth(studentRequest.getDateOfBirth());
 
         return student;
@@ -219,7 +220,8 @@ public class StudentService {
                 .course(student.getCourse())
                 .dateOfBirth(student.getDateOfBirth())
                 .fullName(student.getFullName())
-                .sex(student.getSex())
+                .studentCode(student.getStudentCode())
+                .gender(student.getGender())
                 .build();
     }
 

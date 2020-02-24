@@ -2,7 +2,6 @@ package vn.edu.vnu.uet.dktadmin.rest.controller.room;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.room.RoomService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;

@@ -22,7 +22,7 @@ public class RoomService {
     private MapperFacade mapperFacade;
 
     public RoomResponse createRoom(RoomRequest request) {
-        String code = request.getCode();
+        String code = request.getRoomCode();
         Room roomInDB  = roomDao.getByCode(code);
         if (roomInDB != null) {
             throw new FormValidateException("room", "đã tồn tại");
