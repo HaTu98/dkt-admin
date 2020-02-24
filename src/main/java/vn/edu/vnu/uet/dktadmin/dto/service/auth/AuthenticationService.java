@@ -12,9 +12,7 @@ import vn.edu.vnu.uet.dktadmin.common.model.DktStudent;
 import vn.edu.vnu.uet.dktadmin.common.security.JwtTokenHelper;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.admin.AdminDao;
-import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Admin;
-import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 
 @Service
 public class AuthenticationService {

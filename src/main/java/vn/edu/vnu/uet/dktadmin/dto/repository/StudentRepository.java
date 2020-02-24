@@ -8,4 +8,5 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 public interface StudentRepository extends JpaRepository<Student, Long> {
     Student findByUsername(String username);
     Student findByEmail(String email);
+    Student findByStudentCode(String studentCode);
 }

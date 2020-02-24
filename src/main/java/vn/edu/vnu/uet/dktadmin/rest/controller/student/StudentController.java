@@ -9,7 +9,6 @@ import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
-import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;

@@ -73,14 +73,14 @@ public class BaseController {
         return new CustomError(exception.getMessage());
     }
 
-    /*@ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public CustomError handleNotFoundException(HttpServletResponse response, NotFoundException e) {
-        response.setContentType("application/json");
-        response.setHeader("Content-Type", "application/json");
-        //response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return new CustomError(e.getMessage());
-    }*/
+//    @ExceptionHandler(NotFoundException.class)
+//    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+//    public CustomError handleNotFoundException(HttpServletResponse response, NotFoundException e) {
+//        response.setContentType("application/json");
+//        response.setHeader("Content-Type", "application/json");
+//        //response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+//        return new CustomError(e.getMessage());
+//    }
 
     private void putFieldError(Map<String, Object> errors, FieldError error) {
         val key = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, error.getField());

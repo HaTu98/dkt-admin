@@ -36,4 +36,10 @@ public class StudentDaoImpl implements StudentDao{
     public void saveAll(List<Student> students) {
         studentRepository.saveAll(students);
     }
+
+    @Override
+    public Student getByStudentCode(String studentCode) {
+        return studentRepository.findByStudentCode(studentCode);
+    }
+
 }

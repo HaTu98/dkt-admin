@@ -15,6 +15,7 @@ import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
+import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
@@ -174,6 +175,11 @@ public class StudentService {
         List<Student> saveStudents = new ArrayList<>(importStudents.values());
         studentDao.saveAll(saveStudents);
 
+    }
+
+    public boolean existStudent(String studentCode) {
+        Student student = studentDao.getByStudentCode(studentCode);
+        return student != null;
     }
 
     private Student student(StudentRequest studentRequest) {

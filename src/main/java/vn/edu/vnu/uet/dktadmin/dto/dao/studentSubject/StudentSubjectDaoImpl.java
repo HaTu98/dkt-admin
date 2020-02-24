@@ -8,7 +8,7 @@ import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectRepository;
 import java.util.List;
 
 @Service
-public class StudentSubjectDaoImpl implements StudentSubjectDao{
+public class StudentSubjectDaoImpl implements StudentSubjectDao {
     @Autowired
     private StudentSubjectRepository studentSubjectRepository;
 
@@ -21,4 +21,10 @@ public class StudentSubjectDaoImpl implements StudentSubjectDao{
     public StudentSubject store(StudentSubject studentSubject) {
         return studentSubjectRepository.save(studentSubject);
     }
+
+    @Override
+    public StudentSubject getByStudentAndSubjectAndSemester(Long studentId, Long subjectId, Long semesterId) {
+        return studentSubjectRepository.findByStudentIdAndSubjectIdAndSemesterId(studentId, subjectId, semesterId);
+    }
+
 }
