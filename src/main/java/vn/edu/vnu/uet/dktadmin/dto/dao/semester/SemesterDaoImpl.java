@@ -14,4 +14,9 @@ public class SemesterDaoImpl implements SemesterDao{
     public Semester getBySemesterCode(String semesterCode) {
         return semesterRepository.findOneBySemesterCode(semesterCode);
     }
+
+    @Override
+    public Semester store(Semester semester) {
+        return semesterRepository.save(semester);
+    }
 }
