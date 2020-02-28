@@ -5,14 +5,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vn.edu.vnu.uet.dkt.rest.model.auth.LoginRequest;
-import vn.edu.vnu.uet.dkt.rest.model.auth.LoginResponse;
 import vn.edu.vnu.uet.dktadmin.common.exception.UnauthorizedException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktStudent;
 import vn.edu.vnu.uet.dktadmin.common.security.JwtTokenHelper;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.admin.AdminDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Admin;
+import vn.edu.vnu.uet.dktadmin.rest.model.auth.LoginRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.auth.LoginResponse;
 
 @Service
 public class AuthenticationService {

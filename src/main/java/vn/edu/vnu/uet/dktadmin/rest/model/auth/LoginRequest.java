@@ -1,4 +1,4 @@
-package vn.edu.vnu.uet.dkt.rest.model.auth;
+package vn.edu.vnu.uet.dktadmin.rest.model.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
