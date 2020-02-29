@@ -42,6 +42,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.jpg",
                         "/**/*.html",
                         "/**/*.css",
+                        "/api-docs",
                         "/**/*.js")
                 .permitAll()
                 .antMatchers(
