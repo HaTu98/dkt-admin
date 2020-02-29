@@ -13,9 +13,9 @@ public class RoomResponse {
     @JsonProperty(value = "RoomCode")
     private String roomCode;
 
-    @JsonProperty(value = "location")
+    @JsonProperty(value = "Location")
     private String location;
 
-    @JsonProperty(value = "description")
+    @JsonProperty(value = "Description")
     private String description;
 }
