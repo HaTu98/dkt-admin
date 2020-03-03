@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
+import vn.edu.vnu.uet.dktadmin.common.exception.UnAuthorizeException;
 import vn.edu.vnu.uet.dktadmin.dto.service.auth.AuthenticationService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
+import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.auth.LoginRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.auth.LoginResponse;
 
@@ -22,11 +24,12 @@ public class AuthController extends BaseController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public LoginResponse login(@Valid @RequestBody LoginRequest request, BindingResult result){
-
-        if (result.hasErrors()) {
-            throw new FormValidateException(result);
+    public ApiDataResponse login(@RequestBody LoginRequest request) {
+        try {
+            return ApiDataResponse.ok(authenticationService.login(request));
+        } catch (UnAuthorizeException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
         }
-        return authenticationService.login(request);
+
     }
 }

@@ -12,18 +12,14 @@ import javax.validation.constraints.Size;
 @Setter
 @NoArgsConstructor
 public class StudentRequest {
-    @Size(min = 6, max = 25)
     @JsonProperty(value = "Username")
     private String username;
-    @NotNull
 
     @JsonProperty(value = "Email")
     private String email;
-    @Size(min = 6, max = 25)
 
     @JsonProperty(value = "Password")
     private String password;
-    @Size(min = 6, max = 25)
 
     @JsonProperty(value = "PasswordConfirm")
     private String passwordConfirm;

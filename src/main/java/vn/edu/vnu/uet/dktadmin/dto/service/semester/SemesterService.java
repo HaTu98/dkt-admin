@@ -24,8 +24,8 @@ public class SemesterService {
 
     public SemesterResponse create(SemesterRequest semesterRequest){
         Semester semester = semesterDao.getBySemesterCode(semesterRequest.getSemesterCode());
-        if (semester != null)
-            throw new FormValidateException("semester", "already existed");
+//        if (semester != null)
+//            throw new FormValidateException("semester", "already existed");
 
         semester = mapperFacade.map(semesterRequest, Semester.class);
         Semester semesterSave = semesterDao.store(semester);

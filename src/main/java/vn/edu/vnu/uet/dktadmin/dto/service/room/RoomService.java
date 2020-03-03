@@ -2,8 +2,10 @@ package vn.edu.vnu.uet.dktadmin.dto.service.room;
 
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Room;
@@ -25,7 +27,7 @@ public class RoomService {
         String code = request.getRoomCode();
         Room roomInDB  = roomDao.getByCode(code);
         if (roomInDB != null) {
-            throw new FormValidateException("room", "đã tồn tại");
+            throw new BadRequestException(HttpStatus.BAD_REQUEST.value(), "Room đã tồn tại");
         }
         Room roomRequest = mapperFacade.map(request, Room.class);
 

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
+import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterRequest;
 
 @RestController
@@ -16,9 +17,9 @@ public class roomSemesterController {
     private RoomSemesterService roomSemesterService;
 
     @PostMapping
-    public String createRoomSemester(@RequestBody RoomSemesterRequest request) {
-        roomSemesterService.createRoomSemester(request);
-        return "Success";
+    public ApiDataResponse createRoomSemester(@RequestBody RoomSemesterRequest request) {
+
+        return ApiDataResponse.ok(roomSemesterService.createRoomSemester(request));
     }
 
 

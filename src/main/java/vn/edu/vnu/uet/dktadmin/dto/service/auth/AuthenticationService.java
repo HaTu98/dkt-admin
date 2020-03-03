@@ -3,9 +3,10 @@ package vn.edu.vnu.uet.dktadmin.dto.service.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vn.edu.vnu.uet.dktadmin.common.exception.UnauthorizedException;
+import vn.edu.vnu.uet.dktadmin.common.exception.UnAuthorizeException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktStudent;
 import vn.edu.vnu.uet.dktadmin.common.security.JwtTokenHelper;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
@@ -31,21 +32,21 @@ public class AuthenticationService {
     @Autowired
     private JwtTokenHelper jwtTokenHelper;
 
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) throws UnAuthorizeException {
         String username = request.getUsername();
         String password = request.getPassword();
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-            throw new UnauthorizedException("Tài khoản mật khẩu không chính xác");
+            throw new UnAuthorizeException(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
         }
 
         Admin admin = this.getUsernameOrEmail(username);
         if(admin == null) {
-            throw new UnauthorizedException("Tài khoản mật khẩu không chính xác");
+            throw new UnAuthorizeException(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
         }
 
         boolean result = passwordEncoder.matches( request.getPassword(), admin.getPassword());
         if (!result) {
-            throw new UnauthorizedException("Tài khoản mật khẩu không chính xác");
+            throw new UnAuthorizeException(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
         }
 
         DktStudent dktStudent = mapper.convertValue(admin, DktStudent.class);
