@@ -39,7 +39,7 @@ public class StudentController extends BaseController {
     private AccountService accountService;
 
     @PostMapping("/student")
-    public ApiDataResponse createAccount(@RequestBody StudentRequest request) {
+    public ApiDataResponse<StudentResponse> createAccount(@RequestBody StudentRequest request) {
         String password = request.getPassword();
         if (!password.equals(request.getPasswordConfirm())) {
             return ApiDataResponse.error(HttpStatus.BAD_REQUEST.value(), "password confirm not equal password");
@@ -49,19 +49,19 @@ public class StudentController extends BaseController {
     }
 
     @PutMapping("/student")
-    public ApiDataResponse updateStudent(@RequestBody StudentRequest request) {
+    public ApiDataResponse<StudentResponse> updateStudent(@RequestBody StudentRequest request) {
         return ApiDataResponse.ok(studentService.updateStudent(request));
     }
 
     @GetMapping("/student")
-    public StudentListResponse getStudent() {
-        return studentService.getStudent();
+    public ApiDataResponse<StudentListResponse> getStudent() {
+        return ApiDataResponse.ok(studentService.getStudent());
     }
 
     @PostMapping("/student/import")
-    public String importStudent(@RequestParam("file") MultipartFile file) throws IOException {
+    public ApiDataResponse<String> importStudent(@RequestParam("file") MultipartFile file) throws IOException {
         studentService.importStudent(file);
-        return "success";
-}
+        return ApiDataResponse.ok("success");
+    }
 }
 

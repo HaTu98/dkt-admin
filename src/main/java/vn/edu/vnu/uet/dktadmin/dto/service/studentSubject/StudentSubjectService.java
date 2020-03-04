@@ -3,6 +3,7 @@ package vn.edu.vnu.uet.dktadmin.dto.service.studentSubject;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
@@ -43,23 +44,23 @@ public class StudentSubjectService {
         String studentCode = request.getStudentCode();
         Student student = studentDao.getByStudentCode(studentCode);
         if (student == null) {
-            throw new FormValidateException("StudentCode", "not existed");
+            throw new BadRequestException(400, "student not existed");
         }
 
         String subjectCode = request.getSubjectCode();
         Subject subject = subjectDao.getBySubjectCode(subjectCode);
         if (subject == null) {
-            throw new FormValidateException("SubjectCode", "not exist");
+            throw new BadRequestException(400, "subject not exist");
         }
 
         String semesterCode = request.getSemesterCode();
         Semester semester = semesterDao.getBySemesterCode(semesterCode);
         if (semester == null) {
-            throw new FormValidateException("SemesterCode", "not exist");
+            throw new BadRequestException(400, "semester not exist");
         }
 
         if (existStudentSubject(student.getId(), subject.getId(), semester.getId())){
-            throw new FormValidateException("StudentSubject", "already existed");
+            throw new BadRequestException(400, "StudentSubject already existed");
         }
         StudentSubject studentSubject = buildStudentSubject(student, subject,semester);
 

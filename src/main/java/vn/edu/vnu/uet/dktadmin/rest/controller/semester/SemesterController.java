@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.edu.vnu.uet.dktadmin.dto.service.semester.SemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterResponse;
 
 @RestController
 @RequestMapping("/admin/semester")
@@ -17,7 +18,7 @@ public class SemesterController {
     private SemesterService semesterService;
 
     @PostMapping
-    public ApiDataResponse create(@RequestBody SemesterRequest request){
+    public ApiDataResponse<SemesterResponse> create(@RequestBody SemesterRequest request){
         return ApiDataResponse.ok(semesterService.create(request));
     }
 }

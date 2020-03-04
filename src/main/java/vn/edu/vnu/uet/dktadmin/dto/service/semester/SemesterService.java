@@ -2,7 +2,9 @@ package vn.edu.vnu.uet.dktadmin.dto.service.semester;
 
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
@@ -24,8 +26,8 @@ public class SemesterService {
 
     public SemesterResponse create(SemesterRequest semesterRequest){
         Semester semester = semesterDao.getBySemesterCode(semesterRequest.getSemesterCode());
-//        if (semester != null)
-//            throw new FormValidateException("semester", "already existed");
+        if (semester != null)
+            throw new BadRequestException(HttpStatus.BAD_REQUEST.value(), "semester already existed");
 
         semester = mapperFacade.map(semesterRequest, Semester.class);
         Semester semesterSave = semesterDao.store(semester);

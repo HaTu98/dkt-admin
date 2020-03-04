@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
+import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
@@ -50,7 +51,7 @@ public class StudentService {
     @Transactional
     public StudentResponse createStudent(StudentRequest request) {
         if (checkStudentExist(request)) {
-            throw new FormValidateException("username/email", "student đã tồn tại");
+            throw new BadRequestException(400, "student đã tồn tại");
         }
         DktAdmin admin = accountService.getUserSession();
 
@@ -65,7 +66,7 @@ public class StudentService {
     @Transactional
     public StudentResponse updateStudent(StudentRequest request) {
         if (!checkStudentExist(request)) {
-            throw new FormValidateException("username/email", "student không tồn tại");
+            throw new BadRequestException(400, "student không tồn tại");
         }
         DktAdmin admin = accountService.getUserSession();
 

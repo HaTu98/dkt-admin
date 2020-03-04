@@ -19,7 +19,7 @@ public class RoomController extends BaseController {
     private RoomService roomService;
 
     @PostMapping
-    public ApiDataResponse createRoom(@RequestBody RoomRequest roomRequest) {
+    public ApiDataResponse<RoomResponse> createRoom(@RequestBody RoomRequest roomRequest) {
         try {
             return ApiDataResponse.ok(roomService.createRoom(roomRequest));
         }catch (FormValidateException e){
@@ -28,7 +28,7 @@ public class RoomController extends BaseController {
     }
 
     @GetMapping
-    public ApiDataResponse getAllRoom() {
+    public ApiDataResponse<RoomListResponse> getAllRoom() {
         return ApiDataResponse.ok(roomService.getAllRoom());
     }
 
