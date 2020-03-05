@@ -12,11 +12,11 @@ import org.springframework.http.HttpStatus;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiDataResponse<T> {
     private T data;
-    private int code;
+    private int status;
     private String message;
 
-    public ApiDataResponse(int code, String message) {
-        this.code = code;
+    public ApiDataResponse(int status, String message) {
+        this.status = status;
         this.message = message;
     }
 
