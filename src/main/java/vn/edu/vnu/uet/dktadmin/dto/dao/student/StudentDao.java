@@ -11,4 +11,5 @@ public interface StudentDao {
     List<Student> getAll();
     void saveAll(List<Student> students);
     Student getByStudentCode(String studentCode);
+    Student getById(Long id);
 }

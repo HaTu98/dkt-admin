@@ -7,6 +7,6 @@ import java.util.List;
 public interface RoomDao {
     Room createRoom(Room room);
     Room getByName(String name);
-    Room getByCode(String code);
+    Room getById(Long code);
     List<Room> getAllRoom();
 }

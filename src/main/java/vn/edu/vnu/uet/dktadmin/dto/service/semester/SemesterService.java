@@ -19,13 +19,13 @@ public class SemesterService {
     @Autowired
     private MapperFacade mapperFacade;
 
-    public boolean existSemester(String semesterCode){
-        Semester semester = semesterDao.getBySemesterCode(semesterCode);
+    public boolean existSemester(Long semesterId){
+        Semester semester = semesterDao.getById(semesterId);
         return semester != null;
     }
 
     public SemesterResponse create(SemesterRequest semesterRequest){
-        Semester semester = semesterDao.getBySemesterCode(semesterRequest.getSemesterCode());
+        Semester semester = semesterDao.getById(semesterRequest.getSemesterId());
         if (semester != null)
             throw new BadRequestException(HttpStatus.BAD_REQUEST.value(), "semester already existed");
 

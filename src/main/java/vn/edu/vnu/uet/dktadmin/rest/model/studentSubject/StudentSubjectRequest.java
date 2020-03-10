@@ -7,12 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StudentSubjectRequest {
-    @JsonProperty(value = "StudentCode")
-    private String studentCode;
+    @JsonProperty(value = "StudentId")
+    private Long studentId;
 
-    @JsonProperty(value = "SubjectCode")
-    private String subjectCode;
+    @JsonProperty(value = "SubjectId")
+    private Long subjectId;
 
-    @JsonProperty(value = "SemesterCode")
-    private String semesterCode;
+    @JsonProperty(value = "SemesterId")
+    private Long semesterId;
 }

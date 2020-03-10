@@ -24,6 +24,10 @@ public class ApiDataResponse<T> {
         return new ApiDataResponse(data, HttpStatus.OK.value(), "successful");
     }
 
+    public static ApiDataResponse error() {
+        return new ApiDataResponse(null, HttpStatus.BAD_REQUEST.value(), "Something errors");
+    }
+
     public static ApiDataResponse error(int statusCode, String message) {
         return new ApiDataResponse(null, statusCode, message);
     }

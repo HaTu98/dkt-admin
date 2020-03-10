@@ -7,8 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SemesterResponse {
+    @JsonProperty(value = "Id")
+    private Long id;
+
     @JsonProperty(value = "SemesterName")
     private String semesterName;
+
     @JsonProperty(value = "SemesterCode")
     private String semesterCode;
 

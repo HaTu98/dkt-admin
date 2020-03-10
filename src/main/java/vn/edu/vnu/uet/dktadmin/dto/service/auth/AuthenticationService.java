@@ -38,7 +38,6 @@ public class AuthenticationService {
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             throw new UnAuthorizeException(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
         }
-
         Admin admin = this.getUsernameOrEmail(username);
         if(admin == null) {
             throw new UnAuthorizeException(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());

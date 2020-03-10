@@ -26,14 +26,10 @@ public class RoomSemesterService {
     @Autowired
     private MapperFacade mapperFacade;
 
-    public RoomSemester createRoomSemester(RoomSemesterRequest request) {
-        Semester semester = semesterDao.getBySemesterCode(request.getSemesterCode());
-        Room room = roomDao.getByCode(request.getRoomCode());
-        RoomSemester roomSemester = RoomSemester.builder().semesterId(semester.getId())
-                .roomId(room.getId())
-                .numberOfComputer(request.getNumberOfComputer())
-                .build();
-
-        return roomSemesterDao.createRoomSemester(roomSemester);
+    public RoomSemesterResponse createRoomSemester(RoomSemesterRequest request) {
+        Semester semester = semesterDao.getById(request.getSemesterId());
+        Room room = roomDao.getById(request.getRoomId());
+        RoomSemester roomSemester = mapperFacade.map(request, RoomSemester.class);
+        return mapperFacade.map(roomSemesterDao.createRoomSemester(roomSemester), RoomSemesterResponse.class);
     }
 }

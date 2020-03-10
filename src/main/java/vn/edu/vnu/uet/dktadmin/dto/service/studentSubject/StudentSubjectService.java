@@ -41,20 +41,20 @@ public class StudentSubjectService {
     }
 
     public StudentSubjectResponse create(StudentSubjectRequest request) {
-        String studentCode = request.getStudentCode();
-        Student student = studentDao.getByStudentCode(studentCode);
+        Long studentId = request.getStudentId();
+        Student student = studentDao.getById(studentId);
         if (student == null) {
             throw new BadRequestException(400, "student not existed");
         }
 
-        String subjectCode = request.getSubjectCode();
-        Subject subject = subjectDao.getBySubjectCode(subjectCode);
+        Long subjectId = request.getSubjectId();
+        Subject subject = subjectDao.getById(subjectId);
         if (subject == null) {
             throw new BadRequestException(400, "subject not exist");
         }
 
-        String semesterCode = request.getSemesterCode();
-        Semester semester = semesterDao.getBySemesterCode(semesterCode);
+        Long semesterId = request.getSemesterId();
+        Semester semester = semesterDao.getById(semesterId);
         if (semester == null) {
             throw new BadRequestException(400, "semester not exist");
         }

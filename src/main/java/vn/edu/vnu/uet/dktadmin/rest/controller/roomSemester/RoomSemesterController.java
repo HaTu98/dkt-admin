@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterRequest;
@@ -19,7 +18,7 @@ public class RoomSemesterController {
     private RoomSemesterService roomSemesterService;
 
     @PostMapping
-    public ApiDataResponse<RoomSemester> createRoomSemester(@RequestBody RoomSemesterRequest request) {
+    public ApiDataResponse<RoomSemesterResponse> createRoomSemester(@RequestBody RoomSemesterRequest request) {
 
         return ApiDataResponse.ok(roomSemesterService.createRoomSemester(request));
     }

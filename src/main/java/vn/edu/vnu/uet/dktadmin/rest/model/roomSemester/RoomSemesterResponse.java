@@ -11,11 +11,17 @@ public class RoomSemesterResponse {
     private Long id;
 
     @JsonProperty(value = "NumberOfComputer")
-    private int numberOfComputer;
+    private Long numberOfComputer;
 
-    @JsonProperty(value = "SemesterCode")
-    private String semesterCode;
+    @JsonProperty(value = "AvailableComputer")
+    private String availableComputer;
 
-    @JsonProperty(value = "RoomCode")
-    private String roomCode;
+    @JsonProperty(value = "RoomSemesterCode")
+    private String roomSemesterCode;
+
+    @JsonProperty(value = "SemesterId")
+    private Long semesterId;
+
+    @JsonProperty(value = "RoomId")
+    private Long roomId;
 }

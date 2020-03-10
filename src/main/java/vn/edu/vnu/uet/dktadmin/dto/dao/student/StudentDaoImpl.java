@@ -6,6 +6,7 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentDaoImpl implements StudentDao{
@@ -40,6 +41,12 @@ public class StudentDaoImpl implements StudentDao{
     @Override
     public Student getByStudentCode(String studentCode) {
         return studentRepository.findByStudentCode(studentCode);
+    }
+
+    @Override
+    public Student getById(Long id) {
+        Optional<Student> student = studentRepository.findById(id);
+        return student.orElseGet(student::get);
     }
 
 }

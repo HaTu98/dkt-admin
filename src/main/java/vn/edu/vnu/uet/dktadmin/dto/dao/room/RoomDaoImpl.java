@@ -7,6 +7,7 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.repository.RoomRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoomDaoImpl implements RoomDao {
@@ -25,8 +26,9 @@ public class RoomDaoImpl implements RoomDao {
     }
 
     @Override
-    public Room getByCode(String code) {
-        return roomRepository.findByRoomCode(code);
+    public Room getById(Long id) {
+        Optional<Room> room = roomRepository.findById(id);
+        return room.orElseGet(room::get);
     }
 
     @Override

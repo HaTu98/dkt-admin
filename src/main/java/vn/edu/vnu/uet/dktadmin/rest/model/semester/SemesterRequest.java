@@ -9,12 +9,11 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class SemesterRequest {
-    @NotNull
     @JsonProperty(value = "SemesterName")
     private String semesterName;
-    @NotNull
-    @JsonProperty(value = "SemesterCode")
-    private String semesterCode;
+
+    @JsonProperty(value = "SemesterId")
+    private Long semesterId;
 
     @JsonProperty(value = "SemesterTitle")
     private String semesterTitle;

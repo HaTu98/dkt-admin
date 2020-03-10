@@ -24,8 +24,8 @@ public class RoomService {
     private MapperFacade mapperFacade;
 
     public RoomResponse createRoom(RoomRequest request) {
-        String code = request.getRoomCode();
-        Room roomInDB  = roomDao.getByCode(code);
+        Long roomId = request.getRoomId();
+        Room roomInDB  = roomDao.getById(roomId);
         if (roomInDB != null) {
             throw new BadRequestException(HttpStatus.BAD_REQUEST.value(), "Room đã tồn tại");
         }
