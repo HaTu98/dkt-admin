@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Getter
@@ -18,8 +19,9 @@ public class Exam {
     private Integer numberOfStudent;
     private Integer numberOfStudentSubscribe;
     private String examCode;
-    private Long time;
-    private LocalDate date;
+    private Instant startTime;
+    private Instant date;
     private Long subjectId;
     private Long roomSemesterId;
+    private Integer duration;
 }

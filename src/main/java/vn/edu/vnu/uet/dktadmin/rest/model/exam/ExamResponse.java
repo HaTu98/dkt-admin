@@ -8,7 +8,10 @@ import java.time.Instant;
 
 @Getter
 @Setter
-public class ExamRequest {
+public class ExamResponse {
+    @JsonProperty(value = "Id")
+    private Integer id;
+
     @JsonProperty(value = "NumberOfStudent")
     private Integer numberOfStudent;
 

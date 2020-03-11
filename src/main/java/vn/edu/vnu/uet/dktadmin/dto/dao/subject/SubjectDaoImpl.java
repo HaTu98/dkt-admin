@@ -22,4 +22,9 @@ public class SubjectDaoImpl implements SubjectDao{
         Optional<Subject> subject = subjectRepository.findById(id);
         return subject.orElseGet(subject::get);
     }
+
+    @Override
+    public Subject store(Subject subject) {
+        return subjectRepository.save(subject);
+    }
 }
