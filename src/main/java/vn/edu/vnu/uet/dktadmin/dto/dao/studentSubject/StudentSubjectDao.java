@@ -7,5 +7,5 @@ import java.util.List;
 public interface StudentSubjectDao {
     List<StudentSubject> getAll();
     StudentSubject store(StudentSubject studentSubject);
-    StudentSubject getByStudentAndSubjectAndSemester(Long studentId, Long subjectId, Long semesterId);
+    StudentSubject getByStudentAndSubjectSemesterId(Long studentId, Long subjectSemesterId);
 }

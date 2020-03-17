@@ -10,9 +10,6 @@ public class StudentSubjectRequest {
     @JsonProperty(value = "StudentId")
     private Long studentId;
 
-    @JsonProperty(value = "SubjectId")
-    private Long subjectId;
-
-    @JsonProperty(value = "SemesterId")
-    private Long semesterId;
+    @JsonProperty(value = "studentSubjectId")
+    private Long subjectSubjectId;
 }

@@ -9,10 +9,8 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
-import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
-import vn.edu.vnu.uet.dktadmin.dto.model.Student;
-import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
-import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
+import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectResponse;
 
@@ -24,10 +22,9 @@ public class StudentSubjectService {
     private StudentSubjectDao studentSubjectDao;
     @Autowired
     private StudentDao studentDao;
+
     @Autowired
-    private SubjectDao subjectDao;
-    @Autowired
-    private SemesterDao semesterDao;
+    private SubjectSemesterDao subjectSemesterDao;
 
     @Autowired
     private MapperFacade mapperFacade;
@@ -47,37 +44,30 @@ public class StudentSubjectService {
             throw new BadRequestException(400, "student not existed");
         }
 
-        Long subjectId = request.getSubjectId();
-        Subject subject = subjectDao.getById(subjectId);
-        if (subject == null) {
-            throw new BadRequestException(400, "subject not exist");
+        Long subjectId = request.getSubjectSubjectId();
+        SubjectSemester subjectSemester = subjectSemesterDao.getById(subjectId);
+        if (subjectSemester == null) {
+            throw new BadRequestException(400, "subject semester not exist");
         }
 
-        Long semesterId = request.getSemesterId();
-        Semester semester = semesterDao.getById(semesterId);
-        if (semester == null) {
-            throw new BadRequestException(400, "semester not exist");
-        }
-
-        if (existStudentSubject(student.getId(), subject.getId(), semester.getId())){
+        if (existStudentSubject(student.getId(), subjectSemester.getSemesterId())){
             throw new BadRequestException(400, "StudentSubject already existed");
         }
-        StudentSubject studentSubject = buildStudentSubject(student, subject,semester);
+        StudentSubject studentSubject = buildStudentSubject(student, subjectSemester);
 
         StudentSubject save = studentSubjectDao.store(studentSubject);
         return mapperFacade.map(save, StudentSubjectResponse.class);
     }
 
-    public boolean existStudentSubject(Long studentId, Long subjectId, Long semesterId) {
-        StudentSubject studentSubject = studentSubjectDao.getByStudentAndSubjectAndSemester(studentId, subjectId, semesterId);
+    public boolean existStudentSubject(Long studentId, Long subjectSemesterId) {
+        StudentSubject studentSubject = studentSubjectDao.getByStudentAndSubjectSemesterId(studentId, subjectSemesterId);
         return studentSubject != null;
     }
 
-    private StudentSubject buildStudentSubject(Student student, Subject subject, Semester semester) {
+    private StudentSubject buildStudentSubject(Student student, SubjectSemester subjectSemester) {
         StudentSubject studentSubject = new StudentSubject();
         studentSubject.setStudentId(student.getId());
-        studentSubject.setSubjectId(subject.getId());
-        studentSubject.setSemesterId(subject.getId());
+        studentSubject.setStudentSubjectId(subjectSemester.getId());
         studentSubject.setStatus("ACTIVE");
 
         return studentSubject;

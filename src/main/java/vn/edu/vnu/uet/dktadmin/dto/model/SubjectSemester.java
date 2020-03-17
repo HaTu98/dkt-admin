@@ -9,17 +9,18 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "student_subjects")
-public class StudentSubject {
+@Table(name = "subject_semester")
+public class SubjectSemester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long Id;
 
-    private Long studentId;
-    private Long studentSubjectId;
-    private String status;
+    private String code;
+    private String description;
+    private String createdBy;
+    private String modifiedBy;
     private Instant createdAt;
     private Instant modifiedAt;
-    private Instant createdBy;
-    private Instant modifiedBy;
+    private Long subjectId;
+    private Long semesterId;
 }
