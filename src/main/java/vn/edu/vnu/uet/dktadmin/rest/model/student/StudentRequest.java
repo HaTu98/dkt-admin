@@ -18,12 +18,6 @@ public class StudentRequest {
     @JsonProperty(value = "Email")
     private String email;
 
-    @JsonProperty(value = "Password")
-    private String password;
-
-    @JsonProperty(value = "PasswordConfirm")
-    private String passwordConfirm;
-
     @JsonProperty(value = "StudentCode")
     private String studentCode;
 

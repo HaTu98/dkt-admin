@@ -1,11 +1,11 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.subject;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.dto.service.subject.SubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
@@ -23,8 +23,8 @@ public class SubjectController {
     public ApiDataResponse<SubjectResponse> createSubject(@RequestBody SubjectRequest request) {
         try {
             return ApiDataResponse.ok(subjectService.createSubject(request));
-        } catch (FormValidateException e) {
-            return ApiDataResponse.error(e.getData(),e.getCode(), e.getMessage());
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
         }
     }
 

@@ -15,7 +15,7 @@ public class SubjectSemester {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    private String code;
+    private String subjectSemesterCode;
     private String description;
     private String createdBy;
     private String modifiedBy;

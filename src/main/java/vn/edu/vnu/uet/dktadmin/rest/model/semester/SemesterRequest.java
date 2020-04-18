@@ -12,11 +12,8 @@ public class SemesterRequest {
     @JsonProperty(value = "SemesterName")
     private String semesterName;
 
-    @JsonProperty(value = "SemesterId")
-    private Long semesterId;
-
-    @JsonProperty(value = "SemesterTitle")
-    private String semesterTitle;
+    @JsonProperty(value = "SemesterCode")
+    private String semesterCode;
 
     @JsonProperty(value = "Description")
     private String description;

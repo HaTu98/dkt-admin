@@ -55,7 +55,7 @@ public class StudentService {
         }
         DktAdmin admin = accountService.getUserSession();
 
-        String passwordEncode = passwordEncoder.encode(request.getPassword());
+        String passwordEncode = passwordEncoder.encode(request.getStudentCode());
 
         Student student = buildCreateStudent(request, admin);
         student.setPassword(passwordEncode);
@@ -188,7 +188,7 @@ public class StudentService {
         student.setUsername(studentRequest.getUsername());
         student.setEmail(studentRequest.getEmail());
         student.setCourse(studentRequest.getCourse());
-        student.setPassword(studentRequest.getPassword());
+        student.setPassword(studentRequest.getStudentCode());
         student.setStudentCode(studentRequest.getStudentCode());
         student.setFullName(studentRequest.getFullName());
         student.setGender(studentRequest.getGender());

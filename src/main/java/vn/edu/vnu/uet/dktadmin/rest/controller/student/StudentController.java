@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
@@ -40,12 +41,11 @@ public class StudentController extends BaseController {
 
     @PostMapping("/student")
     public ApiDataResponse<StudentResponse> createAccount(@RequestBody StudentRequest request) {
-        String password = request.getPassword();
-        if (!password.equals(request.getPasswordConfirm())) {
-            return ApiDataResponse.error(HttpStatus.BAD_REQUEST.value(), "password confirm not equal password");
+        try {
+            return ApiDataResponse.ok(studentService.createStudent(request));
+        } catch (BaseException e){
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
         }
-
-        return ApiDataResponse.ok(studentService.createStudent(request));
     }
 
     @PutMapping("/student")

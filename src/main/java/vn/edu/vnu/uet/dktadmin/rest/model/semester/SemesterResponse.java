@@ -16,9 +16,6 @@ public class SemesterResponse {
     @JsonProperty(value = "SemesterCode")
     private String semesterCode;
 
-    @JsonProperty(value = "SemesterTitle")
-    private String semesterTitle;
-
     @JsonProperty(value = "Description")
     private String description;
 }

@@ -4,5 +4,6 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 
 public interface SemesterDao {
     Semester getById(Long id);
+    Semester getBySemesterCode(String semesterCode);
     Semester store(Semester semester);
 }
