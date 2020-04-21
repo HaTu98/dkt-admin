@@ -16,7 +16,7 @@ public class Room {
 
     private String roomName;
     private String roomCode;
-    private Long locationId;
+    private String location;
     private String description;
-    private Integer numberAvailable;
+    private Integer numberComputer;
 }

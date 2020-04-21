@@ -10,11 +10,11 @@ public class RoomRequest {
     @JsonProperty(value = "RoomName")
     private String roomName;
 
-    @JsonProperty(value = "RoomId")
-    private Long roomId;
+    @JsonProperty(value = "RoomCode")
+    private String roomCode;
 
-    @JsonProperty(value = "LocationId")
-    private Long locationId;
+    @JsonProperty(value = "Location")
+    private String location;
 
     @JsonProperty(value = "Description")
     private String description;

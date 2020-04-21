@@ -26,8 +26,10 @@ public class SubjectSemesterController {
     public ApiDataResponse<SubjectSemesterResponse> create(@RequestBody SubjectSemesterRequest request) {
         try {
             return ApiDataResponse.ok(subjectSemesterService.create(request));
-        }catch (BaseException e) {
+        } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
         }
     }
 }

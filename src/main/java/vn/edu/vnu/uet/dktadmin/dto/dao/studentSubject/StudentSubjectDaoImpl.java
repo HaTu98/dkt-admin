@@ -6,6 +6,7 @@ import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentSubjectDaoImpl implements StudentSubjectDao {
@@ -23,8 +24,14 @@ public class StudentSubjectDaoImpl implements StudentSubjectDao {
     }
 
     @Override
-    public StudentSubject getByStudentAndSubjectSemesterId(Long studentId, Long subjectSemsterId) {
-        return studentSubjectRepository.findByStudentIdAndStudentSubjectId(studentId, subjectSemsterId);
+    public StudentSubject getByStudentAndSubjectSemesterId(Long studentId, Long subjectSemesterId) {
+        return studentSubjectRepository.findByStudentIdAndSubjectSemesterId(studentId, subjectSemesterId);
+    }
+
+    @Override
+    public StudentSubject getById(Long id) {
+        Optional<StudentSubject> studentSubject = studentSubjectRepository.findById(id);
+        return studentSubject.orElseGet(studentSubject::get);
     }
 
 }

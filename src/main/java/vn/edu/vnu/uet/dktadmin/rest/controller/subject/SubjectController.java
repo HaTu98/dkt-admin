@@ -25,6 +25,8 @@ public class SubjectController {
             return ApiDataResponse.ok(subjectService.createSubject(request));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
         }
     }
 

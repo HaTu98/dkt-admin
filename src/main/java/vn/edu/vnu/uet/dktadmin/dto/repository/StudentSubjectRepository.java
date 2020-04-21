@@ -6,5 +6,5 @@ import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 
 @Repository
 public interface StudentSubjectRepository extends JpaRepository<StudentSubject, Long> {
-    StudentSubject findByStudentIdAndStudentSubjectId(Long studentId, Long subjectSemesterId);
+    StudentSubject findByStudentIdAndSubjectSemesterId(Long studentId, Long subjectSemesterId);
 }

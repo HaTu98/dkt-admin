@@ -24,15 +24,9 @@ public class RoomService {
     private MapperFacade mapperFacade;
 
     public RoomResponse createRoom(RoomRequest request) {
-        Long roomId = request.getRoomId();
-        Room roomInDB  = roomDao.getById(roomId);
-        if (roomInDB != null) {
-            throw new BadRequestException(HttpStatus.BAD_REQUEST.value(), "Room đã tồn tại");
-        }
+        validateRoom(request);
         Room roomRequest = mapperFacade.map(request, Room.class);
-
-        Room response = roomDao.createRoom(roomRequest);
-        return mapperFacade.map(response, RoomResponse.class);
+        return mapperFacade.map(roomDao.createRoom(roomRequest), RoomResponse.class);
     }
 
     public RoomListResponse getAllRoom() {
@@ -41,5 +35,28 @@ public class RoomService {
 
         List<RoomResponse> roomResponses = mapperFacade.mapAsList(rooms, RoomResponse.class);
         return new RoomListResponse(roomResponses);
+    }
+
+    public boolean isExistRoom(Long roomId){
+        Room room = roomDao.getById(roomId);
+        return room != null;
+    }
+
+    public boolean isExistRoom(String roomCode){
+        Room room = roomDao.getByRoomCode(roomCode);
+        return room != null;
+    }
+
+    private void validateRoom(RoomRequest request) {
+        String roomCode = request.getRoomCode();
+        if(roomCode == null) {
+            throw new BadRequestException(400,"RoomCode không thể null");
+        }
+        if(request.getRoomName() == null) {
+            throw new BadRequestException(400,"RoomName không thể null");
+        }
+        if(isExistRoom(roomCode)) {
+            throw new BadRequestException(400, "Room đã tồn tại");
+        }
     }
 }

@@ -24,8 +24,8 @@ public class ExamRequest {
     @JsonProperty(value = "Date")
     private Instant date;
 
-    @JsonProperty(value = "SubjectId")
-    private Long subjectId;
+    @JsonProperty(value = "SubjectSemesterId")
+    private Long subjectSemesterId;
 
     @JsonProperty(value = "RoomSemesterId")
     private Long roomSemesterId;

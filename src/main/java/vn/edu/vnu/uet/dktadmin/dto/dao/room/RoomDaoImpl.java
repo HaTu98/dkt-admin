@@ -11,8 +11,11 @@ import java.util.Optional;
 
 @Service
 public class RoomDaoImpl implements RoomDao {
-    @Autowired
-    private RoomRepository roomRepository;
+    private final RoomRepository roomRepository;
+
+    public RoomDaoImpl(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
+    }
 
 
     @Override
@@ -23,6 +26,11 @@ public class RoomDaoImpl implements RoomDao {
     @Override
     public Room getByName(String name) {
         return roomRepository.findByRoomName(name);
+    }
+
+    @Override
+    public Room getByRoomCode(String roomCode) {
+        return roomRepository.findByRoomCode(roomCode);
     }
 
     @Override

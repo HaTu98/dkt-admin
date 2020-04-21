@@ -15,11 +15,14 @@ import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterResponse;
 
 @Service
 public class SemesterService {
-    @Autowired
-    private SemesterDao semesterDao;
+    private final SemesterDao semesterDao;
 
-    @Autowired
-    private MapperFacade mapperFacade;
+    private final MapperFacade mapperFacade;
+
+    public SemesterService(MapperFacade mapperFacade, SemesterDao semesterDao) {
+        this.mapperFacade = mapperFacade;
+        this.semesterDao = semesterDao;
+    }
 
     public boolean isExistSemester(String semesterCode){
         Semester semester = semesterDao.getBySemesterCode(semesterCode);

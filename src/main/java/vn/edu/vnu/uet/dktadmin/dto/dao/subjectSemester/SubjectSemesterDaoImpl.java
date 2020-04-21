@@ -9,8 +9,11 @@ import java.util.Optional;
 
 @Service
 public class SubjectSemesterDaoImpl implements SubjectSemesterDao {
-    @Autowired
-    private SubjectSemesterRepository subjectSemesterRepository;
+    private final SubjectSemesterRepository subjectSemesterRepository;
+
+    public SubjectSemesterDaoImpl(SubjectSemesterRepository subjectSemesterRepository) {
+        this.subjectSemesterRepository = subjectSemesterRepository;
+    }
 
     @Override
     public SubjectSemester store(SubjectSemester subjectSemester) {
@@ -21,5 +24,10 @@ public class SubjectSemesterDaoImpl implements SubjectSemesterDao {
     public SubjectSemester getById(Long id) {
         Optional<SubjectSemester> subjectSemester = subjectSemesterRepository.findById(id);
         return subjectSemester.orElseGet(subjectSemester::get);
+    }
+
+    @Override
+    public SubjectSemester getBySubjectIdAndSemesterId(Long subjectId, Long semesterId) {
+        return subjectSemesterRepository.findBySubjectIdAndSemesterId(subjectId, semesterId);
     }
 }

@@ -19,11 +19,13 @@ public class SemesterController {
     private SemesterService semesterService;
 
     @PostMapping
-    public ApiDataResponse<SemesterResponse> create(@RequestBody SemesterRequest request){
+    public ApiDataResponse<SemesterResponse> create(@RequestBody SemesterRequest request) {
         try {
             return ApiDataResponse.ok(semesterService.create(request));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
         }
     }
 }

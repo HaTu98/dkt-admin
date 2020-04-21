@@ -16,10 +16,10 @@ public class StudentSubject {
     private Long id;
 
     private Long studentId;
-    private Long studentSubjectId;
+    private Long subjectSemesterId;
     private String status;
     private Instant createdAt;
     private Instant modifiedAt;
-    private Instant createdBy;
-    private Instant modifiedBy;
+    private String createdBy;
+    private String modifiedBy;
 }

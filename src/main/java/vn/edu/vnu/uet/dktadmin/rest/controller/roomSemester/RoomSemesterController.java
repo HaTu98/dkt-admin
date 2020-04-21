@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterRequest;
@@ -19,8 +20,13 @@ public class RoomSemesterController {
 
     @PostMapping
     public ApiDataResponse<RoomSemesterResponse> createRoomSemester(@RequestBody RoomSemesterRequest request) {
-
-        return ApiDataResponse.ok(roomSemesterService.createRoomSemester(request));
+        try {
+            return ApiDataResponse.ok(roomSemesterService.createRoomSemester(request));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
     }
 
 

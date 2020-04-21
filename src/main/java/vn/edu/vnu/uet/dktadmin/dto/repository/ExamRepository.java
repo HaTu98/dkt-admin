@@ -6,4 +6,5 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
 
 @Repository
 public interface ExamRepository extends JpaRepository<Exam, Long> {
+    Exam findByExamCode(String examCode);
 }

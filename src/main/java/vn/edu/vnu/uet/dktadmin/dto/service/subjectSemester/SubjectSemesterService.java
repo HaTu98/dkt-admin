@@ -34,6 +34,14 @@ public class SubjectSemesterService {
         return mapperFacade.map(store(subjectSemester), SubjectSemesterResponse.class);
     }
 
+    public boolean existSubjectSemester(Long id){
+        SubjectSemester subjectSemester = subjectSemesterDao.getById(id);
+        return subjectSemester != null;
+    }
+    public boolean existSubjectSemester(Long subjectId, Long semesterId){
+        SubjectSemester subjectSemester = subjectSemesterDao.getBySubjectIdAndSemesterId(subjectId, semesterId);
+        return subjectSemester != null;
+    }
     private void validateSubjectSemester(SubjectSemesterRequest request) {
         if (StringUtils.isEmpty(request.getSubjectSemesterCode())) {
             throw new BadRequestException(400, "SubjectSemesterCode không thể null");
@@ -49,6 +57,9 @@ public class SubjectSemesterService {
         }
         if(!semesterService.isExistSemester(request.getSemesterId())) {
             throw new BadRequestException(400, "Semester không tồn tại");
+        }
+        if(existSubjectSemester(request.getSubjectId(), request.getSemesterId())) {
+            throw  new BadRequestException(400, "SubjectSemester đã tồn tại");
         }
     }
 

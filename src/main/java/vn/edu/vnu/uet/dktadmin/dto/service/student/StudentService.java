@@ -13,10 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
-import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
-import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
@@ -83,7 +81,7 @@ public class StudentService {
     }
 
     public Student buildCreateStudent(StudentRequest studentRequest, DktAdmin dktAdmin) {
-        Student student = this.student(studentRequest);
+        Student student = this.generateStudent(studentRequest);
 
         Instant now = Instant.now();
         student.setCreatedAt(now);
@@ -182,8 +180,12 @@ public class StudentService {
         Student student = studentDao.getByStudentCode(studentCode);
         return student != null;
     }
+    public boolean existStudent(Long studentId) {
+        Student student = studentDao.getById(studentId);
+        return student != null;
+    }
 
-    private Student student(StudentRequest studentRequest) {
+    private Student generateStudent(StudentRequest studentRequest) {
         Student student = new Student();
         student.setUsername(studentRequest.getUsername());
         student.setEmail(studentRequest.getEmail());

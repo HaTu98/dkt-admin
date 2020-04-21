@@ -12,11 +12,14 @@ import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectResponse;
 
 @RestController
-@RequestMapping("/admin/student-subjects")
+@RequestMapping("/admin/student_subjects")
 public class StudentSubjectController {
 
-    @Autowired
-    private StudentSubjectService studentSubjectService;
+    private final StudentSubjectService studentSubjectService;
+
+    public StudentSubjectController(StudentSubjectService studentSubjectService) {
+        this.studentSubjectService = studentSubjectService;
+    }
 
     @PostMapping()
     public ApiDataResponse<StudentSubjectResponse> create(@RequestBody StudentSubjectRequest request) {
@@ -25,6 +28,8 @@ public class StudentSubjectController {
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
         }
     }
 

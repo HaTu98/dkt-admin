@@ -6,4 +6,5 @@ import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
 
 @Repository
 public interface RoomSemesterRepository extends JpaRepository<RoomSemester,Long> {
+    RoomSemester findByRoomIdAndSemesterId(Long roomId, Long semesterId);
 }

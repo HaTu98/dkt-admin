@@ -13,6 +13,6 @@ public class StudentSubjectResponse {
     @JsonProperty(value = "StudentSubjectId")
     private Long studentSubjectId;
 
-    @JsonProperty(value = "status")
+    @JsonProperty(value = "Status")
     private String status;
 }

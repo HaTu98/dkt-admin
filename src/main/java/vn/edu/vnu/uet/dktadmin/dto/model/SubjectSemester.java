@@ -17,10 +17,6 @@ public class SubjectSemester {
 
     private String subjectSemesterCode;
     private String description;
-    private String createdBy;
-    private String modifiedBy;
-    private Instant createdAt;
-    private Instant modifiedAt;
     private Long subjectId;
     private Long semesterId;
 }

@@ -8,4 +8,5 @@ public interface StudentSubjectDao {
     List<StudentSubject> getAll();
     StudentSubject store(StudentSubject studentSubject);
     StudentSubject getByStudentAndSubjectSemesterId(Long studentId, Long subjectSemesterId);
+    StudentSubject getById(Long id);
 }

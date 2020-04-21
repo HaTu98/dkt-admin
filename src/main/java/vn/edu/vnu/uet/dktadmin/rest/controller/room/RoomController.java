@@ -3,6 +3,7 @@ package vn.edu.vnu.uet.dktadmin.rest.controller.room;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.dto.service.room.RoomService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
@@ -24,8 +25,10 @@ public class RoomController extends BaseController {
     public ApiDataResponse<RoomResponse> createRoom(@RequestBody RoomRequest roomRequest) {
         try {
             return ApiDataResponse.ok(roomService.createRoom(roomRequest));
-        }catch (FormValidateException e){
-            return ApiDataResponse.error(e.getData(),e.getCode(), e.getMessage());
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
         }
     }
 

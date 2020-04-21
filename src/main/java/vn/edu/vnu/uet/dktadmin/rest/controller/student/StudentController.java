@@ -43,8 +43,10 @@ public class StudentController extends BaseController {
     public ApiDataResponse<StudentResponse> createAccount(@RequestBody StudentRequest request) {
         try {
             return ApiDataResponse.ok(studentService.createStudent(request));
-        } catch (BaseException e){
+        } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
         }
     }
 

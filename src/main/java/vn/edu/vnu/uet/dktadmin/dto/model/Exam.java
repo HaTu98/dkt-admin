@@ -21,7 +21,7 @@ public class Exam {
     private String examCode;
     private Instant startTime;
     private Instant date;
-    private Long subjectId;
+    private Long subjectSemesterId;
     private Long roomSemesterId;
     private Integer duration;
 }
