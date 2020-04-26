@@ -28,8 +28,7 @@ public class RoomSemesterDaoImpl implements RoomSemesterDao{
 
     @Override
     public RoomSemester getById(Long id) {
-        Optional<RoomSemester> roomSemester = roomSemesterRepository.findById(id);
-        return roomSemester.orElseGet(roomSemester::get);
+        return roomSemesterRepository.findById(id).orElse(null);
     }
 
     @Override

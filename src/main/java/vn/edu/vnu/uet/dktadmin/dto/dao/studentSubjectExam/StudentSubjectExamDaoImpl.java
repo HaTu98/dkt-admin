@@ -21,8 +21,7 @@ public class StudentSubjectExamDaoImpl implements StudentSubjectExamDao {
 
     @Override
     public StudentSubjectExam getById(Long id) {
-        Optional<StudentSubjectExam> studentSubjectExam = studentSubjectExamRepository.findById(id);
-        return studentSubjectExam.orElseGet(studentSubjectExam::get);
+        return studentSubjectExamRepository.findById(id).orElse(null);
     }
 
     @Override

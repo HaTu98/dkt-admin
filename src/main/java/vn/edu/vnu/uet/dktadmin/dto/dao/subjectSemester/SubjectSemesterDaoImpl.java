@@ -22,8 +22,7 @@ public class SubjectSemesterDaoImpl implements SubjectSemesterDao {
 
     @Override
     public SubjectSemester getById(Long id) {
-        Optional<SubjectSemester> subjectSemester = subjectSemesterRepository.findById(id);
-        return subjectSemester.orElseGet(subjectSemester::get);
+        return subjectSemesterRepository.findById(id).orElse(null);
     }
 
     @Override

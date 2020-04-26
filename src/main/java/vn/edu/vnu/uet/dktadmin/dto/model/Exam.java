@@ -23,5 +23,6 @@ public class Exam {
     private Instant date;
     private Long subjectSemesterId;
     private Long roomSemesterId;
+    private Long semesterId;
     private Integer duration;
 }

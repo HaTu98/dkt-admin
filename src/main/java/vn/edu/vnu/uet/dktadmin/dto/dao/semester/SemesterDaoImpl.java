@@ -14,8 +14,7 @@ public class SemesterDaoImpl implements SemesterDao{
 
     @Override
     public Semester getById(Long semesterId) {
-        Optional<Semester> semester = semesterRepository.findById(semesterId);
-        return semester.orElseGet(semester::get);
+        return  semesterRepository.findById(semesterId).orElse(null);
     }
 
     @Override

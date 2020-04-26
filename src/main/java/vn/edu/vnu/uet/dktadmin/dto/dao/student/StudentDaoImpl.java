@@ -45,8 +45,7 @@ public class StudentDaoImpl implements StudentDao{
 
     @Override
     public Student getById(Long id) {
-        Optional<Student> student = studentRepository.findById(id);
-        return student.orElseGet(student::get);
+        return studentRepository.findById(id).orElse(null);
     }
 
 }

@@ -19,8 +19,7 @@ public class SubjectDaoImpl implements SubjectDao{
 
     @Override
     public Subject getById(Long id) {
-        Optional<Subject> subject = subjectRepository.findById(id);
-        return subject.orElseGet(subject::get);
+        return subjectRepository.findById(id).orElse(null);
     }
 
     @Override

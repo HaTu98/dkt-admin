@@ -35,8 +35,7 @@ public class RoomDaoImpl implements RoomDao {
 
     @Override
     public Room getById(Long id) {
-        Optional<Room> room = roomRepository.findById(id);
-        return room.orElseGet(room::get);
+        return roomRepository.findById(id).orElse(null);
     }
 
     @Override

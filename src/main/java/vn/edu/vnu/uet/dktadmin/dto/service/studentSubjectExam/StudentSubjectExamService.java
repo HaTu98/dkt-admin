@@ -34,10 +34,10 @@ public class StudentSubjectExamService {
     @Transactional
     public StudentSubjectExamResponse create(StudentSubjectExamRequest request) {
         validateStudentSubjectExam(request);
+        Exam exam = examDao.getById(request.getExamId());
         StudentSubjectExam studentSubjectExam = mapperFacade.map(request, StudentSubjectExam.class);
         studentSubjectExam.setStatus(Constant.active);
-
-        Exam exam = examDao.getById(request.getExamId());
+        studentSubjectExam.setSemesterId(exam.getSemesterId());
         Integer numberStudent = exam.getNumberOfStudentSubscribe();
         if (numberStudent == null) {
             numberStudent = 1;

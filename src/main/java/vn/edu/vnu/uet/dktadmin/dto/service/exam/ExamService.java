@@ -4,7 +4,9 @@ import ma.glasnost.orika.MapperFacade;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
+import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamRequest;
@@ -16,17 +18,21 @@ public class ExamService {
     private final MapperFacade mapperFacade;
     private final SubjectSemesterService subjectSemesterService;
     private final RoomSemesterService roomSemesterService;
+    private final SubjectSemesterDao subjectSemesterDao;
 
-    public ExamService(ExamDao examDao, MapperFacade mapperFacade, SubjectSemesterService subjectSemesterService, RoomSemesterService roomSemesterService) {
+    public ExamService(ExamDao examDao, MapperFacade mapperFacade, SubjectSemesterService subjectSemesterService, RoomSemesterService roomSemesterService, SubjectSemesterDao subjectSemesterDao) {
         this.examDao = examDao;
         this.mapperFacade = mapperFacade;
         this.subjectSemesterService = subjectSemesterService;
         this.roomSemesterService = roomSemesterService;
+        this.subjectSemesterDao = subjectSemesterDao;
     }
 
     public ExamResponse create(ExamRequest request) {
         validateExam(request);
         Exam exam = mapperFacade.map(request, Exam.class);
+        SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());
+        exam.setSemesterId(subjectSemester.getSemesterId());
         return mapperFacade.map(examDao.store(exam),ExamResponse.class);
     }
 

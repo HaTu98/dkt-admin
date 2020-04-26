@@ -30,8 +30,7 @@ public class StudentSubjectDaoImpl implements StudentSubjectDao {
 
     @Override
     public StudentSubject getById(Long id) {
-        Optional<StudentSubject> studentSubject = studentSubjectRepository.findById(id);
-        return studentSubject.orElseGet(studentSubject::get);
+        return studentSubjectRepository.findById(id).orElse(null);
     }
 
 }

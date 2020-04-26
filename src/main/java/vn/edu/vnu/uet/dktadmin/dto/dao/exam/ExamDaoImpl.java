@@ -21,8 +21,7 @@ public class ExamDaoImpl implements ExamDao {
 
     @Override
     public Exam getById(Long id) {
-        Optional<Exam> exam = examRepository.findById(id);
-        return exam.orElseGet(exam::get);
+        return examRepository.findById(id).orElse(null);
     }
 
     @Override

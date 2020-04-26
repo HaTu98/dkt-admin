@@ -62,6 +62,7 @@ public class StudentSubjectService {
     }
 
     private StudentSubject generateStudentSubject(StudentSubjectRequest request) {
+        SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());
         StudentSubject studentSubject = mapperFacade.map(request, StudentSubject.class);
         studentSubject.setStatus(Constant.active);
         studentSubject.setCreatedAt(Instant.now());
@@ -70,6 +71,7 @@ public class StudentSubjectService {
         DktAdmin admin = accountService.getUserSession();
         studentSubject.setCreatedBy(admin.getUsername());
         studentSubject.setModifiedBy(admin.getUsername());
+        studentSubject.setSemesterId(subjectSemester.getSemesterId());
 
         return studentSubject;
     }
