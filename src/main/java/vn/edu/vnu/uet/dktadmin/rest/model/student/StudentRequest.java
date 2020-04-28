@@ -12,6 +12,9 @@ import javax.validation.constraints.Size;
 @Setter
 @NoArgsConstructor
 public class StudentRequest {
+    @JsonProperty(value = "Id")
+    private Long id;
+
     @JsonProperty(value = "Username")
     private String username;
 

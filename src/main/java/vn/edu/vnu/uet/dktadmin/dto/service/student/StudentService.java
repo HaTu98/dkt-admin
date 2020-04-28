@@ -1,6 +1,7 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.student;
 
 import ma.glasnost.orika.MapperFacade;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -57,27 +58,47 @@ public class StudentService {
 
         Student student = buildCreateStudent(request, admin);
         student.setPassword(passwordEncode);
-        Student saveStudent = studentDao.save(student);
-        return getResponse(saveStudent);
+        //Student saveStudent = studentDao.save(student);
+        //return getResponse(saveStudent);
+        return this.getResponse(studentDao.save(student));
     }
 
     @Transactional
     public StudentResponse updateStudent(StudentRequest request) {
-        if (!checkStudentExist(request)) {
-            throw new BadRequestException(400, "student không tồn tại");
-        }
+        validateUpdateStudent(request);
         DktAdmin admin = accountService.getUserSession();
 
         Student student = buildUpdateStudent(request, admin);
-        Student saveStudent = studentDao.save(student);
-        return getResponse(saveStudent);
+        //Student saveStudent = studentDao.save(student);
+        return this.getResponse(studentDao.save(student));
     }
 
+    private void validateUpdateStudent(StudentRequest request) {
+        if (request.getId() == null || !checkStudentExist(request.getId())) {
+            throw new BadRequestException(400, "student không tồn tại");
+        }
+    }
 
-    public StudentListResponse getStudent() {
+    public StudentListResponse getAllStudent() {
         List<Student> listStudent =studentDao.getAll();
         List<StudentResponse> studentResponses = listStudent.stream().map(this::getResponse).collect(Collectors.toList());
         return new StudentListResponse(studentResponses);
+    }
+
+    public StudentResponse getStudent(Long id) {
+        Student student = studentDao.getById(id);
+        if (student == null) {
+            throw new BadRequestException(400, "student không tồn tại");
+        }
+        return this.getResponse(studentDao.save(student));
+    }
+
+    public void deleteStudent(Long id) {
+        Student student = studentDao.getById(id);
+        if (student == null) {
+            throw new BadRequestException(400, "student không tồn tại");
+        }
+        studentDao.delete(student);
     }
 
     public Student buildCreateStudent(StudentRequest studentRequest, DktAdmin dktAdmin) {
@@ -93,23 +114,28 @@ public class StudentService {
     }
 
     public Student buildUpdateStudent(StudentRequest request, DktAdmin dktAdmin) {
-        Student student = this.findStudent(request);
-        if (!student.getUsername().equals(request.getUsername())) {
-            student.setUsername(request.getUsername());
-        }
-        if (!student.getEmail().equals(request.getEmail())) {
+        Student student = studentDao.getById(request.getId());
+        if (!StringUtils.isEmpty(request.getEmail())) {
             student.setEmail(request.getEmail());
         }
-        if (!student.getCourse().equals(request.getCourse())) {
+        if (!StringUtils.isEmpty(request.getCourse())){
             student.setCourse(request.getCourse());
         }
-        if (!student.getFullName().equals(request.getFullName())) {
+        if (!StringUtils.isEmpty(request.getFullName())){
             student.setFullName(request.getFullName());
         }
-        if (!student.getDateOfBirth().equals(request.getDateOfBirth())) {
+        if (!StringUtils.isEmpty(request.getDateOfBirth())){
             student.setDateOfBirth(request.getDateOfBirth());
         }
-
+        if (!StringUtils.isEmpty(request.getStudentCode())){
+            student.setStudentCode(request.getStudentCode());
+        }
+        if (!StringUtils.isEmpty(request.getGender())){
+            student.setGender(request.getGender());
+        }
+        if (!StringUtils.isEmpty(request.getUsername())){
+            student.setUsername(request.getUsername());
+        }
         Instant now = Instant.now();
         student.setModifiedAt(now);
         student.setModifiedBy(dktAdmin.getUsername());
@@ -208,6 +234,11 @@ public class StudentService {
             String username = request.getUsername();
             student = studentDao.getByUsername(username);
         }
+        return student != null;
+    }
+
+    private boolean checkStudentExist(Long  id) {
+        Student student = studentDao.getById(id);
         return student != null;
     }
 

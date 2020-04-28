@@ -21,7 +21,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 
-@RequestMapping("/admin/generation")
+@RequestMapping("/admin")
 @RestController
 public class StudentController extends BaseController {
     @Autowired
@@ -52,14 +52,48 @@ public class StudentController extends BaseController {
 
     @PutMapping("/student")
     public ApiDataResponse<StudentResponse> updateStudent(@RequestBody StudentRequest request) {
-        return ApiDataResponse.ok(studentService.updateStudent(request));
+        try {
+            return ApiDataResponse.ok(studentService.updateStudent(request));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
     }
 
     @GetMapping("/student")
-    public ApiDataResponse<StudentListResponse> getStudent() {
-        return ApiDataResponse.ok(studentService.getStudent());
+    public ApiDataResponse<StudentListResponse> getAllStudent() {
+        try {
+            return ApiDataResponse.ok(studentService.getAllStudent());
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
     }
 
+    @GetMapping("/student/{id}")
+    public ApiDataResponse<StudentResponse> getStudent(@PathVariable Long id) {
+        try {
+            return ApiDataResponse.ok(studentService.getStudent(id));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
+    @DeleteMapping("/student/{id}")
+    public ApiDataResponse<StudentResponse> deleteStudent(@PathVariable Long id) {
+        try {
+            studentService.deleteStudent(id);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
     @PostMapping("/student/import")
     public ApiDataResponse<String> importStudent(@RequestParam("file") MultipartFile file) throws IOException {
         studentService.importStudent(file);

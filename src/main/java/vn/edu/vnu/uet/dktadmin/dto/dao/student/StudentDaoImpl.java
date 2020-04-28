@@ -29,6 +29,11 @@ public class StudentDaoImpl implements StudentDao{
     }
 
     @Override
+    public void delete(Student student) {
+        studentRepository.delete(student);
+    }
+
+    @Override
     public List<Student> getAll() {
         return studentRepository.findAll();
     }
@@ -47,5 +52,6 @@ public class StudentDaoImpl implements StudentDao{
     public Student getById(Long id) {
         return studentRepository.findById(id).orElse(null);
     }
+
 
 }
