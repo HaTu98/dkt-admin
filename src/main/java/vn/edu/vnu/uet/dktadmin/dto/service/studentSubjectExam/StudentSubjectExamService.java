@@ -6,8 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam.StudentSubjectExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
+import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
 import vn.edu.vnu.uet.dktadmin.dto.service.exam.ExamService;
 import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
@@ -19,13 +21,15 @@ public class StudentSubjectExamService {
 
     private final MapperFacade mapperFacade;
     private final StudentSubjectExamDao studentSubjectExamDao;
+    private final StudentSubjectDao studentSubjectDao;
     private final StudentSubjectService studentSubjectService;
     private final ExamService examService;
     private final ExamDao examDao;
 
-    public StudentSubjectExamService(MapperFacade mapperFacade, StudentSubjectExamDao studentSubjectExamDao, StudentSubjectService studentSubjectService, ExamService examService, ExamDao examDao) {
+    public StudentSubjectExamService(MapperFacade mapperFacade, StudentSubjectExamDao studentSubjectExamDao, StudentSubjectDao studentSubjectDao, StudentSubjectService studentSubjectService, ExamService examService, ExamDao examDao) {
         this.mapperFacade = mapperFacade;
         this.studentSubjectExamDao = studentSubjectExamDao;
+        this.studentSubjectDao = studentSubjectDao;
         this.studentSubjectService = studentSubjectService;
         this.examService = examService;
         this.examDao = examDao;
@@ -64,6 +68,15 @@ public class StudentSubjectExamService {
         }
         if (isExistStudentSubjectExam(request.getExamId(), request.getStudentSubjectId())) {
             throw new BadRequestException(400, "StudentSubjectExam đã tồn tại");
+        }
+        Exam exam = examDao.getById(request.getExamId());
+        StudentSubject studentSubject = studentSubjectDao.getById(request.getStudentSubjectId());
+
+        if (exam.getSubjectSemesterId() != studentSubject.getSubjectSemesterId()) {
+            throw new BadRequestException(400, "StudentSubject và Exam không hợp lệ!");
+        }
+        if (exam.getNumberOfStudentSubscribe() >= exam.getNumberOfStudent()) {
+            throw new BadRequestException(400, "Số lượng sinh viên trong phòng đã đầy");
         }
     }
 

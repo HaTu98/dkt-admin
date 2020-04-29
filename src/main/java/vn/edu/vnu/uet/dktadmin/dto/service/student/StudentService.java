@@ -58,9 +58,7 @@ public class StudentService {
 
         Student student = buildCreateStudent(request, admin);
         student.setPassword(passwordEncode);
-        //Student saveStudent = studentDao.save(student);
-        //return getResponse(saveStudent);
-        return this.getResponse(studentDao.save(student));
+        return mapperFacade.map(studentDao.save(student), StudentResponse.class);
     }
 
     @Transactional
@@ -69,8 +67,7 @@ public class StudentService {
         DktAdmin admin = accountService.getUserSession();
 
         Student student = buildUpdateStudent(request, admin);
-        //Student saveStudent = studentDao.save(student);
-        return this.getResponse(studentDao.save(student));
+        return mapperFacade.map(studentDao.save(student), StudentResponse.class);
     }
 
     private void validateUpdateStudent(StudentRequest request) {
@@ -81,7 +78,9 @@ public class StudentService {
 
     public StudentListResponse getAllStudent() {
         List<Student> listStudent =studentDao.getAll();
-        List<StudentResponse> studentResponses = listStudent.stream().map(this::getResponse).collect(Collectors.toList());
+        List<StudentResponse> studentResponses = listStudent.stream().
+                map(student -> mapperFacade.map(student, StudentResponse.class)).
+                collect(Collectors.toList());
         return new StudentListResponse(studentResponses);
     }
 
@@ -90,7 +89,7 @@ public class StudentService {
         if (student == null) {
             throw new BadRequestException(400, "student không tồn tại");
         }
-        return this.getResponse(studentDao.save(student));
+        return mapperFacade.map(student, StudentResponse.class);
     }
 
     public void deleteStudent(Long id) {
@@ -253,16 +252,17 @@ public class StudentService {
     }
 
     private StudentResponse getResponse(Student student) {
-        return StudentResponse.builder()
-                .id(student.getId())
-                .username(student.getUsername())
-                .email(student.getEmail())
-                .course(student.getCourse())
-                .dateOfBirth(student.getDateOfBirth())
-                .fullName(student.getFullName())
-                .studentCode(student.getStudentCode())
-                .gender(student.getGender())
-                .build();
+        return null;
+//        return StudentResponse.builder()
+//                .id(student.getId())
+//                .username(student.getUsername())
+//                .email(student.getEmail())
+//                .course(student.getCourse())
+//                .dateOfBirth(student.getDateOfBirth())
+//                .fullName(student.getFullName())
+//                .studentCode(student.getStudentCode())
+//                .gender(student.getGender())
+//                .build();
     }
 
     private String getValueInCell(Cell cell) {
