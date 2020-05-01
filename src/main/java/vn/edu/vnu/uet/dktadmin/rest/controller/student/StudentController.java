@@ -1,13 +1,9 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.student;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
-import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
@@ -18,26 +14,24 @@ import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 
-import javax.validation.Valid;
 import java.io.IOException;
 
 @RequestMapping("/admin")
 @RestController
 public class StudentController extends BaseController {
-    @Autowired
-    private StudentDao studentDao;
+    private final StudentDao studentDao;
+    private final EmailValidator emailValidator;
+    private final StudentService studentService;
+    private final PasswordEncoder passwordEncoder;
+    private final AccountService accountService;
 
-    @Autowired
-    private EmailValidator emailValidator;
-
-    @Autowired
-    private StudentService studentService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AccountService accountService;
+    public StudentController(StudentDao studentDao, EmailValidator emailValidator, StudentService studentService, PasswordEncoder passwordEncoder, AccountService accountService) {
+        this.studentDao = studentDao;
+        this.emailValidator = emailValidator;
+        this.studentService = studentService;
+        this.passwordEncoder = passwordEncoder;
+        this.accountService = accountService;
+    }
 
     @PostMapping("/student")
     public ApiDataResponse<StudentResponse> createAccount(@RequestBody StudentRequest request) {
@@ -54,6 +48,17 @@ public class StudentController extends BaseController {
     public ApiDataResponse<StudentResponse> updateStudent(@RequestBody StudentRequest request) {
         try {
             return ApiDataResponse.ok(studentService.updateStudent(request));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
+    @GetMapping("/student_in_semester/{semesterId}")
+    public ApiDataResponse<StudentListResponse> getStudentInSemester(@PathVariable Long semesterId) {
+        try{
+            return ApiDataResponse.ok(studentService.getStudentInSemester(semesterId));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {

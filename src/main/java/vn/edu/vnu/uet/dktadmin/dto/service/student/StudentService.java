@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,9 @@ import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
+import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
@@ -32,20 +33,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
-    @Autowired
-    private EmailValidator emailValidator;
+    private final EmailValidator emailValidator;
+    private final StudentDao studentDao;
+    private final StudentSubjectDao studentSubjectDao;
+    private final AccountService accountService;
+    private final PasswordEncoder passwordEncoder;
+    private final MapperFacade mapperFacade;
 
-    @Autowired
-    private StudentDao studentDao;
-
-    @Autowired
-    private AccountService accountService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private MapperFacade mapperFacade;
+    public StudentService(EmailValidator emailValidator, StudentDao studentDao, StudentSubjectDao studentSubjectDao, AccountService accountService, PasswordEncoder passwordEncoder, MapperFacade mapperFacade) {
+        this.emailValidator = emailValidator;
+        this.studentDao = studentDao;
+        this.studentSubjectDao = studentSubjectDao;
+        this.accountService = accountService;
+        this.passwordEncoder = passwordEncoder;
+        this.mapperFacade = mapperFacade;
+    }
 
     @Transactional
     public StudentResponse createStudent(StudentRequest request) {
@@ -68,6 +70,17 @@ public class StudentService {
 
         Student student = buildUpdateStudent(request, admin);
         return mapperFacade.map(studentDao.save(student), StudentResponse.class);
+    }
+
+    @Transactional
+    public StudentListResponse getStudentInSemester(Long semesterId) {
+        List<StudentSubject> studentSubjects = studentSubjectDao.getBySemesterId(semesterId);
+        List<Long> listStudentId = new ArrayList<>();
+        for (StudentSubject studentSubject : studentSubjects) {
+            listStudentId.add(studentSubject.getStudentId());
+        }
+        List<Student> students = studentDao.getStudentInList(listStudentId);
+        return new StudentListResponse(mapperFacade.mapAsList(students, StudentResponse.class));
     }
 
     private void validateUpdateStudent(StudentRequest request) {

@@ -60,7 +60,6 @@ public class StudentSubjectService {
         StudentSubject studentSubject = studentSubjectDao.getById(id);
         return studentSubject != null;
     }
-
     private StudentSubject generateStudentSubject(StudentSubjectRequest request) {
         SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());
         StudentSubject studentSubject = mapperFacade.map(request, StudentSubject.class);

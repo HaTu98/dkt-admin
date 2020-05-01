@@ -10,8 +10,11 @@ import java.util.Optional;
 
 @Service
 public class StudentDaoImpl implements StudentDao{
-    @Autowired
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
+
+    public StudentDaoImpl(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     @Override
     public Student getByEmail(String email) {
@@ -51,6 +54,11 @@ public class StudentDaoImpl implements StudentDao{
     @Override
     public Student getById(Long id) {
         return studentRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Student> getStudentInList(List<Long> ids) {
+        return studentRepository.findByIdIn(ids);
     }
 
 

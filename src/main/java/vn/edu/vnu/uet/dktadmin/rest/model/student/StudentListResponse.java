@@ -9,8 +9,11 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class StudentListResponse {
     @JsonProperty(value = "Students")
     List<StudentResponse> students;
+
+    public StudentListResponse (List<StudentResponse> students) {
+        this.students = students;
+    }
 }
