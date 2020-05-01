@@ -1,14 +1,14 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.room;
 
 import ma.glasnost.orika.MapperFacade;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
-import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
+import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.Location;
 import vn.edu.vnu.uet.dktadmin.dto.model.Room;
+import vn.edu.vnu.uet.dktadmin.dto.service.location.LocationService;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomResponse;
@@ -17,16 +17,27 @@ import java.util.List;
 
 @Service
 public class RoomService {
-    @Autowired
-    private RoomDao roomDao;
+    private final RoomDao roomDao;
+    private final LocationDao locationDao;
+    private final LocationService locationService;
+    private final MapperFacade mapperFacade;
 
-    @Autowired
-    private MapperFacade mapperFacade;
+    public RoomService(RoomDao roomDao, LocationDao locationDao, LocationService locationService, MapperFacade mapperFacade) {
+        this.roomDao = roomDao;
+        this.locationDao = locationDao;
+        this.locationService = locationService;
+        this.mapperFacade = mapperFacade;
+    }
 
     public RoomResponse createRoom(RoomRequest request) {
         validateRoom(request);
-        Room roomRequest = mapperFacade.map(request, Room.class);
-        return mapperFacade.map(roomDao.createRoom(roomRequest), RoomResponse.class);
+        Location location = locationDao.getByLocationName(request.getLocation());
+        if (location == null){
+            location = locationService.createLocation(request.getLocation());
+        }
+        Room room = mapperFacade.map(request, Room.class);
+        room.setLocationId(location.getId());
+        return mapperFacade.map(roomDao.createRoom(room), RoomResponse.class);
     }
 
     public RoomListResponse getAllRoom() {
@@ -57,6 +68,9 @@ public class RoomService {
         }
         if(isExistRoom(roomCode)) {
             throw new BadRequestException(400, "Room đã tồn tại");
+        }
+        if (request.getLocation() == null) {
+            throw new BadRequestException(400, "Location không thể null");
         }
     }
 }

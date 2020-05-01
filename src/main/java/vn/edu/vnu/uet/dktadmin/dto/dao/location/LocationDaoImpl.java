@@ -7,11 +7,19 @@ import vn.edu.vnu.uet.dktadmin.dto.repository.LocationRepository;
 
 @Service
 public class LocationDaoImpl implements LocationDao{
-    @Autowired
-    private LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
+
+    public LocationDaoImpl(LocationRepository locationRepository) {
+        this.locationRepository = locationRepository;
+    }
 
     @Override
     public Location store(Location location) {
         return locationRepository.save(location);
+    }
+
+    @Override
+    public Location getByLocationName(String name) {
+        return locationRepository.findByLocationName(name);
     }
 }

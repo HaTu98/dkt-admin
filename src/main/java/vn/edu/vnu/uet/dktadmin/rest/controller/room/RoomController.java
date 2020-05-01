@@ -20,8 +20,6 @@ public class RoomController extends BaseController {
     private RoomService roomService;
 
     @PostMapping
-//    @ApiResponse(content = @Content(mediaType = "text/plain",
-//            schema = @Schema(implementation= LoginResponse.class)))
     public ApiDataResponse<RoomResponse> createRoom(@RequestBody RoomRequest roomRequest) {
         try {
             return ApiDataResponse.ok(roomService.createRoom(roomRequest));

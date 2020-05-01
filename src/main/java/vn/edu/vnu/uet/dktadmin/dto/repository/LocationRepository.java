@@ -6,4 +6,5 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Location;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
+    Location findByLocationName(String locationName);
 }
