@@ -66,6 +66,17 @@ public class StudentController extends BaseController {
         }
     }
 
+    @GetMapping("/student_in_subject/{subjectSemesterId}")
+    public ApiDataResponse<StudentResponse> getStudentInSubject(@PathVariable Long subjectSemesterId) {
+        try {
+            return ApiDataResponse.ok(studentService.getStudentInSubject(subjectSemesterId));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
     @GetMapping("/student")
     public ApiDataResponse<StudentListResponse> getAllStudent() {
         try {

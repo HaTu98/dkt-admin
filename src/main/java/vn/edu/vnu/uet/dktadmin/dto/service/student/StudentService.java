@@ -72,9 +72,17 @@ public class StudentService {
         return mapperFacade.map(studentDao.save(student), StudentResponse.class);
     }
 
-    @Transactional
     public StudentListResponse getStudentInSemester(Long semesterId) {
         List<StudentSubject> studentSubjects = studentSubjectDao.getBySemesterId(semesterId);
+        return getListStudentByStudentSubject(studentSubjects);
+    }
+
+    public StudentListResponse getStudentInSubject(Long subjectSemesterId) {
+        List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(subjectSemesterId);
+        return getListStudentByStudentSubject(studentSubjects);
+    }
+
+    private StudentListResponse getListStudentByStudentSubject(List<StudentSubject> studentSubjects) {
         List<Long> listStudentId = new ArrayList<>();
         for (StudentSubject studentSubject : studentSubjects) {
             listStudentId.add(studentSubject.getStudentId());
