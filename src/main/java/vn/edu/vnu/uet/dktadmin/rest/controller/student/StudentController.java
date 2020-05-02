@@ -71,7 +71,7 @@ public class StudentController extends BaseController {
     }
 
     @GetMapping("/student_in_subject/{subjectSemesterId}")
-    public ApiDataResponse<StudentResponse> getStudentInSubject(@PathVariable Long subjectSemesterId, @RequestParam PageBaseRequest pageRequest) {
+    public ApiDataResponse<StudentResponse> getStudentInSubject(@PathVariable Long subjectSemesterId, @RequestParam @Nullable PageBaseRequest pageRequest) {
         try {
             pageRequest = PageUtil.validate(pageRequest);
             return ApiDataResponse.ok(studentService.getStudentInSubject(subjectSemesterId, pageRequest));
@@ -109,6 +109,18 @@ public class StudentController extends BaseController {
         try {
             studentService.deleteStudent(id);
             return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
+    @GetMapping("/student/find")
+    public ApiDataResponse<StudentResponse> findStudent(@RequestParam(value = "Query") String query ,@RequestParam @Nullable PageBaseRequest pageBaseRequest) {
+        try {
+            pageBaseRequest = PageUtil.validate(pageBaseRequest);
+            return ApiDataResponse.ok(studentService.searchStudent(query, pageBaseRequest));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {

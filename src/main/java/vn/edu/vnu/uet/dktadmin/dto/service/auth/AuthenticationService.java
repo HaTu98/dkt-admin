@@ -18,20 +18,19 @@ import vn.edu.vnu.uet.dktadmin.rest.model.auth.LoginResponse;
 
 @Service
 public class AuthenticationService {
-    @Autowired
-    private EmailValidator emailValidator;
+    private final EmailValidator emailValidator;
+    private final AdminDao adminDao;
+    private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper mapper;
+    private final JwtTokenHelper jwtTokenHelper;
 
-    @Autowired
-    private AdminDao adminDao;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private JwtTokenHelper jwtTokenHelper;
+    public AuthenticationService(EmailValidator emailValidator, AdminDao adminDao, PasswordEncoder passwordEncoder, ObjectMapper mapper, JwtTokenHelper jwtTokenHelper) {
+        this.emailValidator = emailValidator;
+        this.adminDao = adminDao;
+        this.passwordEncoder = passwordEncoder;
+        this.mapper = mapper;
+        this.jwtTokenHelper = jwtTokenHelper;
+    }
 
     public LoginResponse login(LoginRequest request) throws UnAuthorizeException {
         String username = request.getUsername();
@@ -73,9 +72,7 @@ public class AuthenticationService {
     private boolean isAdminInMemory(String username, String password){
         if (!Constant.adUsername.equals(username))
             return false;
-        if(!Constant.adPassword.equals(password))
-            return false;
-        return true;
+        return Constant.adPassword.equals(password);
     }
 
     private LoginResponse generateLoginResponse(DktAdmin dktAdmin) {

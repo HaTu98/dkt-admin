@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +29,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -91,11 +91,26 @@ public class StudentService {
         Integer size = pageRequest.getSize();
         int total = studentSubjects.size();
         int maxSize = Math.min(total, size * page);
-        for (int i = size*(page-1); i < maxSize; i++ ) {
+        for (int i = size * (page - 1); i < maxSize; i++) {
             listStudentId.add(studentSubjects.get(i).getStudentId());
         }
         List<Student> students = studentDao.getStudentInList(listStudentId);
         StudentListResponse studentListResponse = new StudentListResponse(mapperFacade.mapAsList(students, StudentResponse.class));
+        PageResponse pageResponse = new PageResponse(page, size, total);
+        studentListResponse.setPageResponse(pageResponse);
+        return studentListResponse;
+    }
+
+    private StudentListResponse getListStudentPaging(List<Student> students, PageBaseRequest pageRequest) {
+        List<Student> studentList = new ArrayList<>();
+        Integer page = pageRequest.getPage();
+        Integer size = pageRequest.getSize();
+        int total = students.size();
+        int maxSize = Math.min(total, size * page);
+        for (int i = size * (page - 1); i < maxSize; i++) {
+            studentList.add(students.get(i));
+        }
+        StudentListResponse studentListResponse = new StudentListResponse(mapperFacade.mapAsList(studentList, StudentResponse.class));
         PageResponse pageResponse = new PageResponse(page, size, total);
         studentListResponse.setPageResponse(pageResponse);
         return studentListResponse;
@@ -108,7 +123,7 @@ public class StudentService {
     }
 
     public StudentListResponse getAllStudent() {
-        List<Student> listStudent =studentDao.getAll();
+        List<Student> listStudent = studentDao.getAll();
         List<StudentResponse> studentResponses = listStudent.stream().
                 map(student -> mapperFacade.map(student, StudentResponse.class)).
                 collect(Collectors.toList());
@@ -148,22 +163,22 @@ public class StudentService {
         if (!StringUtils.isEmpty(request.getEmail())) {
             student.setEmail(request.getEmail());
         }
-        if (!StringUtils.isEmpty(request.getCourse())){
+        if (!StringUtils.isEmpty(request.getCourse())) {
             student.setCourse(request.getCourse());
         }
-        if (!StringUtils.isEmpty(request.getFullName())){
+        if (!StringUtils.isEmpty(request.getFullName())) {
             student.setFullName(request.getFullName());
         }
-        if (!StringUtils.isEmpty(request.getDateOfBirth())){
+        if (!StringUtils.isEmpty(request.getDateOfBirth())) {
             student.setDateOfBirth(request.getDateOfBirth());
         }
-        if (!StringUtils.isEmpty(request.getStudentCode())){
+        if (!StringUtils.isEmpty(request.getStudentCode())) {
             student.setStudentCode(request.getStudentCode());
         }
-        if (!StringUtils.isEmpty(request.getGender())){
+        if (!StringUtils.isEmpty(request.getGender())) {
             student.setGender(request.getGender());
         }
-        if (!StringUtils.isEmpty(request.getUsername())){
+        if (!StringUtils.isEmpty(request.getUsername())) {
             student.setUsername(request.getUsername());
         }
         Instant now = Instant.now();
@@ -187,7 +202,7 @@ public class StudentService {
         DktAdmin admin = accountService.getUserSession();
 
         int rowNumber = sheet.getPhysicalNumberOfRows();
-        for (int i = 1;  i < rowNumber; i++) {
+        for (int i = 1; i < rowNumber; i++) {
             XSSFRow row = sheet.getRow(i);
             try {
                 //String stt = getValueInCell(row.getCell(0)).trim();
@@ -197,7 +212,7 @@ public class StudentService {
                 student.setDateOfBirth(getValueInCell(row.getCell(3)).trim());
                 String username = getValueInCell(row.getCell(4)).trim();
                 student.setUsername(username);
-                student.setEmail(username+ Constant.BASE_EMAIL);
+                student.setEmail(username + Constant.BASE_EMAIL);
                 student.setCourse(getValueInCell(row.getCell(5)).trim());
                 student.setPassword(passwordEncoder.encode(username));
                 Instant now = Instant.now();
@@ -215,9 +230,9 @@ public class StudentService {
     }
 
     @Transactional
-    void storeImport(List<Student> students){
-        Map<String,Student> dbStudents = studentDao.getAll().stream().collect(Collectors.toMap(Student::getUsername,s -> s ));
-        Map<String, Student> importStudents = students.stream().collect(Collectors.toMap(Student::getUsername,s -> s ));
+    void storeImport(List<Student> students) {
+        Map<String, Student> dbStudents = studentDao.getAll().stream().collect(Collectors.toMap(Student::getUsername, s -> s));
+        Map<String, Student> importStudents = students.stream().collect(Collectors.toMap(Student::getUsername, s -> s));
         importStudents.forEach((username, student) -> {
             if (dbStudents.containsKey(username)) {
                 Student dbStudent = dbStudents.get(username);
@@ -236,9 +251,23 @@ public class StudentService {
         Student student = studentDao.getByStudentCode(studentCode);
         return student != null;
     }
+
     public boolean existStudent(Long studentId) {
         Student student = studentDao.getById(studentId);
         return student != null;
+    }
+
+    public StudentListResponse searchStudent(String query, PageBaseRequest pageBaseRequest) {
+        List<Student> studentWithCode = studentDao.getStudentLikeCode(query);
+        List<Student> studentWithName = studentDao.getStudentLikeName(query);
+        Map<String, Student> studentMap = new HashMap<>();
+        for (Student student : studentWithCode) {
+            studentMap.put(student.getStudentCode(), student);
+        }
+        for (Student student : studentWithName) {
+            studentMap.put(student.getStudentCode(), student);
+        }
+        return getListStudentPaging(new ArrayList<>(studentMap.values()), pageBaseRequest);
     }
 
     private Student generateStudent(StudentRequest studentRequest) {
@@ -267,7 +296,7 @@ public class StudentService {
         return student != null;
     }
 
-    private boolean checkStudentExist(Long  id) {
+    private boolean checkStudentExist(Long id) {
         Student student = studentDao.getById(id);
         return student != null;
     }

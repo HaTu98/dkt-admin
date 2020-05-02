@@ -1,15 +1,15 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.student;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentRepository;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class StudentDaoImpl implements StudentDao{
+public class StudentDaoImpl implements StudentDao {
     private final StudentRepository studentRepository;
 
     public StudentDaoImpl(StudentRepository studentRepository) {
@@ -59,6 +59,24 @@ public class StudentDaoImpl implements StudentDao{
     @Override
     public List<Student> getStudentInList(List<Long> ids) {
         return studentRepository.findByIdIn(ids);
+    }
+
+    @Override
+    public List<Student> getStudentLikeName(String name) {
+        List<Student> students = studentRepository.findByFullNameContains(name);
+        if (CollectionUtils.isEmpty(students)) {
+            return new ArrayList<>();
+        }
+        return students;
+    }
+
+    @Override
+    public List<Student> getStudentLikeCode(String code) {
+        List<Student> students = studentRepository.findByStudentCodeContains(code);
+        if (CollectionUtils.isEmpty(students)) {
+            return new ArrayList<>();
+        }
+        return students;
     }
 
 
