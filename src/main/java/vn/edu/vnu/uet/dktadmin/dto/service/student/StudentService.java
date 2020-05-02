@@ -28,10 +28,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -267,7 +264,11 @@ public class StudentService {
         for (Student student : studentWithName) {
             studentMap.put(student.getStudentCode(), student);
         }
-        return getListStudentPaging(new ArrayList<>(studentMap.values()), pageBaseRequest);
+        studentMap = studentMap.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1,e2) -> e1, LinkedHashMap::new));
+        return getListStudentPaging(
+                new ArrayList<>(studentMap.values()), pageBaseRequest
+        );
     }
 
     private Student generateStudent(StudentRequest studentRequest) {
