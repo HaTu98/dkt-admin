@@ -43,6 +43,17 @@ public class SubjectService {
         return mapperFacade.map(subjectDao.store(subject),SubjectResponse.class);
     }
 
+    public SubjectResponse updateSubject(SubjectRequest request) {
+        validateUpdate(request);
+        Subject subject = mapperFacade.map(request, Subject.class);
+        subject.setId(subjectDao.getBySubjectCode(request.getSubjectCode()).getId());
+        return mapperFacade.map(subjectDao.store(subject),SubjectResponse.class);
+    }
+
+    public void deleteSubject(Long id) {
+        subjectDao.delete(id);
+    }
+
     public ListSubjectResponse getSubject(PageBaseRequest request) {
         List<Subject> subjects =  subjectDao.getAll();
         return pagingSubject(subjects,request);
@@ -94,7 +105,21 @@ public class SubjectService {
         if (isExistSubject(request.getSubjectCode())) {
             throw new BadRequestException(400, "Môn học đã tồn tại");
         }
+    }
 
+    public void validateUpdate(SubjectRequest request) {
+        if (StringUtils.isEmpty(request.getSubjectCode())) {
+            throw new BadRequestException(400, "Mã môn học không thể null");
+        }
+        if (StringUtils.isEmpty(request.getSubjectName())) {
+            throw new BadRequestException(400, "Tên môn học không thể null");
+        }
+        if (StringUtils.isEmpty(request.getNumberOfCredit())) {
+            throw new BadRequestException(400, "Số tín chỉ không thể null");
+        }
+        if (!isExistSubject(request.getSubjectCode())) {
+            throw new BadRequestException(400, "Môn học không tồn tại");
+        }
     }
 
 }

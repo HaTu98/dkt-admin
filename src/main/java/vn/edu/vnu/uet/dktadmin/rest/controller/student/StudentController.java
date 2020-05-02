@@ -60,7 +60,7 @@ public class StudentController extends BaseController {
 
     @GetMapping("/student_in_semester/{semesterId}")
     public ApiDataResponse<StudentListResponse> getStudentInSemester(@PathVariable Long semesterId, @RequestParam @Nullable PageBaseRequest pageRequest) {
-        try{
+        try {
             pageRequest = PageUtil.validate(pageRequest);
             return ApiDataResponse.ok(studentService.getStudentInSemester(semesterId, pageRequest));
         } catch (BaseException e) {
@@ -117,7 +117,7 @@ public class StudentController extends BaseController {
     }
 
     @GetMapping("/student/find")
-    public ApiDataResponse<StudentResponse> findStudent(@RequestParam(value = "Query") String query ,@RequestParam @Nullable PageBaseRequest pageBaseRequest) {
+    public ApiDataResponse<StudentResponse> findStudent(@RequestParam(value = "Query") String query, @RequestParam @Nullable PageBaseRequest pageBaseRequest) {
         try {
             pageBaseRequest = PageUtil.validate(pageBaseRequest);
             return ApiDataResponse.ok(studentService.searchStudent(query, pageBaseRequest));
@@ -127,6 +127,7 @@ public class StudentController extends BaseController {
             return ApiDataResponse.error();
         }
     }
+
     @PostMapping("/student/import")
     public ApiDataResponse<String> importStudent(@RequestParam("file") MultipartFile file) throws IOException {
         studentService.importStudent(file);

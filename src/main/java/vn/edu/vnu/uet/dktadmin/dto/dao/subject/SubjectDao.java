@@ -8,6 +8,7 @@ public interface SubjectDao {
     Subject getBySubjectCode(String subjectCode);
     Subject getById(Long id);
     Subject store(Subject subject);
+    void delete(Long id);
     List<Subject> getAll() ;
     List<Subject> getLikeName(String name);
     List<Subject> getLikeCode(String code);

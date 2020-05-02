@@ -32,6 +32,14 @@ public class SubjectDaoImpl implements SubjectDao {
     }
 
     @Override
+    public void delete(Long id) {
+        Subject subject = subjectRepository.findById(id).orElse(null);
+        if (subject != null) {
+            subjectRepository.delete(subject);
+        }
+    }
+
+    @Override
     public List<Subject> getAll() {
         List<Subject> subjects = subjectRepository.findAll();
         if (CollectionUtils.isEmpty(subjects)) {

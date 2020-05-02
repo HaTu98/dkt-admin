@@ -1,10 +1,8 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.room;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
-import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.dto.service.room.RoomService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
@@ -15,9 +13,11 @@ import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomResponse;
 @RestController
 @RequestMapping("/admin/rooms")
 public class RoomController extends BaseController {
+    private final RoomService roomService;
 
-    @Autowired
-    private RoomService roomService;
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
+    }
 
     @PostMapping
     public ApiDataResponse<RoomResponse> createRoom(@RequestBody RoomRequest roomRequest) {

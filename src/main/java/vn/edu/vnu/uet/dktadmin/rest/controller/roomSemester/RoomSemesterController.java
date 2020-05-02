@@ -1,6 +1,5 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.roomSemester;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +13,11 @@ import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterResponse;
 @RestController
 @RequestMapping("/admin/room_semesters")
 public class RoomSemesterController {
+    private final RoomSemesterService roomSemesterService;
 
-    @Autowired
-    private RoomSemesterService roomSemesterService;
+    public RoomSemesterController(RoomSemesterService roomSemesterService) {
+        this.roomSemesterService = roomSemesterService;
+    }
 
     @PostMapping
     public ApiDataResponse<RoomSemesterResponse> createRoomSemester(@RequestBody RoomSemesterRequest request) {

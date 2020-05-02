@@ -32,6 +32,29 @@ public class SubjectController {
         }
     }
 
+    @PutMapping("/subject")
+    public ApiDataResponse<SubjectResponse> updateSubject(@RequestBody SubjectRequest request) {
+        try {
+            return ApiDataResponse.ok(subjectService.updateSubject(request));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
+    @DeleteMapping("/subject/{id}")
+    public ApiDataResponse<String> deleteSubject(@PathVariable Long id) {
+        try {
+            subjectService.deleteSubject(id);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
     @GetMapping("/subject")
     public ApiDataResponse<ListSubjectResponse> getSubject(@RequestParam @Nullable PageBaseRequest pageRequest) {
         try {
@@ -45,10 +68,10 @@ public class SubjectController {
     }
 
     @GetMapping("/subject/find")
-    public ApiDataResponse<ListSubjectResponse> search(@RequestParam(value = "Query") String query,@RequestParam @Nullable PageBaseRequest pageRequest) {
+    public ApiDataResponse<ListSubjectResponse> search(@RequestParam(value = "Query") String query, @RequestParam @Nullable PageBaseRequest pageRequest) {
         try {
             pageRequest = PageUtil.validate(pageRequest);
-            return ApiDataResponse.ok(subjectService.searchSubject(query,pageRequest));
+            return ApiDataResponse.ok(subjectService.searchSubject(query, pageRequest));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
