@@ -1,5 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectRepository;

@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,8 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBaseRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
@@ -72,23 +75,30 @@ public class StudentService {
         return mapperFacade.map(studentDao.save(student), StudentResponse.class);
     }
 
-    public StudentListResponse getStudentInSemester(Long semesterId) {
+    public StudentListResponse getStudentInSemester(Long semesterId, PageBaseRequest pageRequest) {
         List<StudentSubject> studentSubjects = studentSubjectDao.getBySemesterId(semesterId);
-        return getListStudentByStudentSubject(studentSubjects);
+        return getListStudentByStudentSubject(studentSubjects, pageRequest);
     }
 
-    public StudentListResponse getStudentInSubject(Long subjectSemesterId) {
+    public StudentListResponse getStudentInSubject(Long subjectSemesterId, PageBaseRequest pageRequest) {
         List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(subjectSemesterId);
-        return getListStudentByStudentSubject(studentSubjects);
+        return getListStudentByStudentSubject(studentSubjects, pageRequest);
     }
 
-    private StudentListResponse getListStudentByStudentSubject(List<StudentSubject> studentSubjects) {
+    private StudentListResponse getListStudentByStudentSubject(List<StudentSubject> studentSubjects, PageBaseRequest pageRequest) {
         List<Long> listStudentId = new ArrayList<>();
-        for (StudentSubject studentSubject : studentSubjects) {
-            listStudentId.add(studentSubject.getStudentId());
+        Integer page = pageRequest.getPage();
+        Integer size = pageRequest.getSize();
+        int total = studentSubjects.size();
+        int maxSize = Math.min(total, size * page);
+        for (int i = size*(page-1); i < maxSize; i++ ) {
+            listStudentId.add(studentSubjects.get(i).getStudentId());
         }
         List<Student> students = studentDao.getStudentInList(listStudentId);
-        return new StudentListResponse(mapperFacade.mapAsList(students, StudentResponse.class));
+        StudentListResponse studentListResponse = new StudentListResponse(mapperFacade.mapAsList(students, StudentResponse.class));
+        PageResponse pageResponse = new PageResponse(page, size, total);
+        studentListResponse.setPageResponse(pageResponse);
+        return studentListResponse;
     }
 
     private void validateUpdateStudent(StudentRequest request) {

@@ -20,8 +20,6 @@ public class AuthController extends BaseController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/login")
-//    @ApiResponse(content = @Content(mediaType = "text/plain",
-//            schema = @Schema(implementation=LoginResponse.class)))
     public ApiDataResponse<LoginResponse> login(@RequestBody LoginRequest request) {
         try {
             return ApiDataResponse.ok(authenticationService.login(request));

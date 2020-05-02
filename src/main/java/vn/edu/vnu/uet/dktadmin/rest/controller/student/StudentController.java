@@ -1,15 +1,18 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.student;
 
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
+import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBaseRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
@@ -56,9 +59,10 @@ public class StudentController extends BaseController {
     }
 
     @GetMapping("/student_in_semester/{semesterId}")
-    public ApiDataResponse<StudentListResponse> getStudentInSemester(@PathVariable Long semesterId) {
+    public ApiDataResponse<StudentListResponse> getStudentInSemester(@PathVariable Long semesterId, @RequestParam @Nullable PageBaseRequest pageRequest) {
         try{
-            return ApiDataResponse.ok(studentService.getStudentInSemester(semesterId));
+            pageRequest = PageUtil.validate(pageRequest);
+            return ApiDataResponse.ok(studentService.getStudentInSemester(semesterId, pageRequest));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
@@ -67,9 +71,10 @@ public class StudentController extends BaseController {
     }
 
     @GetMapping("/student_in_subject/{subjectSemesterId}")
-    public ApiDataResponse<StudentResponse> getStudentInSubject(@PathVariable Long subjectSemesterId) {
+    public ApiDataResponse<StudentResponse> getStudentInSubject(@PathVariable Long subjectSemesterId, @RequestParam PageBaseRequest pageRequest) {
         try {
-            return ApiDataResponse.ok(studentService.getStudentInSubject(subjectSemesterId));
+            pageRequest = PageUtil.validate(pageRequest);
+            return ApiDataResponse.ok(studentService.getStudentInSubject(subjectSemesterId, pageRequest));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
