@@ -264,7 +264,7 @@ public class StudentService {
         for (Student student : studentWithName) {
             studentMap.put(student.getStudentCode(), student);
         }
-        studentMap = studentMap.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
+        studentMap = studentMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1,e2) -> e1, LinkedHashMap::new));
         return getListStudentPaging(
                 new ArrayList<>(studentMap.values()), pageBaseRequest
@@ -310,20 +310,6 @@ public class StudentService {
             String username = request.getUsername();
             return studentDao.getByUsername(username);
         }
-    }
-
-    private StudentResponse getResponse(Student student) {
-        return null;
-//        return StudentResponse.builder()
-//                .id(student.getId())
-//                .username(student.getUsername())
-//                .email(student.getEmail())
-//                .course(student.getCourse())
-//                .dateOfBirth(student.getDateOfBirth())
-//                .fullName(student.getFullName())
-//                .studentCode(student.getStudentCode())
-//                .gender(student.getGender())
-//                .build();
     }
 
     private String getValueInCell(Cell cell) {

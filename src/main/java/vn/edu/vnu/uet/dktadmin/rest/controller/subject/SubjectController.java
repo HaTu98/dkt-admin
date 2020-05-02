@@ -1,14 +1,13 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.subject;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
-import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.subject.SubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBaseRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
 
@@ -16,8 +15,11 @@ import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
 @RestController
 public class SubjectController {
 
-    @Autowired
-    private SubjectService subjectService;
+    private final SubjectService subjectService;
+
+    public SubjectController(SubjectService subjectService) {
+        this.subjectService = subjectService;
+    }
 
     @PostMapping("/subject")
     public ApiDataResponse<SubjectResponse> createSubject(@RequestBody SubjectRequest request) {
@@ -30,4 +32,27 @@ public class SubjectController {
         }
     }
 
+    @GetMapping("/subject")
+    public ApiDataResponse<ListSubjectResponse> getSubject(@RequestParam @Nullable PageBaseRequest pageRequest) {
+        try {
+            pageRequest = PageUtil.validate(pageRequest);
+            return ApiDataResponse.ok(subjectService.getSubject(pageRequest));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
+    @GetMapping("/subject/find")
+    public ApiDataResponse<ListSubjectResponse> search(@RequestParam(value = "Query") String query,@RequestParam @Nullable PageBaseRequest pageRequest) {
+        try {
+            pageRequest = PageUtil.validate(pageRequest);
+            return ApiDataResponse.ok(subjectService.searchSubject(query,pageRequest));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
 }

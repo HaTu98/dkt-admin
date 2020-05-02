@@ -1,6 +1,5 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.semester;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +14,11 @@ import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterResponse;
 @RequestMapping("/admin/semester")
 public class SemesterController {
 
-    @Autowired
-    private SemesterService semesterService;
+    private final SemesterService semesterService;
+
+    public SemesterController(SemesterService semesterService) {
+        this.semesterService = semesterService;
+    }
 
     @PostMapping
     public ApiDataResponse<SemesterResponse> create(@RequestBody SemesterRequest request) {
