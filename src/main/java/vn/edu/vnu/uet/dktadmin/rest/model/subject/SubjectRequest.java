@@ -7,6 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SubjectRequest {
+    @JsonProperty(value = "Id")
+    private Long id;
+
     @JsonProperty(value = "NumberOfCredit")
     private String numberOfCredit;
 

@@ -1,13 +1,12 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.room;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.repository.RoomRepository;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RoomDaoImpl implements RoomDao {
@@ -19,13 +18,31 @@ public class RoomDaoImpl implements RoomDao {
 
 
     @Override
-    public Room createRoom(Room room) {
+    public Room store(Room room) {
         return roomRepository.save(room);
     }
 
     @Override
     public Room getByName(String name) {
         return roomRepository.findByRoomName(name);
+    }
+
+    @Override
+    public List<Room> getLikeCode(String code) {
+        List<Room> rooms = roomRepository.findByRoomCodeContains(code);
+        if (CollectionUtils.isEmpty(rooms)) {
+            return new ArrayList<>();
+        }
+        return rooms;
+    }
+
+    @Override
+    public List<Room> getLikeName(String name) {
+        List<Room> rooms = roomRepository.findByRoomNameContains(name);
+        if (CollectionUtils.isEmpty(rooms)) {
+            return new ArrayList<>();
+        }
+        return rooms;
     }
 
     @Override

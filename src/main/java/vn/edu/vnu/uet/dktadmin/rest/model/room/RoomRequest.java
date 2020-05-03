@@ -7,6 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RoomRequest {
+    @JsonProperty(value = "Id")
+    private Long id;
+
     @JsonProperty(value = "RoomName")
     private String roomName;
 
