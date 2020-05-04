@@ -26,4 +26,6 @@ public interface StudentDao {
     List<Student> getStudentLikeName(String name);
 
     List<Student> getStudentLikeCode(String code);
+
+    void deleteListStudent(List<Student> students);
 }

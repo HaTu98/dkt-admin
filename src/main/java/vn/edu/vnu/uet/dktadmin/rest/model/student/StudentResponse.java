@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-//@Builder
 public class StudentResponse {
     @JsonProperty(value = "Id")
     private Long id;
@@ -31,5 +30,5 @@ public class StudentResponse {
     private String fullName;
 
     @JsonProperty(value = "Gender")
-    private String gender;
+    private Integer gender;
 }

@@ -15,9 +15,6 @@ public class StudentRequest {
     @JsonProperty(value = "Id")
     private Long id;
 
-    @JsonProperty(value = "Username")
-    private String username;
-
     @JsonProperty(value = "Email")
     private String email;
 
@@ -34,5 +31,5 @@ public class StudentRequest {
     private String fullName;
 
     @JsonProperty(value = "Gender")
-    private String gender;
+    private Integer gender;
 }

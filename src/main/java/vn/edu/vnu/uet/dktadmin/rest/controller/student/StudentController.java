@@ -18,6 +18,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequestMapping("/admin")
 @RestController
@@ -108,6 +109,18 @@ public class StudentController extends BaseController {
     public ApiDataResponse<StudentResponse> deleteStudent(@PathVariable Long id) {
         try {
             studentService.deleteStudent(id);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+        return ApiDataResponse.error();
+        }
+    }
+
+    @DeleteMapping("/student/list")
+    public ApiDataResponse<String> deleteListStudent(@RequestBody List<Long> id) {
+        try {
+            studentService.deleteListStudent(id);
             return ApiDataResponse.ok("success");
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());

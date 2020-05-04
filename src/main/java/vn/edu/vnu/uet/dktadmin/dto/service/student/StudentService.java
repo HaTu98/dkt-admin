@@ -143,6 +143,11 @@ public class StudentService {
         studentDao.delete(student);
     }
 
+    public void deleteListStudent(List<Long> ids) {
+        List<Student> students = studentDao.getStudentInList(ids);
+        studentDao.deleteListStudent(students);
+    }
+
     public Student buildCreateStudent(StudentRequest studentRequest, DktAdmin dktAdmin) {
         Student student = this.generateStudent(studentRequest);
 
@@ -171,12 +176,10 @@ public class StudentService {
         }
         if (!StringUtils.isEmpty(request.getStudentCode())) {
             student.setStudentCode(request.getStudentCode());
+            student.setUsername(request.getStudentCode());
         }
-        if (!StringUtils.isEmpty(request.getGender())) {
+        if (request.getGender() != null) {
             student.setGender(request.getGender());
-        }
-        if (!StringUtils.isEmpty(request.getUsername())) {
-            student.setUsername(request.getUsername());
         }
         Instant now = Instant.now();
         student.setModifiedAt(now);
@@ -205,7 +208,7 @@ public class StudentService {
                 //String stt = getValueInCell(row.getCell(0)).trim();
                 Student student = new Student();
                 student.setFullName(getValueInCell(row.getCell(1)).trim());
-                student.setGender(getValueInCell(row.getCell(2)).trim());
+                //student.setGender(getValueInCell(row.getCell(2)).trim());
                 student.setDateOfBirth(getValueInCell(row.getCell(3)).trim());
                 String username = getValueInCell(row.getCell(4)).trim();
                 student.setUsername(username);
@@ -273,7 +276,7 @@ public class StudentService {
 
     private Student generateStudent(StudentRequest studentRequest) {
         Student student = new Student();
-        student.setUsername(studentRequest.getUsername());
+        student.setUsername(studentRequest.getStudentCode());
         student.setEmail(studentRequest.getEmail());
         student.setCourse(studentRequest.getCourse());
         student.setPassword(studentRequest.getStudentCode());
@@ -291,8 +294,8 @@ public class StudentService {
         if (emailValidator.validateEmail(email)) {
             student = studentDao.getByEmail(email);
         } else {
-            String username = request.getUsername();
-            student = studentDao.getByUsername(username);
+            String studentCode = request.getStudentCode();
+            student = studentDao.getByStudentCode(studentCode);
         }
         return student != null;
     }
@@ -307,8 +310,8 @@ public class StudentService {
         if (emailValidator.validateEmail(email)) {
             return studentDao.getByEmail(email);
         } else {
-            String username = request.getUsername();
-            return studentDao.getByUsername(username);
+            String studentCode = request.getStudentCode();
+            return studentDao.getByStudentCode(studentCode);
         }
     }
 

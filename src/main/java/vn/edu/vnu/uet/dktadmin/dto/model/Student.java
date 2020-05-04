@@ -19,7 +19,7 @@ public class Student {
     private String password;
     private String studentCode;
     private String fullName;
-    private String gender;
+    private Integer gender;
     private String dateOfBirth;
     private String course;
     private Instant createdAt;

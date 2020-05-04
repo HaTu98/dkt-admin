@@ -79,5 +79,10 @@ public class StudentDaoImpl implements StudentDao {
         return students;
     }
 
+    @Override
+    public void deleteListStudent(List<Student> students) {
+        studentRepository.deleteAll(students);
+    }
+
 
 }
