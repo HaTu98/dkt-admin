@@ -3,6 +3,7 @@ package vn.edu.vnu.uet.dktadmin.dto.service.room;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Location;
@@ -33,7 +34,7 @@ public class RoomService {
 
     public RoomResponse createRoom(RoomRequest request) {
         validateRoom(request);
-        Location location = locationDao.getByLocationName(request.getLocation());
+        Location location = locationDao.getByLocationCode(Util.camelToSnake(request.getLocation()));
         if (location == null){
             location = locationService.createLocation(request.getLocation());
         }
@@ -54,7 +55,7 @@ public class RoomService {
 
     public RoomResponse updateRoom(RoomRequest request) {
         validateUpdateRoom(request);
-        Location location = locationDao.getByLocationName(request.getLocation());
+        Location location = locationDao.getByLocationCode(Util.camelToSnake(request.getLocation()));
         if (location == null){
             location = locationService.createLocation(request.getLocation());
         }
@@ -64,7 +65,7 @@ public class RoomService {
         return mapperFacade.map(roomDao.store(room), RoomResponse.class);
     }
 
-    public RoomListResponse searchRoom(String query, PageBase pageRequest) {
+    public RoomListResponse searchRoom(String query, PageBase pageBase) {
         List<Room> roomWithName = roomDao.getLikeName(query);
         List<Room> roomWithCode = roomDao.getLikeCode(query);
         Map<Long, Room> roomMap = new HashMap<>();
@@ -77,15 +78,15 @@ public class RoomService {
         roomMap = roomMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         return getListRoomPaging(
-                new ArrayList<>(roomMap.values()), pageRequest
+                new ArrayList<>(roomMap.values()), pageBase
         );
     }
 
 
-    private RoomListResponse getListRoomPaging(List<Room> rooms, PageBase pageRequest) {
+    private RoomListResponse getListRoomPaging(List<Room> rooms, PageBase pageBase) {
         List<Room> roomList = new ArrayList<>();
-        Integer size = pageRequest.getSize();
-        Integer page = pageRequest.getPage();
+        Integer size = pageBase.getSize();
+        Integer page = pageBase.getPage();
         int total = rooms.size();
         int maxSize = Math.min(total, size * page);
         for (int i = size * (page - 1); i < maxSize; i++) {
@@ -129,7 +130,7 @@ public class RoomService {
         if(request.getRoomName() == null) {
             throw new BadRequestException(400,"RoomName không thể null");
         }
-        if(!isExistRoom(roomCode)) {
+        if(!isExistRoom(request.getId())) {
             throw new BadRequestException(400, "Room không đã tồn tại");
         }
         if (request.getLocation() == null) {

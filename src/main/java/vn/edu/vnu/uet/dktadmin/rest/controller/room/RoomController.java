@@ -32,7 +32,7 @@ public class RoomController extends BaseController {
         }
     }
 
-    @GetMapping("/room")
+    @GetMapping("/room/all")
     public ApiDataResponse<RoomListResponse> getAllRoom(
             @RequestParam(required = false, value = "Size") Integer size,
             @RequestParam(required = false, value = "Page") Integer page
@@ -70,9 +70,14 @@ public class RoomController extends BaseController {
     }
 
     @GetMapping("/room/find")
-    public ApiDataResponse<RoomListResponse> searchRoom(@RequestParam(value = "Query") String query, @RequestParam PageBase pageRequest) {
+    public ApiDataResponse<RoomListResponse> searchRoom(
+            @RequestParam(value = "Query") String query,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
         try {
-            return ApiDataResponse.ok(roomService.searchRoom(query, pageRequest));
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(roomService.searchRoom(query, pageBase));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {

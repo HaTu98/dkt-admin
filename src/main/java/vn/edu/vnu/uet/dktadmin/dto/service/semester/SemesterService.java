@@ -24,20 +24,32 @@ public class SemesterService {
         this.semesterDao = semesterDao;
     }
 
-    public boolean isExistSemester(String semesterCode){
+    public boolean isExistSemester(String semesterCode) {
         Semester semester = semesterDao.getBySemesterCode(semesterCode);
         return semester != null;
     }
-    public boolean isExistSemester(Long semesterId){
+
+    public boolean isExistSemester(Long semesterId) {
         Semester semester = semesterDao.getById(semesterId);
         return semester != null;
     }
 
     @Transactional
-    public SemesterResponse create(SemesterRequest semesterRequest){
+    public SemesterResponse create(SemesterRequest semesterRequest) {
         validateSemester(semesterRequest);
         Semester semester = mapperFacade.map(semesterRequest, Semester.class);
         return mapperFacade.map(store(semester), SemesterResponse.class);
+    }
+
+    @Transactional
+    public SemesterResponse update(SemesterRequest request) {
+        validateUpdateSemester(request);
+        Semester semester = mapperFacade.map(request, Semester.class);
+        return mapperFacade.map(store(semester), SemesterResponse.class);
+    }
+
+    public SemesterResponse getSemesterById(Long id) {
+        return mapperFacade.map(semesterDao.getById(id), SemesterResponse.class);
     }
 
     private Semester store(Semester semester) {
@@ -51,8 +63,23 @@ public class SemesterService {
         if (StringUtils.isEmpty(request.getSemesterCode())) {
             throw new BadRequestException(400, "Mã học kì không thể null");
         }
-        if (isExistSemester(request.getSemesterCode())){
+        if (isExistSemester(request.getSemesterCode())) {
             throw new BadRequestException(400, "Học kì đã tồn tại");
+        }
+    }
+
+    private void validateUpdateSemester(SemesterRequest request) {
+        if (request.getId() == null) {
+            throw new BadRequestException(400, "Id học kì không thể null");
+        }
+        if (StringUtils.isEmpty(request.getSemesterName())) {
+            throw new BadRequestException(400, "Tên học kì không thể null");
+        }
+        if (StringUtils.isEmpty(request.getSemesterCode())) {
+            throw new BadRequestException(400, "Mã học kì không thể null");
+        }
+        if (!isExistSemester(request.getId())) {
+            throw new BadRequestException(400, "Học kì không tồn tại");
         }
     }
 }

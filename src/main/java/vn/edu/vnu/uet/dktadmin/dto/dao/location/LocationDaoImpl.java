@@ -21,4 +21,9 @@ public class LocationDaoImpl implements LocationDao {
     public Location getByLocationName(String name) {
         return locationRepository.findByLocationName(name);
     }
+
+    @Override
+    public Location getByLocationCode(String code) {
+        return locationRepository.findByLocationCode(code);
+    }
 }
