@@ -12,7 +12,7 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.PageBaseRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
@@ -60,9 +60,14 @@ public class StudentController extends BaseController {
     }
 
     @GetMapping("/student_in_semester/{semesterId}")
-    public ApiDataResponse<StudentListResponse> getStudentInSemester(@PathVariable Long semesterId, @RequestParam @Nullable PageBaseRequest pageRequest) {
+    public ApiDataResponse<StudentListResponse> getStudentInSemester(
+            @PathVariable Long semesterId,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    )
+    {
         try {
-            pageRequest = PageUtil.validate(pageRequest);
+            PageBase pageRequest = PageUtil.validate(page, size);
             return ApiDataResponse.ok(studentService.getStudentInSemester(semesterId, pageRequest));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
@@ -72,10 +77,15 @@ public class StudentController extends BaseController {
     }
 
     @GetMapping("/student_in_subject/{subjectSemesterId}")
-    public ApiDataResponse<StudentResponse> getStudentInSubject(@PathVariable Long subjectSemesterId, @RequestParam @Nullable PageBaseRequest pageRequest) {
+    public ApiDataResponse<StudentResponse> getStudentInSubject(
+            @PathVariable Long subjectSemesterId,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    )
+    {
         try {
-            pageRequest = PageUtil.validate(pageRequest);
-            return ApiDataResponse.ok(studentService.getStudentInSubject(subjectSemesterId, pageRequest));
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(studentService.getStudentInSubject(subjectSemesterId, pageBase));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
@@ -130,10 +140,14 @@ public class StudentController extends BaseController {
     }
 
     @GetMapping("/student/find")
-    public ApiDataResponse<StudentResponse> findStudent(@RequestParam(value = "Query") String query, @RequestParam @Nullable PageBaseRequest pageBaseRequest) {
+    public ApiDataResponse<StudentResponse> findStudent(
+            @RequestParam(value = "Query") String query,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
         try {
-            pageBaseRequest = PageUtil.validate(pageBaseRequest);
-            return ApiDataResponse.ok(studentService.searchStudent(query, pageBaseRequest));
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(studentService.searchStudent(query, pageBase));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {

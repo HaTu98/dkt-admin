@@ -2,14 +2,12 @@ package vn.edu.vnu.uet.dktadmin.dto.service.subject;
 
 import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
-import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
-import vn.edu.vnu.uet.dktadmin.rest.model.PageBaseRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
@@ -54,12 +52,12 @@ public class SubjectService {
         subjectDao.delete(id);
     }
 
-    public ListSubjectResponse getSubject(PageBaseRequest request) {
+    public ListSubjectResponse getSubject(PageBase request) {
         List<Subject> subjects =  subjectDao.getAll();
         return pagingSubject(subjects,request);
     }
 
-    public ListSubjectResponse searchSubject(String query, PageBaseRequest pageRequest) {
+    public ListSubjectResponse searchSubject(String query, PageBase pageRequest) {
         List<Subject> subjectCodes = subjectDao.getLikeCode(query);
         List<Subject> subjectNames = subjectDao.getLikeName(query);
         Map<Long, Subject> subjectMap = new HashMap<>();
@@ -76,7 +74,7 @@ public class SubjectService {
         );
     }
 
-    private ListSubjectResponse pagingSubject(List<Subject> subjects, PageBaseRequest pageRequest) {
+    private ListSubjectResponse pagingSubject(List<Subject> subjects, PageBase pageRequest) {
         List<Subject> subjectList =  new ArrayList<>();
         Integer page = pageRequest.getPage();
         Integer size = pageRequest.getSize();

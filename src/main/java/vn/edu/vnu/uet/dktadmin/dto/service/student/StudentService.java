@@ -20,7 +20,7 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
-import vn.edu.vnu.uet.dktadmin.rest.model.PageBaseRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
@@ -72,17 +72,17 @@ public class StudentService {
         return mapperFacade.map(studentDao.save(student), StudentResponse.class);
     }
 
-    public StudentListResponse getStudentInSemester(Long semesterId, PageBaseRequest pageRequest) {
+    public StudentListResponse getStudentInSemester(Long semesterId, PageBase pageRequest) {
         List<StudentSubject> studentSubjects = studentSubjectDao.getBySemesterId(semesterId);
         return getListStudentByStudentSubject(studentSubjects, pageRequest);
     }
 
-    public StudentListResponse getStudentInSubject(Long subjectSemesterId, PageBaseRequest pageRequest) {
+    public StudentListResponse getStudentInSubject(Long subjectSemesterId, PageBase pageRequest) {
         List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(subjectSemesterId);
         return getListStudentByStudentSubject(studentSubjects, pageRequest);
     }
 
-    private StudentListResponse getListStudentByStudentSubject(List<StudentSubject> studentSubjects, PageBaseRequest pageRequest) {
+    private StudentListResponse getListStudentByStudentSubject(List<StudentSubject> studentSubjects, PageBase pageRequest) {
         List<Long> listStudentId = new ArrayList<>();
         Integer page = pageRequest.getPage();
         Integer size = pageRequest.getSize();
@@ -98,7 +98,7 @@ public class StudentService {
         return studentListResponse;
     }
 
-    private StudentListResponse getListStudentPaging(List<Student> students, PageBaseRequest pageRequest) {
+    private StudentListResponse getListStudentPaging(List<Student> students, PageBase pageRequest) {
         List<Student> studentList = new ArrayList<>();
         Integer page = pageRequest.getPage();
         Integer size = pageRequest.getSize();
@@ -257,7 +257,7 @@ public class StudentService {
         return student != null;
     }
 
-    public StudentListResponse searchStudent(String query, PageBaseRequest pageBaseRequest) {
+    public StudentListResponse searchStudent(String query, PageBase pageBase) {
         List<Student> studentWithCode = studentDao.getStudentLikeCode(query);
         List<Student> studentWithName = studentDao.getStudentLikeName(query);
         Map<String, Student> studentMap = new HashMap<>();
@@ -270,7 +270,7 @@ public class StudentService {
         studentMap = studentMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1,e2) -> e1, LinkedHashMap::new));
         return getListStudentPaging(
-                new ArrayList<>(studentMap.values()), pageBaseRequest
+                new ArrayList<>(studentMap.values()), pageBase
         );
     }
 

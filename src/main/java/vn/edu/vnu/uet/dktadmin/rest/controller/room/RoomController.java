@@ -7,7 +7,7 @@ import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.room.RoomService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.PageBaseRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomResponse;
@@ -33,10 +33,13 @@ public class RoomController extends BaseController {
     }
 
     @GetMapping("/room")
-    public ApiDataResponse<RoomListResponse> getAllRoom(@RequestParam PageBaseRequest pageRequest) {
+    public ApiDataResponse<RoomListResponse> getAllRoom(
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
         try {
-            pageRequest = PageUtil.validate(pageRequest);
-            return ApiDataResponse.ok(roomService.getAllRoom(pageRequest));
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(roomService.getAllRoom(pageBase));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
@@ -67,7 +70,7 @@ public class RoomController extends BaseController {
     }
 
     @GetMapping("/room/find")
-    public ApiDataResponse<RoomListResponse> searchRoom(@RequestParam(value = "Query") String query, @RequestParam PageBaseRequest pageRequest) {
+    public ApiDataResponse<RoomListResponse> searchRoom(@RequestParam(value = "Query") String query, @RequestParam PageBase pageRequest) {
         try {
             return ApiDataResponse.ok(roomService.searchRoom(query, pageRequest));
         } catch (BaseException e) {

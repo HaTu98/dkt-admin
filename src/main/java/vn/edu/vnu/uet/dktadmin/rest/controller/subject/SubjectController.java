@@ -6,7 +6,7 @@ import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.subject.SubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.PageBaseRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
@@ -56,10 +56,13 @@ public class SubjectController {
     }
 
     @GetMapping("/subject")
-    public ApiDataResponse<ListSubjectResponse> getSubject(@RequestParam @Nullable PageBaseRequest pageRequest) {
+    public ApiDataResponse<ListSubjectResponse> getSubject(
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
         try {
-            pageRequest = PageUtil.validate(pageRequest);
-            return ApiDataResponse.ok(subjectService.getSubject(pageRequest));
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(subjectService.getSubject(pageBase));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
@@ -68,10 +71,14 @@ public class SubjectController {
     }
 
     @GetMapping("/subject/find")
-    public ApiDataResponse<ListSubjectResponse> search(@RequestParam(value = "Query") String query, @RequestParam @Nullable PageBaseRequest pageRequest) {
+    public ApiDataResponse<ListSubjectResponse> search(
+            @RequestParam(value = "Query") String query,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
         try {
-            pageRequest = PageUtil.validate(pageRequest);
-            return ApiDataResponse.ok(subjectService.searchSubject(query, pageRequest));
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(subjectService.searchSubject(query, pageBase));
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {

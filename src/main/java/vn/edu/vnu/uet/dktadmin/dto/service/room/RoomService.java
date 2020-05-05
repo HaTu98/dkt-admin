@@ -8,7 +8,7 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Location;
 import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.service.location.LocationService;
-import vn.edu.vnu.uet.dktadmin.rest.model.PageBaseRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomRequest;
@@ -42,7 +42,7 @@ public class RoomService {
         return mapperFacade.map(roomDao.store(room), RoomResponse.class);
     }
 
-    public RoomListResponse getAllRoom(PageBaseRequest page) {
+    public RoomListResponse getAllRoom(PageBase page) {
         List<Room> rooms = roomDao.getAllRoom();
         return getListRoomPaging(rooms, page);
     }
@@ -64,7 +64,7 @@ public class RoomService {
         return mapperFacade.map(roomDao.store(room), RoomResponse.class);
     }
 
-    public RoomListResponse searchRoom(String query, PageBaseRequest pageRequest) {
+    public RoomListResponse searchRoom(String query, PageBase pageRequest) {
         List<Room> roomWithName = roomDao.getLikeName(query);
         List<Room> roomWithCode = roomDao.getLikeCode(query);
         Map<Long, Room> roomMap = new HashMap<>();
@@ -82,7 +82,7 @@ public class RoomService {
     }
 
 
-    private RoomListResponse getListRoomPaging(List<Room> rooms, PageBaseRequest pageRequest) {
+    private RoomListResponse getListRoomPaging(List<Room> rooms, PageBase pageRequest) {
         List<Room> roomList = new ArrayList<>();
         Integer size = pageRequest.getSize();
         Integer page = pageRequest.getPage();
