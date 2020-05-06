@@ -11,10 +11,17 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam.StudentSubjectExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
+import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectExamRepository;
 import vn.edu.vnu.uet.dktadmin.dto.service.exam.ExamService;
 import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.ListStudentSubjectExamResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class StudentSubjectExamService {
@@ -42,6 +49,9 @@ public class StudentSubjectExamService {
         StudentSubjectExam studentSubjectExam = mapperFacade.map(request, StudentSubjectExam.class);
         studentSubjectExam.setStatus(Constant.active);
         studentSubjectExam.setSemesterId(exam.getSemesterId());
+
+        StudentSubject studentSubject = studentSubjectDao.getById(request.getStudentSubjectId());
+        studentSubjectExam.setStudentId(studentSubject.getStudentId());
         Integer numberStudent = exam.getNumberOfStudentSubscribe();
         if (numberStudent == null) {
             numberStudent = 1;
@@ -75,7 +85,7 @@ public class StudentSubjectExamService {
         if (exam.getSubjectSemesterId() != studentSubject.getSubjectSemesterId()) {
             throw new BadRequestException(400, "StudentSubject và Exam không hợp lệ!");
         }
-        if (exam.getNumberOfStudentSubscribe() >= exam.getNumberOfStudent()) {
+        if (exam.getNumberOfStudentSubscribe() != null && exam.getNumberOfStudentSubscribe() >= exam.getNumberOfStudent()) {
             throw new BadRequestException(400, "Số lượng sinh viên trong phòng đã đầy");
         }
     }
@@ -88,5 +98,36 @@ public class StudentSubjectExamService {
     public boolean isExistStudentSubjectExam(Long id) {
         StudentSubjectExam studentSubjectExam = studentSubjectExamDao.getById(id);
         return studentSubjectExam != null;
+    }
+
+    public ListStudentSubjectExamResponse getBySemester(Long semesterId, PageBase pageBase) {
+        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getBySemesterId(semesterId);
+        return getStudentExamPaging(studentSubjectExams, pageBase);
+    }
+
+    public ListStudentSubjectExamResponse getBySubjectSemester(Long subjectSemesterId, PageBase pageBase) {
+        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getByStudentSubjectId(subjectSemesterId);
+        return getStudentExamPaging(studentSubjectExams, pageBase);
+    }
+
+    public StudentSubjectExamResponse getById(Long id) {
+        return mapperFacade.map(studentSubjectExamDao.getById(id), StudentSubjectExamResponse.class);
+    }
+
+    private ListStudentSubjectExamResponse getStudentExamPaging(List<StudentSubjectExam> studentSubjectExams, PageBase pageBase) {
+        List<StudentSubjectExam> studentSubjectExamList = new ArrayList<>();
+        Integer page = pageBase.getPage();
+        Integer size = pageBase.getSize();
+        int total = studentSubjectExams.size();
+        int maxSize = Math.min(total, size * page);
+        for (int i = size * (page - 1); i < maxSize; i++) {
+            studentSubjectExamList.add(studentSubjectExams.get(i));
+        }
+        PageResponse pageResponse = new PageResponse(page, size, total);
+        ListStudentSubjectExamResponse studentSubjectExamResponse = new ListStudentSubjectExamResponse(
+                mapperFacade.mapAsList(studentSubjectExamList, StudentSubjectExamResponse.class),
+                pageResponse
+        );
+        return studentSubjectExamResponse;
     }
 }

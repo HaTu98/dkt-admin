@@ -11,4 +11,5 @@ public interface StudentSubjectDao {
     StudentSubject getById(Long id);
     List<StudentSubject> getBySemesterId(Long semesterId);
     List<StudentSubject> getBySubjectSemesterId(Long subjectSemesterId);
+    void delete(StudentSubject studentSubject);
 }

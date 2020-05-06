@@ -12,10 +12,14 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.ListStudentSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectResponse;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -56,10 +60,65 @@ public class StudentSubjectService {
         StudentSubject studentSubject = studentSubjectDao.getByStudentAndSubjectSemesterId(studentId, subjectSemesterId);
         return studentSubject != null;
     }
+
     public boolean existStudentSubject(Long id) {
         StudentSubject studentSubject = studentSubjectDao.getById(id);
         return studentSubject != null;
     }
+
+    public StudentSubjectResponse update(StudentSubjectRequest request) {
+        validateUpdateStudentSubject(request);
+        StudentSubject studentSubject = studentSubjectDao.getById(request.getId());
+        SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());
+        studentSubject.setSemesterId(subjectSemester.getSemesterId());
+        studentSubject.setSubjectSemesterId(request.getSubjectSemesterId());
+        studentSubject.setStudentId(request.getStudentId());
+
+        studentSubject.setModifiedAt(Instant.now());
+
+        DktAdmin admin = accountService.getUserSession();
+        studentSubject.setModifiedBy(admin.getUsername());
+        return mapperFacade.map(studentSubjectDao.store(studentSubject), StudentSubjectResponse.class);
+    }
+
+    public ListStudentSubjectResponse getBySubjectSemesterId(Long id, PageBase pageBase) {
+        List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(id);
+        return getStudentSubjectPaging(studentSubjects, pageBase);
+    }
+
+    public ListStudentSubjectResponse getBySemesterId(Long id, PageBase pageBase) {
+        List<StudentSubject> studentSubjects = studentSubjectDao.getBySemesterId(id);
+        return getStudentSubjectPaging(studentSubjects, pageBase);
+    }
+
+    public void delete(Long id) {
+        StudentSubject studentSubject = studentSubjectDao.getById(id);
+        if (studentSubject != null) {
+            studentSubjectDao.delete(studentSubject);
+        }
+    }
+
+    public StudentSubjectResponse getById(Long id) {
+        return mapperFacade.map(studentSubjectDao.getById(id), StudentSubjectResponse.class);
+    }
+
+    private ListStudentSubjectResponse getStudentSubjectPaging(List<StudentSubject> studentSubject, PageBase pageBase) {
+        List<StudentSubject> studentSubjectList = new ArrayList<>();
+        Integer page = pageBase.getPage();
+        Integer size = pageBase.getSize();
+        int total = studentSubject.size();
+        int maxSize = Math.min(total, size * page);
+        for (int i = size * (page - 1); i < maxSize; i++) {
+            studentSubjectList.add(studentSubject.get(i));
+        }
+        PageResponse pageResponse = new PageResponse(page, size, total);
+        ListStudentSubjectResponse listStudentSubjectResponse = new ListStudentSubjectResponse(
+                mapperFacade.mapAsList(studentSubject, StudentSubjectResponse.class),
+                pageResponse
+        );
+        return listStudentSubjectResponse;
+    }
+
     private StudentSubject generateStudentSubject(StudentSubjectRequest request) {
         SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());
         StudentSubject studentSubject = mapperFacade.map(request, StudentSubject.class);
@@ -76,20 +135,42 @@ public class StudentSubjectService {
     }
 
     private void validateStudentSubject(StudentSubjectRequest request) {
-        if (request.getStudentId() == null){
+        if (request.getStudentId() == null) {
             throw new BadRequestException(400, "StudentId không thể null");
         }
-        if (request.getSubjectSemesterId() == null){
+        if (request.getSubjectSemesterId() == null) {
             throw new BadRequestException(400, "StudentSubjectId không thể null");
         }
-        if (!studentService.existStudent(request.getStudentId())){
+        if (!studentService.existStudent(request.getStudentId())) {
             throw new BadRequestException(400, "Sinh viên không tồn tại");
         }
         if (!subjectSemesterService.existSubjectSemester(request.getSubjectSemesterId())) {
-            throw  new BadRequestException(400, "Môn học trong học kì không tồn tại");
+            throw new BadRequestException(400, "Môn học trong học kì không tồn tại");
         }
-        if (existStudentSubject(request.getStudentId(), request.getSubjectSemesterId())){
+        if (existStudentSubject(request.getStudentId(), request.getSubjectSemesterId())) {
             throw new BadRequestException(400, "Sinh viên môn học đã tồn tại");
+        }
+    }
+
+    private void validateUpdateStudentSubject(StudentSubjectRequest request) {
+        if (!existStudentSubject(request.getId())) {
+            throw new BadRequestException(400, "Sinh viên môn học không tồn tại");
+        }
+
+        if (request.getStudentId() == null) {
+            throw new BadRequestException(400, "StudentId không thể null");
+        }
+        if (request.getSubjectSemesterId() == null) {
+            throw new BadRequestException(400, "StudentSubjectId không thể null");
+        }
+        if (!studentService.existStudent(request.getStudentId())) {
+            throw new BadRequestException(400, "Sinh viên không tồn tại");
+        }
+        if (!subjectSemesterService.existSubjectSemester(request.getSubjectSemesterId())) {
+            throw new BadRequestException(400, "Môn học trong học kì không tồn tại");
+        }
+        if (!existStudentSubject(request.getStudentId(), request.getSubjectSemesterId())) {
+            throw new BadRequestException(400, "Sinh viên môn học không tồn tại");
         }
     }
 }

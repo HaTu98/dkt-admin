@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectExamRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,5 +28,15 @@ public class StudentSubjectExamDaoImpl implements StudentSubjectExamDao {
     @Override
     public StudentSubjectExam getByExamIdAndStudentSubjectId(Long examId, Long studentSubjectId) {
         return studentSubjectExamRepository.findByExamIdAndAndStudentSubjectId(examId, studentSubjectId);
+    }
+
+    @Override
+    public List<StudentSubjectExam> getBySemesterId(Long semesterId) {
+        return studentSubjectExamRepository.findBySemesterId(semesterId);
+    }
+
+    @Override
+    public List<StudentSubjectExam> getByStudentSubjectId(Long studentSubjectId) {
+        return studentSubjectExamRepository.findByStudentSubjectId(studentSubjectId);
     }
 }

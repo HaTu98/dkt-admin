@@ -1,6 +1,5 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectRepository;
@@ -44,5 +43,11 @@ public class StudentSubjectDaoImpl implements StudentSubjectDao {
     public List<StudentSubject> getBySubjectSemesterId(Long subjectSemesterId) {
         return studentSubjectRepository.findBySubjectSemesterId(subjectSemesterId);
     }
+
+    @Override
+    public void delete(StudentSubject studentSubject) {
+        studentSubjectRepository.delete(studentSubject);
+    }
+
 
 }
