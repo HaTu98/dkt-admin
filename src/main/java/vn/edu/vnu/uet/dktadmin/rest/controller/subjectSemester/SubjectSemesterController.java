@@ -1,9 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.subjectSemester;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
@@ -30,4 +27,27 @@ public class SubjectSemesterController {
             return ApiDataResponse.error();
         }
     }
+
+    @PutMapping
+    public ApiDataResponse<SubjectSemesterResponse> update(@RequestBody SubjectSemesterRequest request) {
+        try {
+            return ApiDataResponse.ok(subjectSemesterService.update(request));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ApiDataResponse<SubjectSemesterResponse> getById(@PathVariable Long id) {
+        try {
+            return ApiDataResponse.ok(subjectSemesterService.getById(id));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
 }

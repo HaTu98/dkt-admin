@@ -34,32 +34,72 @@ public class SubjectSemesterService {
         return mapperFacade.map(store(subjectSemester), SubjectSemesterResponse.class);
     }
 
-    public boolean existSubjectSemester(Long id){
+    public SubjectSemesterResponse update(SubjectSemesterRequest request) {
+        validateUpdateSubjectSemester(request);
+        SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getId());
+        if (subjectSemester == null) {
+            throw new BadRequestException(400, "SubjectSemester không tồn tại");
+        }
+        subjectSemester.setDescription(request.getDescription());
+        subjectSemester.setSemesterId(request.getSemesterId());
+        subjectSemester.setSubjectId(request.getSubjectId());
+        subjectSemester.setSubjectSemesterCode(request.getSubjectSemesterCode());
+        return mapperFacade.map(subjectSemesterDao.store(subjectSemester), SubjectSemesterResponse.class);
+    }
+
+    public SubjectSemesterResponse getById(Long id) {
+        return mapperFacade.map(subjectSemesterDao.getById(id),SubjectSemesterResponse.class);
+    }
+
+    public boolean existSubjectSemester(Long id) {
         SubjectSemester subjectSemester = subjectSemesterDao.getById(id);
         return subjectSemester != null;
     }
-    public boolean existSubjectSemester(Long subjectId, Long semesterId){
+
+    public boolean existSubjectSemester(Long subjectId, Long semesterId) {
         SubjectSemester subjectSemester = subjectSemesterDao.getBySubjectIdAndSemesterId(subjectId, semesterId);
         return subjectSemester != null;
     }
+
     private void validateSubjectSemester(SubjectSemesterRequest request) {
         if (StringUtils.isEmpty(request.getSubjectSemesterCode())) {
             throw new BadRequestException(400, "SubjectSemesterCode không thể null");
         }
-        if (request.getSubjectId() == null ) {
+        if (request.getSubjectId() == null) {
             throw new BadRequestException(400, "Subject không thể null");
         }
         if (request.getSemesterId() == null) {
             throw new BadRequestException(400, "Semester không thể null");
         }
-        if(!subjectService.isExistSubject(request.getSubjectId())) {
+        if (!subjectService.isExistSubject(request.getSubjectId())) {
             throw new BadRequestException(400, "Subject không tồn tại");
         }
-        if(!semesterService.isExistSemester(request.getSemesterId())) {
+        if (!semesterService.isExistSemester(request.getSemesterId())) {
             throw new BadRequestException(400, "Semester không tồn tại");
         }
-        if(existSubjectSemester(request.getSubjectId(), request.getSemesterId())) {
-            throw  new BadRequestException(400, "SubjectSemester đã tồn tại");
+        if (existSubjectSemester(request.getSubjectId(), request.getSemesterId())) {
+            throw new BadRequestException(400, "SubjectSemester đã tồn tại");
+        }
+    }
+
+    private void validateUpdateSubjectSemester(SubjectSemesterRequest request) {
+        if (StringUtils.isEmpty(request.getSubjectSemesterCode())) {
+            throw new BadRequestException(400, "SubjectSemesterCode không thể null");
+        }
+        if (request.getSubjectId() == null) {
+            throw new BadRequestException(400, "Subject không thể null");
+        }
+        if (request.getSemesterId() == null) {
+            throw new BadRequestException(400, "Semester không thể null");
+        }
+        if (!subjectService.isExistSubject(request.getSubjectId())) {
+            throw new BadRequestException(400, "Subject không tồn tại");
+        }
+        if (!semesterService.isExistSemester(request.getSemesterId())) {
+            throw new BadRequestException(400, "Semester không tồn tại");
+        }
+        if (!existSubjectSemester(request.getSubjectId(), request.getSemesterId())) {
+            throw new BadRequestException(400, "SubjectSemester không tồn tại");
         }
     }
 
