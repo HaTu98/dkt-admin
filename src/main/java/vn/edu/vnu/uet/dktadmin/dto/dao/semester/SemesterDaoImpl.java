@@ -5,12 +5,16 @@ import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 import vn.edu.vnu.uet.dktadmin.dto.repository.SemesterRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class SemesterDaoImpl implements SemesterDao{
-    @Autowired
-    private SemesterRepository semesterRepository;
+    private final SemesterRepository semesterRepository;
+
+    public SemesterDaoImpl(SemesterRepository semesterRepository) {
+        this.semesterRepository = semesterRepository;
+    }
 
     @Override
     public Semester getById(Long semesterId) {
@@ -25,5 +29,20 @@ public class SemesterDaoImpl implements SemesterDao{
     @Override
     public Semester store(Semester semester) {
         return semesterRepository.save(semester);
+    }
+
+    @Override
+    public List<Semester> getAll() {
+        return semesterRepository.findAll();
+    }
+
+    @Override
+    public List<Semester> getLikeCode(String code) {
+        return semesterRepository.findBySemesterCodeContains(code);
+    }
+
+    @Override
+    public List<Semester> getLikeName(String name) {
+        return semesterRepository.findBySemesterNameContains(name);
     }
 }

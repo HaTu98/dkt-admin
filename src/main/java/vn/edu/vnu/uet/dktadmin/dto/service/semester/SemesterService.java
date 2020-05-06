@@ -10,8 +10,15 @@ import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
+import vn.edu.vnu.uet.dktadmin.dto.model.Student;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterResponse;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SemesterService {
@@ -51,6 +58,42 @@ public class SemesterService {
     public SemesterResponse getSemesterById(Long id) {
         return mapperFacade.map(semesterDao.getById(id), SemesterResponse.class);
     }
+
+    public SemesterListResponse getAll(PageBase pageBase) {
+        List<Semester> semesters = semesterDao.getAll();
+        return getListStudentPaging(semesters, pageBase);
+    }
+
+    public SemesterListResponse search(String query, PageBase pageBase) {
+        List<Semester> semesterLikeCode = semesterDao.getLikeCode(query);
+        List<Semester> semesterLikeName = semesterDao.getLikeName(query);
+        Map<Long, Semester> semesterMap = new HashMap<>();
+        for (Semester semester : semesterLikeCode) {
+            semesterMap.put(semester.getId(), semester);
+        }
+        for (Semester semester : semesterLikeName) {
+            semesterMap.put(semester.getId(), semester);
+        }
+        semesterMap = semesterMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        return getListStudentPaging(new ArrayList<>(semesterMap.values()), pageBase);
+    }
+
+    private SemesterListResponse getListStudentPaging(List<Semester> semesters,PageBase pageBase) {
+        List<Semester> semesterList = new ArrayList<>();
+        Integer page = pageBase.getPage();
+        Integer size = pageBase.getSize();
+        int total = semesters.size();
+        int maxSize = Math.min(total, size * page);
+        for (int i = size * (page - 1); i < maxSize; i++) {
+            semesterList.add(semesters.get(i));
+        }
+        PageResponse pageResponse = new PageResponse(page, size, total);
+        SemesterListResponse semesterListResponse = new SemesterListResponse(mapperFacade.mapAsList(semesterList, SemesterResponse.class));
+        semesterListResponse.setPageResponse(pageResponse);
+        return semesterListResponse;
+    }
+
 
     private Semester store(Semester semester) {
         return semesterDao.store(semester);
