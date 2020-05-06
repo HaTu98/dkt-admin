@@ -112,11 +112,10 @@ public class StudentSubjectService {
             studentSubjectList.add(studentSubject.get(i));
         }
         PageResponse pageResponse = new PageResponse(page, size, total);
-        ListStudentSubjectResponse listStudentSubjectResponse = new ListStudentSubjectResponse(
-                mapperFacade.mapAsList(studentSubject, StudentSubjectResponse.class),
+        return new ListStudentSubjectResponse(
+                mapperFacade.mapAsList(studentSubjectList, StudentSubjectResponse.class),
                 pageResponse
         );
-        return listStudentSubjectResponse;
     }
 
     private StudentSubject generateStudentSubject(StudentSubjectRequest request) {
