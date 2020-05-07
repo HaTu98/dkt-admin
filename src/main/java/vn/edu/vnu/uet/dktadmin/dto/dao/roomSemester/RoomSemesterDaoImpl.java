@@ -17,7 +17,7 @@ public class RoomSemesterDaoImpl implements RoomSemesterDao{
     }
 
     @Override
-    public RoomSemester createRoomSemester(RoomSemester roomSemester) {
+    public RoomSemester store(RoomSemester roomSemester) {
         return roomSemesterRepository.save(roomSemester);
     }
 
@@ -34,5 +34,10 @@ public class RoomSemesterDaoImpl implements RoomSemesterDao{
     @Override
     public RoomSemester getByRoomIdAndSemesterId(Long roomId, Long semesterId) {
         return  roomSemesterRepository.findByRoomIdAndSemesterId(roomId,semesterId);
+    }
+
+    @Override
+    public List<RoomSemester> getBySemesterId(Long id) {
+        return roomSemesterRepository.findBySemesterId(id);
     }
 }

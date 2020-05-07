@@ -5,8 +5,9 @@ import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
 import java.util.List;
 
 public interface RoomSemesterDao {
-    RoomSemester createRoomSemester(RoomSemester roomSemester);
+    RoomSemester store(RoomSemester roomSemester);
     List<RoomSemester> getAll();
     RoomSemester getById(Long id);
     RoomSemester getByRoomIdAndSemesterId(Long roomId, Long semesterId);
+    List<RoomSemester> getBySemesterId(Long id);
 }
