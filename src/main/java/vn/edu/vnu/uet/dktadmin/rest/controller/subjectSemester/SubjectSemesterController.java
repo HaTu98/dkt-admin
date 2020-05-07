@@ -2,8 +2,10 @@ package vn.edu.vnu.uet.dktadmin.rest.controller.subjectSemester;
 
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterResponse;
 
@@ -49,5 +51,23 @@ public class SubjectSemesterController {
             return ApiDataResponse.error();
         }
     }
+
+    @GetMapping("/semester/{id}")
+    public ApiDataResponse<SubjectSemesterResponse> getAll(
+            @PathVariable(required = false, value = "id") Long id,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    )
+    {
+        try {
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(subjectSemesterService.getSemester(id,pageBase));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
 
 }

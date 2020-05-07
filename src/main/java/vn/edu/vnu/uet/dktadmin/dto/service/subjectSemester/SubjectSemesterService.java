@@ -9,8 +9,14 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.semester.SemesterService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subject.SubjectService;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.ListSubjectSemesterResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class SubjectSemesterService {
@@ -59,6 +65,27 @@ public class SubjectSemesterService {
     public boolean existSubjectSemester(Long subjectId, Long semesterId) {
         SubjectSemester subjectSemester = subjectSemesterDao.getBySubjectIdAndSemesterId(subjectId, semesterId);
         return subjectSemester != null;
+    }
+
+    public ListSubjectSemesterResponse getSemester(Long id,PageBase pageBase) {
+        List<SubjectSemester> subjectSemesters = subjectSemesterDao.getBySemesterId(id);
+        return getSubjectSemesterPaging(subjectSemesters, pageBase);
+    }
+
+    private ListSubjectSemesterResponse getSubjectSemesterPaging(List<SubjectSemester> subjectSemesters, PageBase pageBase) {
+        List<SubjectSemester> subjectSemesterList = new ArrayList<>();
+        Integer page = pageBase.getPage();
+        Integer size = pageBase.getSize();
+        int total = subjectSemesters.size();
+        int maxSize = Math.min(total, size * page);
+        for (int i = size * (page - 1); i < maxSize; i++) {
+            subjectSemesterList.add(subjectSemesters.get(i));
+        }
+        PageResponse pageResponse = new PageResponse(page, size, total);
+        return new ListSubjectSemesterResponse(
+                mapperFacade.mapAsList(subjectSemesterList, SubjectSemesterResponse.class),
+                pageResponse
+        );
     }
 
     private void validateSubjectSemester(SubjectSemesterRequest request) {

@@ -1,11 +1,10 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.dto.repository.SubjectSemesterRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class SubjectSemesterDaoImpl implements SubjectSemesterDao {
@@ -28,5 +27,10 @@ public class SubjectSemesterDaoImpl implements SubjectSemesterDao {
     @Override
     public SubjectSemester getBySubjectIdAndSemesterId(Long subjectId, Long semesterId) {
         return subjectSemesterRepository.findBySubjectIdAndSemesterId(subjectId, semesterId);
+    }
+
+    @Override
+    public List<SubjectSemester> getBySemesterId(Long semesterId) {
+        return subjectSemesterRepository.findBySemesterId(semesterId);
     }
 }
