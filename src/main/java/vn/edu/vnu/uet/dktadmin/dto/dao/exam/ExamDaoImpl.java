@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
 import vn.edu.vnu.uet.dktadmin.dto.repository.ExamRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,5 +28,10 @@ public class ExamDaoImpl implements ExamDao {
     @Override
     public Exam getByExamCode(String examCode) {
         return examRepository.findByExamCode(examCode);
+    }
+
+    @Override
+    public List<Exam> getBySemesterId(Long semesterId) {
+        return examRepository.findBySemesterId(semesterId);
     }
 }

@@ -7,14 +7,19 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester.RoomSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
-import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
-import vn.edu.vnu.uet.dktadmin.dto.model.Room;
-import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
-import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
+import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
+import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.exam.ListExamResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ExamService {
@@ -54,6 +59,30 @@ public class ExamService {
     public boolean isExistExam(String examCode) {
         Exam exam  = examDao.getByExamCode(examCode);
         return exam != null;
+    }
+
+    public ExamResponse getById(Long id) {
+        Exam exam = examDao.getById(id);
+        return mapperFacade.map(exam, ExamResponse.class);
+    }
+
+    public ListExamResponse getBySemesterId(Long id, PageBase pageBase) {
+        List<Exam> exams = examDao.getBySemesterId(id);
+        return getExamPaging(exams, pageBase);
+    }
+
+    public ListExamResponse getExamPaging(List<Exam> exams, PageBase pageBase) {
+        List<Exam> examList =  new ArrayList<>();
+        Integer page = pageBase.getPage();
+        Integer size = pageBase.getSize();
+        int total = exams.size();
+        int maxSize = Math.min(total, size * page);
+        for (int i = size * (page - 1); i < maxSize; i++) {
+            examList.add(exams.get(i));
+        }
+        PageResponse pageResponse = new PageResponse(page, size, total);
+        ListExamResponse response = new ListExamResponse(mapperFacade.mapAsList(examList, ExamResponse.class), pageResponse);
+        return response;
     }
 
     public void validateExam(ExamRequest request){
