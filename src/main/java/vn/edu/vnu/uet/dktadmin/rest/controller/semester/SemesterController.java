@@ -42,6 +42,17 @@ public class SemesterController {
         }
     }
 
+    @PutMapping("/semester/{id}/active")
+    public ApiDataResponse<SemesterResponse> active(@PathVariable Long id) {
+        try {
+            return ApiDataResponse.ok(semesterService.active(id));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
     @GetMapping("/semester/{id}")
     public ApiDataResponse<SemesterResponse> getSemester(@PathVariable Long id) {
         try {

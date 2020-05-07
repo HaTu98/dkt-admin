@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
@@ -45,6 +46,7 @@ public class SemesterService {
     public SemesterResponse create(SemesterRequest semesterRequest) {
         validateSemester(semesterRequest);
         Semester semester = mapperFacade.map(semesterRequest, Semester.class);
+        semester.setStatus(Constant.inActive);
         return mapperFacade.map(store(semester), SemesterResponse.class);
     }
 
@@ -52,6 +54,15 @@ public class SemesterService {
     public SemesterResponse update(SemesterRequest request) {
         validateUpdateSemester(request);
         Semester semester = mapperFacade.map(request, Semester.class);
+        return mapperFacade.map(store(semester), SemesterResponse.class);
+    }
+
+    public SemesterResponse active(Long id) {
+        Semester semester = semesterDao.getById(id);
+        if (semester == null) {
+            throw new BadRequestException(400, "Semester không tồn tại");
+        }
+        semester.setStatus(Constant.active);
         return mapperFacade.map(store(semester), SemesterResponse.class);
     }
 

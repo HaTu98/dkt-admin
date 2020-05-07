@@ -16,4 +16,5 @@ public class Semester {
     private String semesterName;
     private String semesterCode;
     private String description;
+    private String status;
 }

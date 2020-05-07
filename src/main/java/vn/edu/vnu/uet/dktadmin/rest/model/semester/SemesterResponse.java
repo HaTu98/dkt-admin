@@ -18,4 +18,7 @@ public class SemesterResponse {
 
     @JsonProperty(value = "Description")
     private String description;
+
+    @JsonProperty(value = "Status")
+    private String status;
 }

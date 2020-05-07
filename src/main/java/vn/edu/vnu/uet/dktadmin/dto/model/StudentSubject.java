@@ -18,6 +18,7 @@ public class StudentSubject {
     private Long studentId;
     private Long subjectSemesterId;
     private Long semesterId;
+    private Long subjectId;
     private String status;
     private Instant createdAt;
     private Instant modifiedAt;
