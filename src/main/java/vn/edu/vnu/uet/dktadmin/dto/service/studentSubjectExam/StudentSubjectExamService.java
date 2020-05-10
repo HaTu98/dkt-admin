@@ -60,7 +60,9 @@ public class StudentSubjectExamService {
         }
         exam.setNumberOfStudentSubscribe(numberStudent);
         examDao.store(exam);
-        return mapperFacade.map(studentSubjectExamDao.store(studentSubjectExam), StudentSubjectExamResponse.class);
+        StudentSubjectExamResponse response = mapperFacade.map(studentSubjectExamDao.store(studentSubjectExam), StudentSubjectExamResponse.class);
+        response.setLocationId(exam.getLocationId());
+        return response;
     }
 
     public void validateStudentSubjectExam(StudentSubjectExamRequest request) {

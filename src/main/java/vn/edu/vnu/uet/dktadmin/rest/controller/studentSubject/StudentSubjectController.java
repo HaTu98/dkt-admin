@@ -1,9 +1,12 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.studentSubject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
+import vn.edu.vnu.uet.dktadmin.rest.controller.student.StudentController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.ListStudentSubjectResponse;
@@ -13,7 +16,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectResponse;
 @RestController
 @RequestMapping("/admin/student_subjects")
 public class StudentSubjectController {
-
+    private static final Logger log = LoggerFactory.getLogger(StudentSubjectController.class);
     private final StudentSubjectService studentSubjectService;
 
     public StudentSubjectController(StudentSubjectService studentSubjectService) {
@@ -23,11 +26,14 @@ public class StudentSubjectController {
     @PostMapping()
     public ApiDataResponse<StudentSubjectResponse> create(@RequestBody StudentSubjectRequest request) {
         try {
+            log.info("create subjectSubject : {}", request );
             StudentSubjectResponse response = studentSubjectService.create(request);
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -35,11 +41,14 @@ public class StudentSubjectController {
     @PutMapping()
     public ApiDataResponse<StudentSubjectResponse> update(@RequestBody StudentSubjectRequest request) {
         try {
+            log.info("update subjectSubject : {}", request );
             StudentSubjectResponse response = studentSubjectService.update(request);
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -51,12 +60,15 @@ public class StudentSubjectController {
             @RequestParam(required = false, value = "Page") Integer page
     ) {
         try {
+            log.info("get subject_semester id : {}", id );
             PageBase pageBase = PageUtil.validate(page, size);
             ListStudentSubjectResponse response = studentSubjectService.getBySubjectSemesterId(id,pageBase);
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -68,12 +80,15 @@ public class StudentSubjectController {
             @RequestParam(required = false, value = "Page") Integer page
     ) {
         try {
+            log.info("get by semester id : {}", id );
             PageBase pageBase = PageUtil.validate(page, size);
             ListStudentSubjectResponse response = studentSubjectService.getBySemesterId(id,pageBase);
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -81,11 +96,14 @@ public class StudentSubjectController {
     @DeleteMapping("/{id}")
     public ApiDataResponse<String> delete(@PathVariable Long id) {
         try {
+            log.info("delete  id : {}", id );
             studentSubjectService.delete(id);
             return ApiDataResponse.ok("success");
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -93,10 +111,13 @@ public class StudentSubjectController {
     @GetMapping("/{id}")
     public ApiDataResponse<StudentSubjectResponse> getById(@PathVariable Long id) {
         try {
+            log.info("get  id : {}", id );
             return ApiDataResponse.ok(studentSubjectService.getById(id));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }

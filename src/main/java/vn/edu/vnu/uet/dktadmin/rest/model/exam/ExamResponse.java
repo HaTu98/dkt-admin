@@ -19,13 +19,13 @@ public class ExamResponse {
     private String examCode;
 
     @JsonProperty(value = "StartTime")
-    private Instant startTime;
+    private String startTime;
 
-    @JsonProperty(value = "Duration")
-    private Long duration;
+    @JsonProperty(value = "EndTime")
+    private String endTime;
 
     @JsonProperty(value = "Date")
-    private Instant date;
+    private String date;
 
     @JsonProperty(value = "SubjectSemesterId")
     private Long subjectSemesterId;

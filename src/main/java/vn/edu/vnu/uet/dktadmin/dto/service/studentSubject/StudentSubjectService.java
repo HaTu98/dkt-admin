@@ -122,7 +122,7 @@ public class StudentSubjectService {
     private StudentSubject generateStudentSubject(StudentSubjectRequest request) {
         SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());
         StudentSubject studentSubject = mapperFacade.map(request, StudentSubject.class);
-        studentSubject.setSubjectId(studentSubject.getSubjectId());
+        studentSubject.setSubjectId(subjectSemester.getSubjectId());
         studentSubject.setStatus(Constant.active);
         studentSubject.setCreatedAt(Instant.now());
         studentSubject.setModifiedAt(Instant.now());

@@ -1,10 +1,13 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.studentSubjectExam;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
 import vn.edu.vnu.uet.dktadmin.dto.service.studentSubjectExam.StudentSubjectExamService;
+import vn.edu.vnu.uet.dktadmin.rest.controller.studentSubject.StudentSubjectController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.ListStudentSubjectExamResponse;
@@ -14,6 +17,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExam
 @RestController
 @RequestMapping("/admin/student_subject_exam")
 public class StudentSubjectExamController {
+    private static final Logger log = LoggerFactory.getLogger(StudentSubjectExamController.class);
     private final StudentSubjectExamService studentSubjectExamService;
 
     public StudentSubjectExamController(StudentSubjectExamService studentSubjectExamService) {
@@ -23,10 +27,13 @@ public class StudentSubjectExamController {
     @PostMapping
     public ApiDataResponse<StudentSubjectExamResponse> create(@RequestBody StudentSubjectExamRequest request) {
         try {
+            log.info("create student {}", request);
             return ApiDataResponse.ok(studentSubjectExamService.create(request));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -38,11 +45,14 @@ public class StudentSubjectExamController {
             @RequestParam(required = false, value = "Page") Integer page
     ) {
         try {
+            log.info("get by semester {}", id);
             PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(studentSubjectExamService.getBySemester(id, pageBase));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -54,11 +64,14 @@ public class StudentSubjectExamController {
             @RequestParam(required = false, value = "Page") Integer page
     ) {
         try {
+            log.info("get by subject_semester {}", id);
             PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(studentSubjectExamService.getBySubjectSemester(id, pageBase));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -66,10 +79,13 @@ public class StudentSubjectExamController {
     @GetMapping("/{id}")
     public ApiDataResponse<StudentSubjectExamResponse> get(@PathVariable Long id) {
         try {
+            log.info("get by id {}", id);
             return ApiDataResponse.ok(studentSubjectExamService.getById(id));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }

@@ -2,12 +2,16 @@ package vn.edu.vnu.uet.dktadmin.dto.service.exam;
 
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester.RoomSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
-import vn.edu.vnu.uet.dktadmin.dto.model.*;
+import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
+import vn.edu.vnu.uet.dktadmin.dto.model.Room;
+import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
+import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
@@ -15,9 +19,9 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ListExamResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +34,7 @@ public class ExamService {
     private final SubjectSemesterDao subjectSemesterDao;
     private final RoomSemesterDao roomSemesterDao;
     private final RoomDao roomDao;
+    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public ExamService(ExamDao examDao, MapperFacade mapperFacade, SubjectSemesterService subjectSemesterService, RoomSemesterService roomSemesterService, SubjectSemesterDao subjectSemesterDao, RoomSemesterDao roomSemesterDao, RoomDao roomDao) {
         this.examDao = examDao;
@@ -43,21 +48,22 @@ public class ExamService {
 
     public ExamResponse create(ExamRequest request) {
         validateExam(request);
-        Exam exam = mapperFacade.map(request, Exam.class);
-        RoomSemester roomSemester = roomSemesterDao.getById(request.getRoomSemesterId());
-        Room room = roomDao.getById(roomSemester.getRoomId());
-        SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());
-        exam.setSemesterId(subjectSemester.getSemesterId());
-        exam.setLocationId(room.getLocationId());
-        return mapperFacade.map(examDao.store(exam),ExamResponse.class);
+        Exam exam = generateExam(request);
+        Exam response = examDao.store(exam);
+        ExamResponse examResponse = mapperFacade.map(response, ExamResponse.class);
+        examResponse.setStartTime(response.getStartTime().format(format));
+        examResponse.setEndTime(response.getEndTime().format(format));
+        examResponse.setDate(response.getDate().format(format));
+        return mapperFacade.map(examResponse, ExamResponse.class);
     }
 
     public boolean isExistExam(Long examId) {
         Exam exam = examDao.getById(examId);
         return exam != null;
     }
+
     public boolean isExistExam(String examCode) {
-        Exam exam  = examDao.getByExamCode(examCode);
+        Exam exam = examDao.getByExamCode(examCode);
         return exam != null;
     }
 
@@ -72,7 +78,7 @@ public class ExamService {
     }
 
     public ListExamResponse getExamPaging(List<Exam> exams, PageBase pageBase) {
-        List<Exam> examList =  new ArrayList<>();
+        List<Exam> examList = new ArrayList<>();
         Integer page = pageBase.getPage();
         Integer size = pageBase.getSize();
         int total = exams.size();
@@ -80,12 +86,13 @@ public class ExamService {
         for (int i = size * (page - 1); i < maxSize; i++) {
             examList.add(exams.get(i));
         }
-        PageResponse pageResponse = new PageResponse(page, size, total);
-        ListExamResponse response = new ListExamResponse(mapperFacade.mapAsList(examList, ExamResponse.class), pageResponse);
-        return response;
+        return new ListExamResponse(
+                mapperFacade.mapAsList(examList, ExamResponse.class),
+                new PageResponse(page, size, total)
+        );
     }
 
-    public void validateExam(ExamRequest request){
+    public void validateExam(ExamRequest request) {
         if (request.getRoomSemesterId() == null) {
             throw new BadRequestException(400, "RoomSemester không thể null");
         }
@@ -95,11 +102,61 @@ public class ExamService {
         if (!subjectSemesterService.existSubjectSemester(request.getSubjectSemesterId())) {
             throw new BadRequestException(400, "SubjectSemester không tồn tại");
         }
-        if(!roomSemesterService.isExistRoomSemester(request.getRoomSemesterId())) {
+        if (!roomSemesterService.isExistRoomSemester(request.getRoomSemesterId())) {
             throw new BadRequestException(400, "RoomSemester không tồn tại");
         }
-        if (isExistExam(request.getExamCode())) {
-            throw new BadRequestException(400, "ExamCode đã tồn tại");
+        if (!validateConflictExam(request)) {
+            throw new BadRequestException(400, "Thời gian không hợp lệ");
         }
+    }
+
+    private Exam generateExam(ExamRequest request) {
+        Exam exam = new Exam();
+        exam.setSubjectSemesterId(request.getSubjectSemesterId());
+        exam.setRoomSemesterId(request.getRoomSemesterId());
+        exam.setNumberOfStudent(request.getNumberOfStudent() == null ? 0 : request.getNumberOfStudent());
+        exam.setNumberOfStudentSubscribe(0);
+
+        LocalDateTime startDate = LocalDateTime.parse(request.getDate(), format);
+        exam.setDate(startDate);
+        LocalDateTime startTime = LocalDateTime.parse(request.getStartTime(), format);
+        exam.setStartTime(startTime);
+        LocalDateTime endTime = LocalDateTime.parse(request.getEndTime(), format);
+        exam.setEndTime(endTime);
+        exam.setExamCode(request.getExamCode());
+
+        RoomSemester roomSemester = roomSemesterDao.getById(request.getRoomSemesterId());
+        Room room = roomDao.getById(roomSemester.getRoomId());
+        exam.setLocationId(room.getLocationId());
+
+        SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());
+        exam.setSemesterId(subjectSemester.getSemesterId());
+        return exam;
+    }
+
+
+    private boolean validateConflictExam(ExamRequest request) {
+        LocalDateTime date = LocalDateTime.parse(request.getDate(), format);
+        List<Exam> exams = examDao.getByRoomAndDate(request.getRoomSemesterId(), date);
+        if (CollectionUtils.isEmpty(exams)) {
+            return true;
+        }
+
+        LocalDateTime startTime = LocalDateTime.parse(request.getStartTime(), format);
+        LocalDateTime endTime = LocalDateTime.parse(request.getEndTime(), format);
+        for (Exam exam : exams) {
+            LocalDateTime start = exam.getStartTime();
+            LocalDateTime end = exam.getEndTime();
+            if (!startTime.isBefore(start) && !startTime.isAfter(end)) {
+                return false;
+            }
+            if (!endTime.isBefore(start) &&  !endTime.isAfter(end)) {
+                return false;
+            }
+            if (!startTime.isAfter(start) && !endTime.isBefore(end)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -1,9 +1,12 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.subjectSemester;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
+import vn.edu.vnu.uet.dktadmin.rest.controller.subject.SubjectController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterRequest;
@@ -12,7 +15,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterRespons
 @RestController
 @RequestMapping("/admin/subject_semesters")
 public class SubjectSemesterController {
-
+    private static final Logger log = LoggerFactory.getLogger(SubjectController.class);
     private final SubjectSemesterService subjectSemesterService;
 
     public SubjectSemesterController(SubjectSemesterService subjectSemesterService) {
@@ -22,10 +25,13 @@ public class SubjectSemesterController {
     @PostMapping
     public ApiDataResponse<SubjectSemesterResponse> create(@RequestBody SubjectSemesterRequest request) {
         try {
+            log.info("create subject_semesters semester : {}", request);
             return ApiDataResponse.ok(subjectSemesterService.create(request));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -33,10 +39,13 @@ public class SubjectSemesterController {
     @PutMapping
     public ApiDataResponse<SubjectSemesterResponse> update(@RequestBody SubjectSemesterRequest request) {
         try {
+            log.info("Update subject_semesters semester : {}", request);
             return ApiDataResponse.ok(subjectSemesterService.update(request));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -44,10 +53,13 @@ public class SubjectSemesterController {
     @GetMapping("/{id}")
     public ApiDataResponse<SubjectSemesterResponse> getById(@PathVariable Long id) {
         try {
+            log.info("get subject_semesters semester  id : {}", id);
             return ApiDataResponse.ok(subjectSemesterService.getById(id));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -60,11 +72,14 @@ public class SubjectSemesterController {
     )
     {
         try {
+            log.info("get semester by  semester : {}", id);
             PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(subjectSemesterService.getSemester(id,pageBase));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }

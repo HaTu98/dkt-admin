@@ -1,6 +1,7 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.student;
 
-import org.springframework.lang.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequestMapping("/admin")
 @RestController
 public class StudentController extends BaseController {
+    private static final Logger log = LoggerFactory.getLogger(StudentController.class);
     private final StudentDao studentDao;
     private final EmailValidator emailValidator;
     private final StudentService studentService;
@@ -40,10 +42,13 @@ public class StudentController extends BaseController {
     @PostMapping("/student")
     public ApiDataResponse<StudentResponse> createAccount(@RequestBody StudentRequest request) {
         try {
+            log.info("create student {}", request);
             return ApiDataResponse.ok(studentService.createStudent(request));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -51,10 +56,13 @@ public class StudentController extends BaseController {
     @PutMapping("/student")
     public ApiDataResponse<StudentResponse> updateStudent(@RequestBody StudentRequest request) {
         try {
+            log.info("update student {}", request);
             return ApiDataResponse.ok(studentService.updateStudent(request));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -68,10 +76,13 @@ public class StudentController extends BaseController {
     {
         try {
             PageBase pageRequest = PageUtil.validate(page, size);
+            log.info("get student in semester {}", semesterId);
             return ApiDataResponse.ok(studentService.getStudentInSemester(semesterId, pageRequest));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -84,11 +95,14 @@ public class StudentController extends BaseController {
     )
     {
         try {
+            log.info("get student in subject {}", subjectSemesterId);
             PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(studentService.getStudentInSubject(subjectSemesterId, pageBase));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -98,8 +112,10 @@ public class StudentController extends BaseController {
         try {
             return ApiDataResponse.ok(studentService.getAllStudent());
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -107,10 +123,13 @@ public class StudentController extends BaseController {
     @GetMapping("/student/{id}")
     public ApiDataResponse<StudentResponse> getStudent(@PathVariable Long id) {
         try {
+            log.info("get student by id :  {}", id);
             return ApiDataResponse.ok(studentService.getStudent(id));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -118,23 +137,29 @@ public class StudentController extends BaseController {
     @DeleteMapping("/student/{id}")
     public ApiDataResponse<StudentResponse> deleteStudent(@PathVariable Long id) {
         try {
+            log.info("delete student id : {}", id);
             studentService.deleteStudent(id);
             return ApiDataResponse.ok("success");
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
-        return ApiDataResponse.error();
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
         }
     }
 
     @DeleteMapping("/student/list")
     public ApiDataResponse<String> deleteListStudent(@RequestBody List<Long> id) {
         try {
+            log.info("delete student in list: {}", id);
             studentService.deleteListStudent(id);
             return ApiDataResponse.ok("success");
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
@@ -146,11 +171,14 @@ public class StudentController extends BaseController {
             @RequestParam(required = false, value = "Page") Integer page
     ) {
         try {
+            log.info("find student query : {}", query);
             PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(studentService.searchStudent(query, pageBase));
         } catch (BaseException e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }
