@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExamService {
@@ -50,11 +51,7 @@ public class ExamService {
         validateExam(request);
         Exam exam = generateExam(request);
         Exam response = examDao.store(exam);
-        ExamResponse examResponse = mapperFacade.map(response, ExamResponse.class);
-        examResponse.setStartTime(response.getStartTime().format(format));
-        examResponse.setEndTime(response.getEndTime().format(format));
-        examResponse.setDate(response.getDate().format(format));
-        return mapperFacade.map(examResponse, ExamResponse.class);
+        return getExamResponse(response);
     }
 
     public boolean isExistExam(Long examId) {
@@ -69,7 +66,7 @@ public class ExamService {
 
     public ExamResponse getById(Long id) {
         Exam exam = examDao.getById(id);
-        return mapperFacade.map(exam, ExamResponse.class);
+        return getExamResponse(exam);
     }
 
     public ListExamResponse getBySemesterId(Long id, PageBase pageBase) {
@@ -86,8 +83,12 @@ public class ExamService {
         for (int i = size * (page - 1); i < maxSize; i++) {
             examList.add(exams.get(i));
         }
+        List<ExamResponse> examResponses = new ArrayList<>();
+        for (Exam exam : examList) {
+            examResponses.add(getExamResponse(exam));
+        }
         return new ListExamResponse(
-                mapperFacade.mapAsList(examList, ExamResponse.class),
+                examResponses,
                 new PageResponse(page, size, total)
         );
     }
@@ -108,6 +109,14 @@ public class ExamService {
         if (!validateConflictExam(request)) {
             throw new BadRequestException(400, "Thời gian không hợp lệ");
         }
+    }
+
+    private ExamResponse getExamResponse(Exam exam) {
+        ExamResponse examResponse = mapperFacade.map(exam, ExamResponse.class);
+        examResponse.setStartTime(exam.getStartTime().format(format));
+        examResponse.setEndTime(exam.getEndTime().format(format));
+        examResponse.setDate(exam.getDate().format(format));
+        return examResponse;
     }
 
     private Exam generateExam(ExamRequest request) {

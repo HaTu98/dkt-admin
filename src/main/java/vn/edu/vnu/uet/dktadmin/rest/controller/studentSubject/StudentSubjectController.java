@@ -122,4 +122,22 @@ public class StudentSubjectController {
         }
     }
 
+    @GetMapping("/semester/{id}/unregistered")
+    public ApiDataResponse<StudentSubjectResponse> getStudentSubjectUnregister(
+            @PathVariable Long id,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
+        try {
+            log.info("get student subject unregistered");
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(studentSubjectService.getStudentSubjectUnregistered(id, pageBase));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
 }

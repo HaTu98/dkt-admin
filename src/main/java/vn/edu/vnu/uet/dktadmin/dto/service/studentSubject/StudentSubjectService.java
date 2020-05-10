@@ -8,6 +8,7 @@ import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam.StudentSubjectExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
@@ -20,7 +21,9 @@ import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectResponse;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class StudentSubjectService {
@@ -31,8 +34,9 @@ public class StudentSubjectService {
     private final StudentService studentService;
     private final SubjectSemesterService subjectSemesterService;
     private final AccountService accountService;
+    private final StudentSubjectExamDao studentSubjectExamDao;
 
-    public StudentSubjectService(MapperFacade mapperFacade, StudentSubjectDao studentSubjectDao, StudentDao studentDao, SubjectSemesterDao subjectSemesterDao, StudentService studentService, SubjectSemesterService subjectSemesterService, AccountService accountService) {
+    public StudentSubjectService(MapperFacade mapperFacade, StudentSubjectDao studentSubjectDao, StudentDao studentDao, SubjectSemesterDao subjectSemesterDao, StudentService studentService, SubjectSemesterService subjectSemesterService, AccountService accountService, StudentSubjectExamDao studentSubjectExamDao) {
         this.mapperFacade = mapperFacade;
         this.studentSubjectDao = studentSubjectDao;
         this.studentDao = studentDao;
@@ -40,6 +44,7 @@ public class StudentSubjectService {
         this.studentService = studentService;
         this.subjectSemesterService = subjectSemesterService;
         this.accountService = accountService;
+        this.studentSubjectExamDao = studentSubjectExamDao;
     }
 
     public StudentSubject create(StudentSubject request) {
@@ -101,6 +106,21 @@ public class StudentSubjectService {
 
     public StudentSubjectResponse getById(Long id) {
         return mapperFacade.map(studentSubjectDao.getById(id), StudentSubjectResponse.class);
+    }
+
+    public ListStudentSubjectResponse getStudentSubjectUnregistered(Long semesterId, PageBase pageBase) {
+        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getBySemesterId(semesterId);
+        List<StudentSubject> studentSubjects = studentSubjectDao.getBySemesterId(semesterId);
+        Map<Long, StudentSubject> studentSubjectMap = new HashMap<>();
+        for (StudentSubject studentSubject : studentSubjects) {
+            studentSubjectMap.put(studentSubject.getId(), studentSubject);
+        }
+        for (StudentSubjectExam studentSubjectExam : studentSubjectExams) {
+            if (studentSubjectMap.containsKey(studentSubjectExam.getStudentSubjectId())) {
+                studentSubjectMap.remove(studentSubjectExam.getId());
+            }
+        }
+        return getStudentSubjectPaging(new ArrayList<>( studentSubjectMap.values()), pageBase);
     }
 
     private ListStudentSubjectResponse getStudentSubjectPaging(List<StudentSubject> studentSubject, PageBase pageBase) {

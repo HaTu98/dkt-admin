@@ -13,12 +13,12 @@ public class PageResponse {
     @JsonProperty("Page")
     private int page;
 
-    @JsonProperty("Count")
-    private int count;
+    @JsonProperty("Total")
+    private int total;
 
-    public PageResponse(int page, int size, int count) {
+    public PageResponse(int page, int size, int total) {
         this.size = size;
         this.page = page;
-        this.count = count;
+        this.total = total;
     }
 }
