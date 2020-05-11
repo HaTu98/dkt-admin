@@ -16,6 +16,7 @@ import vn.edu.vnu.uet.dktadmin.dto.service.exam.ExamService;
 import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.ListStudentSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.ListStudentSubjectExamResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamResponse;
@@ -60,9 +61,32 @@ public class StudentSubjectExamService {
         }
         exam.setNumberOfStudentSubscribe(numberStudent);
         examDao.store(exam);
+
+        studentSubject.setIsRegistered(true);
+        studentSubjectDao.store(studentSubject);
+
         StudentSubjectExamResponse response = mapperFacade.map(studentSubjectExamDao.store(studentSubjectExam), StudentSubjectExamResponse.class);
         response.setLocationId(exam.getLocationId());
         return response;
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        StudentSubjectExam studentSubjectExam = studentSubjectExamDao.getById(id);
+        Exam exam = examDao.getById(studentSubjectExam.getExamId());
+        int numberStudent = exam.getNumberOfStudentSubscribe() == null ? 0 : exam.getNumberOfStudentSubscribe();
+        if (numberStudent == 0) {
+            exam.setNumberOfStudentSubscribe(0);
+        } else {
+            exam.setNumberOfStudentSubscribe(numberStudent - 1);
+        }
+        examDao.store(exam);
+
+        StudentSubject studentSubject = studentSubjectDao.getById(studentSubjectExam.getStudentSubjectId());
+        studentSubject.setIsRegistered(false);
+        studentSubjectDao.store(studentSubject);
+
+        studentSubjectExamDao.delete(studentSubjectExam);
     }
 
     public void validateStudentSubjectExam(StudentSubjectExamRequest request) {
@@ -114,6 +138,10 @@ public class StudentSubjectExamService {
 
     public StudentSubjectExamResponse getById(Long id) {
         return mapperFacade.map(studentSubjectExamDao.getById(id), StudentSubjectExamResponse.class);
+    }
+
+    public ListStudentSubjectResponse autoRegister(Long id) {
+        return null;
     }
 
     private ListStudentSubjectExamResponse getStudentExamPaging(List<StudentSubjectExam> studentSubjectExams, PageBase pageBase) {

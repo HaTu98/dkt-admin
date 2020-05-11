@@ -27,7 +27,7 @@ public class StudentSubjectExamController {
     @PostMapping
     public ApiDataResponse<StudentSubjectExamResponse> create(@RequestBody StudentSubjectExamRequest request) {
         try {
-            log.info("create student {}", request);
+            log.info("create studentSubjectExam {}", request);
             return ApiDataResponse.ok(studentSubjectExamService.create(request));
         } catch (BaseException e) {
             log.error(e.getMessage());
@@ -37,6 +37,22 @@ public class StudentSubjectExamController {
             return ApiDataResponse.error();
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ApiDataResponse<String> delete(@PathVariable Long id) {
+        try {
+            log.info("delete studentSubjectExam {}", id);
+            studentSubjectExamService.delete(id);
+            return ApiDataResponse.ok("Success");
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
 
     @GetMapping("/semester/{id}")
     public ApiDataResponse<ListStudentSubjectExamResponse> getBySemesterId(
@@ -81,6 +97,20 @@ public class StudentSubjectExamController {
         try {
             log.info("get by id {}", id);
             return ApiDataResponse.ok(studentSubjectExamService.getById(id));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @GetMapping("/semester/{id}/auto_register")
+    public ApiDataResponse<ListStudentSubjectExamResponse> autoRegister(@PathVariable Long id) {
+        try {
+            log.info("auto register");
+            return ApiDataResponse.ok(studentSubjectExamService.autoRegister(id));
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

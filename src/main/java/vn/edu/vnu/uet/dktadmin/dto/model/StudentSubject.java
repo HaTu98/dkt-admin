@@ -20,6 +20,7 @@ public class StudentSubject {
     private Long semesterId;
     private Long subjectId;
     private String status;
+    private Boolean isRegistered;
     private Instant createdAt;
     private Instant modifiedAt;
     private String createdBy;

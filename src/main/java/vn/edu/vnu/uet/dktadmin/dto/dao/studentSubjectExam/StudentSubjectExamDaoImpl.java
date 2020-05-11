@@ -39,4 +39,9 @@ public class StudentSubjectExamDaoImpl implements StudentSubjectExamDao {
     public List<StudentSubjectExam> getByStudentSubjectId(Long studentSubjectId) {
         return studentSubjectExamRepository.findByStudentSubjectId(studentSubjectId);
     }
+
+    @Override
+    public void delete(StudentSubjectExam studentSubjectExam) {
+        studentSubjectExamRepository.delete(studentSubjectExam);
+    }
 }
