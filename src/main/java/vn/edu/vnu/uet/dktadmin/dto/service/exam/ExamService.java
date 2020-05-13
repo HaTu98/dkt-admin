@@ -4,6 +4,7 @@ import ma.glasnost.orika.MapperFacade;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester.RoomSemesterDao;
@@ -140,6 +141,7 @@ public class ExamService {
 
         SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());
         exam.setSemesterId(subjectSemester.getSemesterId());
+        exam.setSubjectId(subjectSemester.getSubjectId());
         return exam;
     }
 
@@ -156,7 +158,10 @@ public class ExamService {
         for (Exam exam : exams) {
             LocalDateTime start = exam.getStartTime();
             LocalDateTime end = exam.getEndTime();
-            if (!startTime.isBefore(start) && !startTime.isAfter(end)) {
+            if (!Util.validateTime(start, end, startTime, endTime)) {
+                return false;
+            }
+            /*if (!startTime.isBefore(start) && !startTime.isAfter(end)) {
                 return false;
             }
             if (!endTime.isBefore(start) &&  !endTime.isAfter(end)) {
@@ -164,7 +169,7 @@ public class ExamService {
             }
             if (!startTime.isAfter(start) && !endTime.isBefore(end)) {
                 return false;
-            }
+            }*/
         }
         return true;
     }

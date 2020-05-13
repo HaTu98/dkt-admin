@@ -1,5 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam;
 
+import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface StudentSubjectExamDao {
     List<StudentSubjectExam> getBySemesterId(Long semesterId);
     List<StudentSubjectExam> getByStudentSubjectId(Long studentSubjectId);
     void delete(StudentSubjectExam studentSubjectExam);
+    List<StudentSubjectExam> getByStudentIdAndSemesterId(Long studentId, Long semesterId);
 }

@@ -1,5 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.common.utilities;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,5 +77,17 @@ public class Util {
         return removeAccent(camel)
                 .replaceAll(" ", "_")
                 .toLowerCase();
+    }
+    public static boolean validateTime(LocalDateTime start, LocalDateTime end, LocalDateTime startTime, LocalDateTime endTime) {
+        if (!startTime.isBefore(start) && !startTime.isAfter(end)) {
+            return false;
+        }
+        if (!endTime.isBefore(start) &&  !endTime.isAfter(end)) {
+            return false;
+        }
+        if (!startTime.isAfter(start) && !endTime.isBefore(end)) {
+            return false;
+        }
+        return true;
     }
 }

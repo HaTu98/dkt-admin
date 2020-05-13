@@ -25,6 +25,7 @@ public class Exam {
     private Long subjectSemesterId;
     private Long roomSemesterId;
     private Long semesterId;
+    private Long subjectId;
     private Long locationId;
     private LocalDateTime endTime;
 }

@@ -1,9 +1,12 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectRepository;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -47,6 +50,25 @@ public class StudentSubjectDaoImpl implements StudentSubjectDao {
     @Override
     public void delete(StudentSubject studentSubject) {
         studentSubjectRepository.delete(studentSubject);
+    }
+
+    @Override
+    public List<StudentSubject> getByIsNotRegistered(Long id) {
+        List<StudentSubject> studentSubjects = studentSubjectRepository.findBySemesterIdAndIsRegisteredIsFalse(id);
+        if (CollectionUtils.isEmpty(studentSubjects)) {
+            return new ArrayList<>();
+        }
+        return studentSubjects;
+    }
+
+    @Override
+    public List<StudentSubject> getByIsRegisteredAndStudentId(Long id, Long studentId) {
+        List<StudentSubject> studentSubjects = studentSubjectRepository.
+                findBySemesterIdAndStudentIdAndIsRegisteredIsTrue(id,studentId);
+        if (CollectionUtils.isEmpty(studentSubjects)) {
+            return new ArrayList<>();
+        }
+        return studentSubjects;
     }
 
 

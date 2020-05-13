@@ -5,13 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam.StudentSubjectExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
-import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectExamRepository;
 import vn.edu.vnu.uet.dktadmin.dto.service.exam.ExamService;
 import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
@@ -21,8 +21,11 @@ import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.ListStudentSubject
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamResponse;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentSubjectExamService {
@@ -140,8 +143,71 @@ public class StudentSubjectExamService {
         return mapperFacade.map(studentSubjectExamDao.getById(id), StudentSubjectExamResponse.class);
     }
 
-    public ListStudentSubjectResponse autoRegister(Long id) {
+    public void autoRegister(Long semesterId) {
+        List<StudentSubject> studentSubjects = studentSubjectDao.getByIsNotRegistered(semesterId);
+        for (StudentSubject studentSubject : studentSubjects) {
+            Exam exam = autoGetRegisterSubject(studentSubject);
+            StudentSubjectExam studentSubjectExam = new StudentSubjectExam();
+            studentSubjectExam.setStatus(Constant.active);
+            studentSubjectExam.setSemesterId(exam.getSemesterId());
+            studentSubjectExam.setExamId(exam.getId());
+            studentSubjectExam.setStudentSubjectId(studentSubject.getId());
+            studentSubjectExam.setStudentId(studentSubject.getStudentId());
+            storeStudentSubjectExam(studentSubject, exam, studentSubjectExam);
+        }
+    }
+
+    @Transactional
+    public StudentSubjectExam storeStudentSubjectExam(StudentSubject studentSubject, Exam exam, StudentSubjectExam studentSubjectExam) {
+        Integer numberStudent = exam.getNumberOfStudentSubscribe();
+        if (numberStudent == null) {
+            numberStudent = 1;
+        } else {
+            numberStudent += 1;
+        }
+        exam.setNumberOfStudentSubscribe(numberStudent);
+        examDao.store(exam);
+
+        studentSubject.setIsRegistered(true);
+        studentSubjectDao.store(studentSubject);
+
+        return studentSubjectExamDao.store(studentSubjectExam);
+    }
+
+    private Exam autoGetRegisterSubject(StudentSubject studentSubject) {
+        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao
+                .getByStudentIdAndSemesterId(studentSubject.getStudentId(), studentSubject.getSemesterId());
+        List<Long> listExamId = studentSubjectExams.stream()
+                .map(StudentSubjectExam::getExamId)
+                .collect(Collectors.toList());
+        List<Exam> examRegistered = examDao.getExamInListId(listExamId);
+        List<Exam> exams = examDao.getBySemesterIdAndSubjectId(studentSubject.getSemesterId(), studentSubject.getSubjectId());
+        List<Exam> slotExams = exams.stream()
+                .filter(exam -> exam.getNumberOfStudentSubscribe() < exam.getNumberOfStudent())
+                .collect(Collectors.toList());
+        slotExams = slotExams.stream()
+                .sorted(Comparator.comparingInt(Exam::getNumberOfStudentSubscribe))
+                .collect(Collectors.toList());
+        return getSlotExam(slotExams, examRegistered);
+    }
+
+    private Exam getSlotExam(List<Exam> slotExams, List<Exam> examRegistered) {
+        for (Exam exam : slotExams) {
+            if (checkSlotValid(exam,examRegistered))
+                return exam;
+        }
         return null;
+    }
+
+    private boolean checkSlotValid(Exam slotExam, List<Exam> examRegistered) {
+        LocalDateTime start = slotExam.getStartTime();
+        LocalDateTime end = slotExam.getEndTime();
+        for (Exam exam : examRegistered) {
+            LocalDateTime startTime = exam.getStartTime();
+            LocalDateTime endTime = exam.getEndTime();
+            if (!Util.validateTime(start, end, startTime, endTime)) return false;
+        }
+        return true;
     }
 
     private ListStudentSubjectExamResponse getStudentExamPaging(List<StudentSubjectExam> studentSubjectExams, PageBase pageBase) {
@@ -154,10 +220,9 @@ public class StudentSubjectExamService {
             studentSubjectExamList.add(studentSubjectExams.get(i));
         }
         PageResponse pageResponse = new PageResponse(page, size, total);
-        ListStudentSubjectExamResponse studentSubjectExamResponse = new ListStudentSubjectExamResponse(
+        return new ListStudentSubjectExamResponse(
                 mapperFacade.mapAsList(studentSubjectExamList, StudentSubjectExamResponse.class),
                 pageResponse
         );
-        return studentSubjectExamResponse;
     }
 }

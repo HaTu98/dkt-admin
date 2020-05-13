@@ -11,4 +11,6 @@ public interface StudentSubjectRepository extends JpaRepository<StudentSubject, 
     StudentSubject findByStudentIdAndSubjectSemesterId(Long studentId, Long subjectSemesterId);
     List<StudentSubject> findBySemesterId (Long semesterId);
     List<StudentSubject> findBySubjectSemesterId (Long subjectSemesterId);
+    List<StudentSubject> findBySemesterIdAndIsRegisteredIsFalse(Long semesterId);
+    List<StudentSubject> findBySemesterIdAndStudentIdAndIsRegisteredIsTrue(Long semesterId, Long studentId);
 }

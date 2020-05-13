@@ -106,11 +106,12 @@ public class StudentSubjectExamController {
         }
     }
 
-    @GetMapping("/semester/{id}/auto_register")
+    @PostMapping("/semester/{id}/auto_register")
     public ApiDataResponse<ListStudentSubjectExamResponse> autoRegister(@PathVariable Long id) {
         try {
             log.info("auto register");
-            return ApiDataResponse.ok(studentSubjectExamService.autoRegister(id));
+            studentSubjectExamService.autoRegister(id);
+            return ApiDataResponse.ok("success");
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

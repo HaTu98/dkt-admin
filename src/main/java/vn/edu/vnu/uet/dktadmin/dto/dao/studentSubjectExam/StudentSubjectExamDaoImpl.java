@@ -1,6 +1,7 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam;
 
 import org.springframework.stereotype.Service;
+import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectExamRepository;
 
@@ -43,5 +44,10 @@ public class StudentSubjectExamDaoImpl implements StudentSubjectExamDao {
     @Override
     public void delete(StudentSubjectExam studentSubjectExam) {
         studentSubjectExamRepository.delete(studentSubjectExam);
+    }
+
+    @Override
+    public List<StudentSubjectExam> getByStudentIdAndSemesterId(Long studentId, Long semesterId) {
+        return studentSubjectExamRepository.findByStudentIdAndSemesterId(studentId, semesterId);
     }
 }
