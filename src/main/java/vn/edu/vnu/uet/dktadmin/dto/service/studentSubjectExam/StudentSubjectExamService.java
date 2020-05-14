@@ -17,6 +17,7 @@ import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.ListStudentSubjectResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.AutoRegisterResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.ListStudentSubjectExamResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamResponse;
@@ -143,18 +144,25 @@ public class StudentSubjectExamService {
         return mapperFacade.map(studentSubjectExamDao.getById(id), StudentSubjectExamResponse.class);
     }
 
-    public void autoRegister(Long semesterId) {
+    public AutoRegisterResponse autoRegister(Long semesterId) {
+        int success = 0, fail = 0;
         List<StudentSubject> studentSubjects = studentSubjectDao.getByIsNotRegistered(semesterId);
         for (StudentSubject studentSubject : studentSubjects) {
-            Exam exam = autoGetRegisterSubject(studentSubject);
-            StudentSubjectExam studentSubjectExam = new StudentSubjectExam();
-            studentSubjectExam.setStatus(Constant.active);
-            studentSubjectExam.setSemesterId(exam.getSemesterId());
-            studentSubjectExam.setExamId(exam.getId());
-            studentSubjectExam.setStudentSubjectId(studentSubject.getId());
-            studentSubjectExam.setStudentId(studentSubject.getStudentId());
-            storeStudentSubjectExam(studentSubject, exam, studentSubjectExam);
+            try {
+                Exam exam = autoGetRegisterSubject(studentSubject);
+                StudentSubjectExam studentSubjectExam = new StudentSubjectExam();
+                studentSubjectExam.setStatus(Constant.active);
+                studentSubjectExam.setSemesterId(exam.getSemesterId());
+                studentSubjectExam.setExamId(exam.getId());
+                studentSubjectExam.setStudentSubjectId(studentSubject.getId());
+                studentSubjectExam.setStudentId(studentSubject.getStudentId());
+                storeStudentSubjectExam(studentSubject, exam, studentSubjectExam);
+                success += 1;
+            } catch (Exception e) {
+                fail += 1;
+            }
         }
+        return new AutoRegisterResponse(success, fail);
     }
 
     @Transactional

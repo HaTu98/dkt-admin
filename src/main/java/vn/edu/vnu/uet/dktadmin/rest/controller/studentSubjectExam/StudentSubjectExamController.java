@@ -10,6 +10,7 @@ import vn.edu.vnu.uet.dktadmin.dto.service.studentSubjectExam.StudentSubjectExam
 import vn.edu.vnu.uet.dktadmin.rest.controller.studentSubject.StudentSubjectController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
+import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.AutoRegisterResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.ListStudentSubjectExamResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamResponse;
@@ -107,11 +108,10 @@ public class StudentSubjectExamController {
     }
 
     @PostMapping("/semester/{id}/auto_register")
-    public ApiDataResponse<ListStudentSubjectExamResponse> autoRegister(@PathVariable Long id) {
+    public ApiDataResponse<AutoRegisterResponse> autoRegister(@PathVariable Long id) {
         try {
             log.info("auto register");
-            studentSubjectExamService.autoRegister(id);
-            return ApiDataResponse.ok("success");
+            return ApiDataResponse.ok(studentSubjectExamService.autoRegister(id));
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
