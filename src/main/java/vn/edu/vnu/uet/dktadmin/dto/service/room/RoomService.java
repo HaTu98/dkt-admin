@@ -86,16 +86,21 @@ public class RoomService {
 
 
     private RoomListResponse getListRoomPaging(List<Room> rooms, PageBase pageBase) {
-        List<Room> roomList = new ArrayList<>();
+        List<Location> locations = locationDao.getAll();
+        Map<Long, String> locationMap = locations.stream()
+                .collect(Collectors.toMap(Location::getId, Location::getLocationName));
+        List<RoomResponse> roomResponses = new ArrayList<>();
         Integer size = pageBase.getSize();
         Integer page = pageBase.getPage();
         int total = rooms.size();
         int maxSize = Math.min(total, size * page);
         for (int i = size * (page - 1); i < maxSize; i++) {
-            roomList.add(rooms.get(i));
+            RoomResponse response = mapperFacade.map(rooms.get(i), RoomResponse.class);
+            response.setLocation(locationMap.get(rooms.get(i).getLocationId()));
+            roomResponses.add(response);
         }
         PageResponse pageResponse = new PageResponse(page, size, total);
-        return new RoomListResponse(mapperFacade.mapAsList(roomList, RoomResponse.class), pageResponse);
+        return new RoomListResponse(roomResponses, pageResponse);
     }
 
     public boolean isExistRoom(Long roomId){
