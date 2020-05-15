@@ -40,7 +40,7 @@ public class JwtTokenHelper {
         String token = null;
         admin.setRole("Admin");
         token = Jwts.builder()
-                .claim("FULL_NAME", admin.getFullName())
+                .claim(FULL_NAME, admin.getFullName())
                 .claim(USERNAME, admin.getUsername())
                 .claim(EMAIL, admin.getEmail())
                 .claim(ROLE, admin.getRole())
