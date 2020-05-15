@@ -59,7 +59,7 @@ public class RoomDaoImpl implements RoomDao {
     public List<Room> getAllRoom() {
         List<Room> rooms = roomRepository.findAll();
         if (CollectionUtils.isEmpty(rooms))
-            return null;
+            return new ArrayList<>();
         return rooms;
     }
 }
