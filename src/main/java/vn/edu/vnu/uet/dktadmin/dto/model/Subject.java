@@ -17,4 +17,5 @@ public class Subject {
     private String subjectName;
     private String subjectCode;
     private Integer numberOfCredit;
+    private String description;
 }

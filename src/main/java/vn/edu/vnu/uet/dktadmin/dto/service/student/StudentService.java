@@ -119,12 +119,9 @@ public class StudentService {
         }
     }
 
-    public StudentListResponse getAllStudent() {
+    public StudentListResponse getAllStudent(PageBase pageBase) {
         List<Student> listStudent = studentDao.getAll();
-        List<StudentResponse> studentResponses = listStudent.stream().
-                map(student -> mapperFacade.map(student, StudentResponse.class)).
-                collect(Collectors.toList());
-        return new StudentListResponse(studentResponses);
+        return getListStudentPaging(listStudent,pageBase);
     }
 
     public StudentResponse getStudent(Long id) {

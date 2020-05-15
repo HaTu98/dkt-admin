@@ -107,10 +107,15 @@ public class StudentController extends BaseController {
         }
     }
 
-    @GetMapping("/student")
-    public ApiDataResponse<StudentListResponse> getAllStudent() {
+    @GetMapping("/student/all")
+    public ApiDataResponse<StudentListResponse> getAllStudent(
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
         try {
-            return ApiDataResponse.ok(studentService.getAllStudent());
+            log.info("get all student}");
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(studentService.getAllStudent(pageBase));
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

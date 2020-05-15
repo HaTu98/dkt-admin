@@ -18,4 +18,7 @@ public class SubjectRequest {
 
     @JsonProperty(value = "SubjectName")
     private String subjectName;
+
+    @JsonProperty(value = "Description")
+    private String description;
 }
