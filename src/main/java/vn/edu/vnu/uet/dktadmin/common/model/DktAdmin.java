@@ -10,6 +10,7 @@ import lombok.Setter;
 public class DktAdmin {
     private Long id;
     private String username;
+    private String fullName;
     private String email;
     private String role;
 }
