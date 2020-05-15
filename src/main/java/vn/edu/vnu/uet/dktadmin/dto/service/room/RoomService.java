@@ -40,7 +40,9 @@ public class RoomService {
         }
         Room room = mapperFacade.map(request, Room.class);
         room.setLocationId(location.getId());
-        return mapperFacade.map(roomDao.store(room), RoomResponse.class);
+        RoomResponse response = mapperFacade.map(roomDao.store(room), RoomResponse.class);
+        response.setLocation(location.getLocationName());
+        return response;
     }
 
     public RoomListResponse getAllRoom(PageBase page) {

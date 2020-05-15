@@ -38,7 +38,11 @@ public class StudentDaoImpl implements StudentDao {
 
     @Override
     public List<Student> getAll() {
-        return studentRepository.findAll();
+        List<Student> students = studentRepository.findAll();
+        if (CollectionUtils.isEmpty(students)) {
+            return new ArrayList<>();
+        }
+        return students;
     }
 
     @Override
