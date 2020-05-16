@@ -16,6 +16,8 @@ import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomResponse;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin")
 public class RoomController extends BaseController {
@@ -110,6 +112,21 @@ public class RoomController extends BaseController {
         try {
             log.info("check exist Room");
             return ApiDataResponse.ok(roomService.checkExistRoom(checkExistRequest));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @DeleteMapping("/room/list")
+    public ApiDataResponse<String> deleteListRoom(@RequestBody List<Long> id) {
+        try {
+            log.info("delete Room in list: {}", id);
+            roomService.deleteListRoom(id);
+            return ApiDataResponse.ok("success");
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

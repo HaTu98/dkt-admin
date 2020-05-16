@@ -10,6 +10,7 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Location;
 import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
+import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.service.location.LocationService;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
@@ -102,6 +103,11 @@ public class RoomService {
             return false;
         }
         throw new BadRequestException(400, "Mode không tồn tại");
+    }
+
+    public void deleteListRoom(List<Long> ids) {
+        List<Room> rooms = roomDao.getRoomInList(ids);
+        roomDao.deleteRooms(rooms);
     }
 
     private RoomListResponse getListRoomPaging(List<Room> rooms, PageBase pageBase) {

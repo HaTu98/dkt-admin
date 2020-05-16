@@ -12,4 +12,6 @@ public interface RoomDao {
     Room getByRoomCode(String roomCode);
     Room getById(Long id);
     List<Room> getAllRoom();
+    List<Room> getRoomInList(List<Long> id);
+    void deleteRooms(List<Room> rooms);
 }

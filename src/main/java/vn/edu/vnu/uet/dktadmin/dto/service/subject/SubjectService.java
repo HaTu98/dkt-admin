@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
@@ -92,6 +93,11 @@ public class SubjectService {
             return false;
         }
         throw new BadRequestException(400, "Mode không tồn tại");
+    }
+
+    public void deleteListSubject(List<Long> ids) {
+        List<Subject> semesters = subjectDao.getByIdIn(ids);
+        subjectDao.deleteListSubject(semesters);
     }
 
     private ListSubjectResponse pagingSubject(List<Subject> subjects, PageBase pageRequest) {

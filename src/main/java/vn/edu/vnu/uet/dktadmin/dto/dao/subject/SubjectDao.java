@@ -12,4 +12,6 @@ public interface SubjectDao {
     List<Subject> getAll() ;
     List<Subject> getLikeName(String name);
     List<Subject> getLikeCode(String code);
+    List<Subject> getByIdIn(List<Long> id);
+    void deleteListSubject(List<Subject> subjects);
 }

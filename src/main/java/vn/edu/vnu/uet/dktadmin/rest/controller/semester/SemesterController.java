@@ -14,6 +14,8 @@ import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterResponse;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin")
 public class SemesterController {
@@ -120,6 +122,21 @@ public class SemesterController {
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
+    @DeleteMapping("/semester/list")
+    public ApiDataResponse<String> deleteListSemester(@RequestBody List<Long> id) {
+        try {
+            log.info("delete Room in list: {}", id);
+            semesterService.deleteListSemester(id);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }

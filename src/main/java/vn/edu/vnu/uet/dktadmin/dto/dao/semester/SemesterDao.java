@@ -11,4 +11,6 @@ public interface SemesterDao {
     List<Semester> getAll();
     List<Semester> getLikeCode(String code);
     List<Semester> getLikeName(String name);
+    List<Semester> getSemesterIdIn(List<Long> ids);
+    void deleteSemester(List<Semester> semesters);
 }

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
@@ -103,6 +104,11 @@ public class SemesterService {
         semesterMap = semesterMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         return getListStudentPaging(new ArrayList<>(semesterMap.values()), pageBase);
+    }
+
+    public void deleteListSemester(List<Long> ids) {
+        List<Semester> semesters = semesterDao.getSemesterIdIn(ids);
+        semesterDao.deleteSemester(semesters);
     }
 
     private Semester generateSemester(SemesterRequest request) {

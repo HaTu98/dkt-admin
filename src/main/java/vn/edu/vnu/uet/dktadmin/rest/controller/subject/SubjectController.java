@@ -14,6 +14,8 @@ import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
 
+import java.util.List;
+
 @RequestMapping("/admin")
 @RestController
 public class SubjectController {
@@ -109,6 +111,21 @@ public class SubjectController {
         try {
             log.info("check exist Subject");
             return ApiDataResponse.ok(subjectService.checkExistSubject(checkExistRequest));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @DeleteMapping("/subject/list")
+    public ApiDataResponse<String> deleteListSubject(@RequestBody List<Long> id) {
+        try {
+            log.info("delete subject in list: {}", id);
+            subjectService.deleteListSubject(id);
+            return ApiDataResponse.ok("success");
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

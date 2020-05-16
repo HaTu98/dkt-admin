@@ -45,4 +45,14 @@ public class SemesterDaoImpl implements SemesterDao{
     public List<Semester> getLikeName(String name) {
         return semesterRepository.findBySemesterNameContains(name);
     }
+
+    @Override
+    public List<Semester> getSemesterIdIn(List<Long> ids) {
+        return semesterRepository.findByIdIn(ids);
+    }
+
+    @Override
+    public void deleteSemester(List<Semester> semesters) {
+        semesterRepository.deleteAll(semesters);
+    }
 }

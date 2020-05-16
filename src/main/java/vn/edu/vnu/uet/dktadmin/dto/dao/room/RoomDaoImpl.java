@@ -62,4 +62,18 @@ public class RoomDaoImpl implements RoomDao {
             return new ArrayList<>();
         return rooms;
     }
+
+    @Override
+    public List<Room> getRoomInList(List<Long> id) {
+        List<Room> rooms = roomRepository.findByIdIn(id);
+        if (CollectionUtils.isEmpty(rooms)) {
+            return new ArrayList<>();
+        }
+        return rooms;
+    }
+
+    @Override
+    public void deleteRooms(List<Room> rooms) {
+        roomRepository.deleteAll(rooms);
+    }
 }

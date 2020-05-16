@@ -15,4 +15,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findByRoomCodeContains(String code);
 
     List<Room> findByRoomNameContains(String name);
+
+    List<Room> findByIdIn(List<Long> id);
 }
