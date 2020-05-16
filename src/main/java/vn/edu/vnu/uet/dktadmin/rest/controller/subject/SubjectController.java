@@ -8,6 +8,7 @@ import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.subject.SubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.studentSubjectExam.StudentSubjectExamController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
@@ -94,6 +95,20 @@ public class SubjectController {
             log.info("get subject search query : {}", query);
             PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(subjectService.searchSubject(query, pageBase));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @PostMapping("/subject/check_exist")
+    public ApiDataResponse existSubject (@RequestBody CheckExistRequest checkExistRequest) {
+        try {
+            log.info("check exist Subject");
+            return ApiDataResponse.ok(subjectService.checkExistSubject(checkExistRequest));
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

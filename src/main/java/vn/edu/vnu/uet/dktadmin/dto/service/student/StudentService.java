@@ -20,6 +20,7 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
+import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
@@ -269,6 +270,23 @@ public class StudentService {
         return getListStudentPaging(
                 new ArrayList<>(studentMap.values()), pageBase
         );
+    }
+
+    public Boolean checkExistStudent(CheckExistRequest checkExistRequest) {
+        if (Constant.ADD.equalsIgnoreCase(checkExistRequest.getMode())) {
+            Student student = studentDao.getByStudentCode(checkExistRequest.getCode());
+            return student == null;
+        } else if (Constant.EDIT.equalsIgnoreCase(checkExistRequest.getMode())){
+            Student student = studentDao.getByStudentCode(checkExistRequest.getCode());
+            Student studentById = studentDao.getById(checkExistRequest.getId());
+            if (student == null) return false;
+            if (studentById == null) return true;
+            if (student.getStudentCode().equals(studentById.getStudentCode())) {
+                return true;
+            }
+            return false;
+        }
+        throw new BadRequestException(400, "Mode không tồn tại");
     }
 
     private Student generateStudent(StudentRequest studentRequest) {

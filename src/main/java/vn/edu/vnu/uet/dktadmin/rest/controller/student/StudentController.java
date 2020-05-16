@@ -13,6 +13,7 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
@@ -179,6 +180,20 @@ public class StudentController extends BaseController {
             log.info("find student query : {}", query);
             PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(studentService.searchStudent(query, pageBase));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @PostMapping("/student/check_exist")
+    public ApiDataResponse existStudent (@RequestBody CheckExistRequest checkExistRequest) {
+        try {
+            log.info("check exist student");
+            return ApiDataResponse.ok(studentService.checkExistStudent(checkExistRequest));
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

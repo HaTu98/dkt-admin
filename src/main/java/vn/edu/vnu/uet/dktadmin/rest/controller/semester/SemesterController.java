@@ -1,10 +1,14 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.semester;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.semester.SemesterService;
+import vn.edu.vnu.uet.dktadmin.rest.controller.student.StudentController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterRequest;
@@ -13,7 +17,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterResponse;
 @RestController
 @RequestMapping("/admin")
 public class SemesterController {
-
+    private static final Logger log = LoggerFactory.getLogger(SemesterController.class);
     private final SemesterService semesterService;
 
     public SemesterController(SemesterService semesterService) {
@@ -49,6 +53,31 @@ public class SemesterController {
         } catch (BaseException e) {
             return ApiDataResponse.error(e.getCode(), e.getMessage());
         } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
+    @PutMapping("semester/{id}/done")
+    public ApiDataResponse<SemesterResponse>  done(@PathVariable Long id) {
+        try {
+            return ApiDataResponse.ok(semesterService.done(id));
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
+    }
+
+    @PostMapping("/semester/check_exist")
+    public ApiDataResponse existStudent (@RequestBody CheckExistRequest checkExistRequest) {
+        try {
+            log.info("check exist student");
+            return ApiDataResponse.ok(semesterService.checkExistSemester(checkExistRequest));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
             return ApiDataResponse.error();
         }
     }

@@ -19,6 +19,15 @@ public class SemesterResponse {
     @JsonProperty(value = "Description")
     private String description;
 
+    @JsonProperty(value = "StartDate")
+    private String startDate;
+
+    @JsonProperty(value = "EndDate")
+    private String endDate;
+
+    @JsonProperty(value = "Year")
+    private String year;
+
     @JsonProperty(value = "Status")
-    private String status;
+    private Integer status;
 }

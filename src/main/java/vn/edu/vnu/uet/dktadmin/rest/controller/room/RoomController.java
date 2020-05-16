@@ -10,6 +10,7 @@ import vn.edu.vnu.uet.dktadmin.dto.service.room.RoomService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
 import vn.edu.vnu.uet.dktadmin.rest.controller.exam.ExamController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomRequest;
@@ -104,5 +105,18 @@ public class RoomController extends BaseController {
         }
     }
 
+    @PostMapping("/room/check_exist")
+    public ApiDataResponse existStudent (@RequestBody CheckExistRequest checkExistRequest) {
+        try {
+            log.info("check exist Room");
+            return ApiDataResponse.ok(roomService.checkExistRoom(checkExistRequest));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
 
 }

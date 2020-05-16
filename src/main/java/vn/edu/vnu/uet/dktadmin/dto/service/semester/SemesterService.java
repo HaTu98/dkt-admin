@@ -2,22 +2,22 @@ package vn.edu.vnu.uet.dktadmin.dto.service.semester;
 
 import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
-import vn.edu.vnu.uet.dktadmin.common.exception.FormValidateException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
+import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.semester.SemesterResponse;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +26,7 @@ public class SemesterService {
     private final SemesterDao semesterDao;
 
     private final MapperFacade mapperFacade;
+    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public SemesterService(MapperFacade mapperFacade, SemesterDao semesterDao) {
         this.mapperFacade = mapperFacade;
@@ -45,16 +46,21 @@ public class SemesterService {
     @Transactional
     public SemesterResponse create(SemesterRequest semesterRequest) {
         validateSemester(semesterRequest);
-        Semester semester = mapperFacade.map(semesterRequest, Semester.class);
-        semester.setStatus(Constant.inActive);
-        return mapperFacade.map(store(semester), SemesterResponse.class);
+        Semester semester = generateSemester(semesterRequest);
+        semester.setStatus(Constant.UNREGISTERED);
+
+        return generateResponse(store(semester));
     }
 
     @Transactional
     public SemesterResponse update(SemesterRequest request) {
         validateUpdateSemester(request);
-        Semester semester = mapperFacade.map(request, Semester.class);
-        return mapperFacade.map(store(semester), SemesterResponse.class);
+        Semester semester = generateSemester(request);
+        Semester semesterDB = semesterDao.getById(request.getId());
+        semester.setStatus(semesterDB.getStatus());
+        semester.setId(request.getId());
+
+        return generateResponse(semesterDao.store(semester));
     }
 
     public SemesterResponse active(Long id) {
@@ -62,12 +68,21 @@ public class SemesterService {
         if (semester == null) {
             throw new BadRequestException(400, "Semester không tồn tại");
         }
-        semester.setStatus(Constant.active);
+        semester.setStatus(Constant.REGISTERING);
+        return mapperFacade.map(store(semester), SemesterResponse.class);
+    }
+
+    public SemesterResponse done(Long id) {
+        Semester semester = semesterDao.getById(id);
+        if (semester == null) {
+            throw new BadRequestException(400, "Semester không tồn tại");
+        }
+        semester.setStatus(Constant.REGISTERED);
         return mapperFacade.map(store(semester), SemesterResponse.class);
     }
 
     public SemesterResponse getSemesterById(Long id) {
-        return mapperFacade.map(semesterDao.getById(id), SemesterResponse.class);
+        return generateResponse(semesterDao.getById(id));
     }
 
     public SemesterListResponse getAll(PageBase pageBase) {
@@ -90,6 +105,20 @@ public class SemesterService {
         return getListStudentPaging(new ArrayList<>(semesterMap.values()), pageBase);
     }
 
+    private Semester generateSemester(SemesterRequest request) {
+        Semester semester = new Semester();
+        semester.setSemesterCode(request.getSemesterCode());
+        semester.setSemesterName(request.getSemesterName());
+        semester.setDescription(request.getDescription());
+        semester.setYear(request.getYear());
+        LocalDateTime startDate = LocalDateTime.parse(request.getStartDate(), format);
+        semester.setStartDate(startDate);
+        LocalDateTime endDate = LocalDateTime.parse(request.getEndDate(), format);
+        semester.setEndDate(endDate);
+
+        return semester;
+    }
+
     private SemesterListResponse getListStudentPaging(List<Semester> semesters,PageBase pageBase) {
         List<Semester> semesterList = new ArrayList<>();
         Integer page = pageBase.getPage();
@@ -105,9 +134,33 @@ public class SemesterService {
         return semesterListResponse;
     }
 
+    public Boolean checkExistSemester(CheckExistRequest checkExistRequest) {
+        if (Constant.ADD.equalsIgnoreCase(checkExistRequest.getMode())) {
+            Semester semester = semesterDao.getBySemesterCode(checkExistRequest.getCode());
+            return semester == null;
+        } else if (Constant.EDIT.equalsIgnoreCase(checkExistRequest.getMode())){
+            Semester semester = semesterDao.getBySemesterCode(checkExistRequest.getCode());
+            Semester semesterById = semesterDao.getById(checkExistRequest.getId());
+            if (semester == null) return false;
+            if (semesterById == null) return true;
+            if (semester.getSemesterCode().equals(semesterById.getSemesterCode())) {
+                return true;
+            }
+            return false;
+        }
+        throw new BadRequestException(400, "Mode không tồn tại");
+    }
 
     private Semester store(Semester semester) {
         return semesterDao.store(semester);
+    }
+
+    private SemesterResponse generateResponse(Semester semester) {
+        SemesterResponse semesterResponse = mapperFacade.map(semester, SemesterResponse.class);
+        semesterResponse.setStartDate(semester.getStartDate().format(format));
+        semesterResponse.setEndDate(semester.getEndDate().format(format));
+        semesterResponse.setStatus(semester.getStatus());
+        return semesterResponse;
     }
 
     private void validateSemester(SemesterRequest request) {

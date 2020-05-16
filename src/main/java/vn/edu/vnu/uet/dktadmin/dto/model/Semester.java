@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,6 +16,9 @@ public class Semester {
     private Long id;
     private String semesterName;
     private String semesterCode;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private Integer year;
     private String description;
-    private String status;
+    private Integer status;
 }

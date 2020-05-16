@@ -11,7 +11,7 @@ public class SubjectResponse {
     private String id;
 
     @JsonProperty(value = "NumberOfCredit")
-    private String numberOfCredit;
+    private Integer numberOfCredit;
 
     @JsonProperty(value = "SubjectCode")
     private String subjectCode;

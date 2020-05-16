@@ -18,6 +18,15 @@ public class SemesterRequest {
     @JsonProperty(value = "SemesterCode")
     private String semesterCode;
 
+    @JsonProperty(value = "StartDate")
+    private String startDate;
+
+    @JsonProperty(value = "EndDate")
+    private String endDate;
+
+    @JsonProperty(value = "Year")
+    private Integer year;
+
     @JsonProperty(value = "Description")
     private String description;
 }

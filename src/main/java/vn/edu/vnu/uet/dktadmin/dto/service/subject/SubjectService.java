@@ -4,9 +4,12 @@ import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
+import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
@@ -72,6 +75,23 @@ public class SubjectService {
         return pagingSubject(
                 new ArrayList<>(subjectMap.values()),pageRequest
         );
+    }
+
+    public Boolean checkExistSubject(CheckExistRequest checkExistRequest) {
+        if (Constant.ADD.equalsIgnoreCase(checkExistRequest.getMode())) {
+            Subject subject = subjectDao.getBySubjectCode(checkExistRequest.getCode());
+            return subject == null;
+        } else if (Constant.EDIT.equalsIgnoreCase(checkExistRequest.getMode())){
+            Subject subject = subjectDao.getBySubjectCode(checkExistRequest.getCode());
+            Subject subjectById = subjectDao.getById(checkExistRequest.getId());
+            if (subject == null) return false;
+            if (subjectById == null) return true;
+            if (subject.getSubjectCode().equals(subjectById.getSubjectCode())) {
+                return true;
+            }
+            return false;
+        }
+        throw new BadRequestException(400, "Mode không tồn tại");
     }
 
     private ListSubjectResponse pagingSubject(List<Subject> subjects, PageBase pageRequest) {

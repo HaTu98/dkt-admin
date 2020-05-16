@@ -2,13 +2,16 @@ package vn.edu.vnu.uet.dktadmin.dto.service.room;
 
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.stereotype.Service;
+import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Location;
 import vn.edu.vnu.uet.dktadmin.dto.model.Room;
+import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 import vn.edu.vnu.uet.dktadmin.dto.service.location.LocationService;
+import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
@@ -84,6 +87,22 @@ public class RoomService {
         );
     }
 
+    public Boolean checkExistRoom(CheckExistRequest checkExistRequest) {
+        if (Constant.ADD.equalsIgnoreCase(checkExistRequest.getMode())) {
+            Room room = roomDao.getByRoomCode(checkExistRequest.getCode());
+            return room == null;
+        } else if (Constant.EDIT.equalsIgnoreCase(checkExistRequest.getMode())){
+            Room room = roomDao.getByRoomCode(checkExistRequest.getCode());
+            Room roomById = roomDao.getById(checkExistRequest.getId());
+            if (room == null) return false;
+            if (roomById == null) return true;
+            if (room.getRoomCode().equals(roomById.getRoomCode())) {
+                return true;
+            }
+            return false;
+        }
+        throw new BadRequestException(400, "Mode không tồn tại");
+    }
 
     private RoomListResponse getListRoomPaging(List<Room> rooms, PageBase pageBase) {
         List<Location> locations = locationDao.getAll();
