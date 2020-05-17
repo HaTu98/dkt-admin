@@ -54,7 +54,9 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js")
                 .permitAll()
                 .antMatchers(
-                        "/admin/auth/login")
+                        "/admin/auth/login",
+                        "/admin/student/import",
+                        "/admin/student/template")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and().csrf().disable();

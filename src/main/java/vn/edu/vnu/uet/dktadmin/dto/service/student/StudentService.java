@@ -7,11 +7,13 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
+import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
@@ -27,6 +29,8 @@ import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
@@ -186,49 +190,46 @@ public class StudentService {
         return student;
     }
 
-    public void importStudent(MultipartFile file) throws IOException {
-        String error = "";
+    public List<XSSFRow> importStudent(MultipartFile file) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
         XSSFSheet sheet = workbook.getSheetAt(0);
-        List<Student> students = getStudentInSheet(sheet, error);
-
-        storeImport(students);
+        List<XSSFRow> errors = new ArrayList<>();
+        storeImportStudent(sheet, errors);
+        return errors;
     }
 
-    private List<Student> getStudentInSheet(XSSFSheet sheet, String error) {
-        List<Student> students = new ArrayList<>();
-        DktAdmin admin = accountService.getUserSession();
+    public XSSFWorkbook template() throws IOException {
+        String templatePath = "\\template\\excel\\import_student.xlsx";
+        File templateFile = new ClassPathResource(templatePath).getFile();
+        FileInputStream templateInputStream = new FileInputStream(templateFile);
+        return new XSSFWorkbook(templateInputStream);
+    }
 
+    private void storeImportStudent(XSSFSheet sheet, List<XSSFRow> errors) {
         int rowNumber = sheet.getPhysicalNumberOfRows();
-        for (int i = 1; i < rowNumber; i++) {
+        for (int i = 5; i < rowNumber; i++) {
             XSSFRow row = sheet.getRow(i);
             try {
-                //String stt = getValueInCell(row.getCell(0)).trim();
-                Student student = new Student();
-                student.setFullName(getValueInCell(row.getCell(1)).trim());
-                //student.setGender(getValueInCell(row.getCell(2)).trim());
-                student.setDateOfBirth(getValueInCell(row.getCell(3)).trim());
-                String username = getValueInCell(row.getCell(4)).trim();
-                student.setUsername(username);
-                student.setEmail(username + Constant.BASE_EMAIL);
-                student.setCourse(getValueInCell(row.getCell(5)).trim());
-                student.setPassword(passwordEncoder.encode(username));
-                Instant now = Instant.now();
-                student.setCreatedAt(now);
-                student.setModifiedAt(now);
-                student.setCreatedBy(admin.getUsername());
-                student.setModifiedBy(admin.getUsername());
+                String stt = getValueInCell(row.getCell(0));
+                if (stt == null) continue;
+                StudentRequest studentRequest = new StudentRequest();
+                studentRequest.setFullName(getValueInCell(row.getCell(1)).trim());
+                studentRequest.setStudentCode(getValueInCell(row.getCell(2)));
+                studentRequest.setDateOfBirth(getValueInCell(row.getCell(3)));
+                studentRequest.setEmail(getValueInCell(row.getCell(4)));
+                studentRequest.setCourse(getValueInCell(row.getCell(5)));
+                String gender = getValueInCell(row.getCell(6));
+                studentRequest.setGender(Gender.getValue(gender).getValue());
 
-                students.add(student);
+                this.createStudent(studentRequest);
             } catch (Exception e) {
-                error += i + ", ";
+                errors.add(row);
             }
         }
-        return students;
     }
 
     @Transactional
-    void storeImport(List<Student> students) {
+    void storeImportStudent(List<Student> students) {
         Map<String, Student> dbStudents = studentDao.getAll().stream().collect(Collectors.toMap(Student::getUsername, s -> s));
         Map<String, Student> importStudents = students.stream().collect(Collectors.toMap(Student::getUsername, s -> s));
         importStudents.forEach((username, student) -> {

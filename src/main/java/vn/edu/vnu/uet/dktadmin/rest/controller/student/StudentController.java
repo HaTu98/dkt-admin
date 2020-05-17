@@ -1,12 +1,18 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.student;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
+import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
@@ -19,6 +25,9 @@ import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -204,9 +213,39 @@ public class StudentController extends BaseController {
     }
 
     @PostMapping("/student/import")
-    public ApiDataResponse<String> importStudent(@RequestParam("file") MultipartFile file) throws IOException {
-        studentService.importStudent(file);
-        return ApiDataResponse.ok("success");
+        public ResponseEntity<?> importStudent(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
+        List<XSSFRow> errors = studentService.importStudent(file);
+        if (errors.size() > 0) {
+            Workbook fileErrors = studentService.template();
+            Sheet sheetErrors = fileErrors.getSheetAt(0);
+            for (int i = 0 ; i < errors.size(); i++) {
+                Row rowOld = errors.get(i);
+                Row rowNew = sheetErrors.createRow(5 + i);
+                ExcelUtil.copyRow(rowNew, rowOld);
+            }
+            response.setContentType("application/vnd.ms-excel");
+            String excelFileName = "Errors_Student.xlsx";
+            response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+            ServletOutputStream out = response.getOutputStream();
+            fileErrors.write(out);
+            out.flush();
+            out.close();
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.ok("success");
+    }
+
+    @GetMapping("/student/template")
+    public ResponseEntity<?> template(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        XSSFWorkbook xssfWorkbook = studentService.template();
+        String excelFileName = "Template_Student.xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+        ServletOutputStream out = response.getOutputStream();
+        xssfWorkbook.write(out);
+        out.flush();
+        out.close();
+        return ResponseEntity.ok().build();
     }
 }
 

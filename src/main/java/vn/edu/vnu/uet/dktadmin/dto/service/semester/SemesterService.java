@@ -7,9 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
-import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
-import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
@@ -88,7 +86,7 @@ public class SemesterService {
 
     public SemesterListResponse getAll(PageBase pageBase) {
         List<Semester> semesters = semesterDao.getAll();
-        return getListStudentPaging(semesters, pageBase);
+        return getListSemesterPaging(semesters, pageBase);
     }
 
     public SemesterListResponse search(String query, PageBase pageBase) {
@@ -103,7 +101,7 @@ public class SemesterService {
         }
         semesterMap = semesterMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        return getListStudentPaging(new ArrayList<>(semesterMap.values()), pageBase);
+        return getListSemesterPaging(new ArrayList<>(semesterMap.values()), pageBase);
     }
 
     public void deleteListSemester(List<Long> ids) {
@@ -125,7 +123,7 @@ public class SemesterService {
         return semester;
     }
 
-    private SemesterListResponse getListStudentPaging(List<Semester> semesters,PageBase pageBase) {
+    private SemesterListResponse getListSemesterPaging(List<Semester> semesters, PageBase pageBase) {
         List<SemesterResponse> semesterList = new ArrayList<>();
         Integer page = pageBase.getPage();
         Integer size = pageBase.getSize();

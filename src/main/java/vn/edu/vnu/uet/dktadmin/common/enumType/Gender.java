@@ -11,4 +11,13 @@ public enum Gender {
 
     private final String name;
     private final Integer value;
+    
+    public static Gender getValue(String value) {
+        switch (value) {
+            case "Nam" : return MALE;
+            case "Nữ": return FEMALE;
+            default:
+                throw new IllegalStateException("Unexpected value: " + value);
+        }
+    }
 }

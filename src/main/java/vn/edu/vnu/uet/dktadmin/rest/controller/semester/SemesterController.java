@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.semester.SemesterService;
-import vn.edu.vnu.uet.dktadmin.rest.controller.student.StudentController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
