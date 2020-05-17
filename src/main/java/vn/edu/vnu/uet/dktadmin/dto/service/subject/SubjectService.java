@@ -80,16 +80,16 @@ public class SubjectService {
     public Boolean checkExistSubject(CheckExistRequest checkExistRequest) {
         if (Constant.ADD.equalsIgnoreCase(checkExistRequest.getMode())) {
             Subject subject = subjectDao.getBySubjectCode(checkExistRequest.getCode());
-            return subject == null;
+            return subject != null;
         } else if (Constant.EDIT.equalsIgnoreCase(checkExistRequest.getMode())){
             Subject subject = subjectDao.getBySubjectCode(checkExistRequest.getCode());
             Subject subjectById = subjectDao.getById(checkExistRequest.getId());
-            if (subject == null) return false;
             if (subjectById == null) return true;
+            if (subject == null) return false;
             if (subject.getSubjectCode().equals(subjectById.getSubjectCode())) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
         throw new BadRequestException(400, "Mode không tồn tại");
     }

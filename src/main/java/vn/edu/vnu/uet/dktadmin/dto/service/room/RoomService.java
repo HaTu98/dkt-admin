@@ -91,16 +91,16 @@ public class RoomService {
     public Boolean checkExistRoom(CheckExistRequest checkExistRequest) {
         if (Constant.ADD.equalsIgnoreCase(checkExistRequest.getMode())) {
             Room room = roomDao.getByRoomCode(checkExistRequest.getCode());
-            return room == null;
+            return room != null;
         } else if (Constant.EDIT.equalsIgnoreCase(checkExistRequest.getMode())){
             Room room = roomDao.getByRoomCode(checkExistRequest.getCode());
             Room roomById = roomDao.getById(checkExistRequest.getId());
-            if (room == null) return false;
             if (roomById == null) return true;
+            if (room == null) return false;
             if (room.getRoomCode().equals(roomById.getRoomCode())) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
         throw new BadRequestException(400, "Mode không tồn tại");
     }

@@ -145,12 +145,12 @@ public class SemesterService {
     public Boolean checkExistSemester(CheckExistRequest checkExistRequest) {
         if (Constant.ADD.equalsIgnoreCase(checkExistRequest.getMode())) {
             Semester semester = semesterDao.getBySemesterCode(checkExistRequest.getCode());
-            return semester == null;
+            return semester != null;
         } else if (Constant.EDIT.equalsIgnoreCase(checkExistRequest.getMode())){
             Semester semester = semesterDao.getBySemesterCode(checkExistRequest.getCode());
             Semester semesterById = semesterDao.getById(checkExistRequest.getId());
-            if (semester == null) return false;
             if (semesterById == null) return true;
+            if (semester == null) return false;
             if (semester.getSemesterCode().equals(semesterById.getSemesterCode())) {
                 return true;
             }

@@ -276,12 +276,12 @@ public class StudentService {
     public Boolean checkExistStudent(CheckExistRequest checkExistRequest) {
         if (Constant.ADD.equalsIgnoreCase(checkExistRequest.getMode())) {
             Student student = studentDao.getByStudentCode(checkExistRequest.getCode());
-            return student == null;
+            return student != null;
         } else if (Constant.EDIT.equalsIgnoreCase(checkExistRequest.getMode())){
             Student student = studentDao.getByStudentCode(checkExistRequest.getCode());
             Student studentById = studentDao.getById(checkExistRequest.getId());
-            if (student == null) return false;
             if (studentById == null) return true;
+            if (student == null) return false;
             if (student.getStudentCode().equals(studentById.getStudentCode())) {
                 return true;
             }
