@@ -27,7 +27,7 @@ public class SemesterService {
     private final SemesterDao semesterDao;
 
     private final MapperFacade mapperFacade;
-    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public SemesterService(MapperFacade mapperFacade, SemesterDao semesterDao) {
         this.mapperFacade = mapperFacade;

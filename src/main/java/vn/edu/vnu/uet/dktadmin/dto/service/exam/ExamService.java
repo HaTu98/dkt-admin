@@ -21,6 +21,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ListExamResponse;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,7 +37,8 @@ public class ExamService {
     private final SubjectSemesterDao subjectSemesterDao;
     private final RoomSemesterDao roomSemesterDao;
     private final RoomDao roomDao;
-    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private final DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public ExamService(ExamDao examDao, MapperFacade mapperFacade, SubjectSemesterService subjectSemesterService, RoomSemesterService roomSemesterService, SubjectSemesterDao subjectSemesterDao, RoomSemesterDao roomSemesterDao, RoomDao roomDao) {
         this.examDao = examDao;
@@ -116,7 +118,7 @@ public class ExamService {
         ExamResponse examResponse = mapperFacade.map(exam, ExamResponse.class);
         examResponse.setStartTime(exam.getStartTime().format(format));
         examResponse.setEndTime(exam.getEndTime().format(format));
-        examResponse.setDate(exam.getDate().format(format));
+        examResponse.setDate(exam.getDate().format(formatDate));
         return examResponse;
     }
 
@@ -127,7 +129,7 @@ public class ExamService {
         exam.setNumberOfStudent(request.getNumberOfStudent() == null ? 0 : request.getNumberOfStudent());
         exam.setNumberOfStudentSubscribe(0);
 
-        LocalDateTime startDate = LocalDateTime.parse(request.getDate(), format);
+        LocalDate startDate = LocalDate.parse(request.getDate(), formatDate);
         exam.setDate(startDate);
         LocalDateTime startTime = LocalDateTime.parse(request.getStartTime(), format);
         exam.setStartTime(startTime);
@@ -147,7 +149,7 @@ public class ExamService {
 
 
     private boolean validateConflictExam(ExamRequest request) {
-        LocalDateTime date = LocalDateTime.parse(request.getDate(), format);
+        LocalDate date = LocalDate.parse(request.getDate(), formatDate);
         List<Exam> exams = examDao.getByRoomAndDate(request.getRoomSemesterId(), date);
         if (CollectionUtils.isEmpty(exams)) {
             return true;
@@ -161,15 +163,6 @@ public class ExamService {
             if (!Util.validateTime(start, end, startTime, endTime)) {
                 return false;
             }
-            /*if (!startTime.isBefore(start) && !startTime.isAfter(end)) {
-                return false;
-            }
-            if (!endTime.isBefore(start) &&  !endTime.isAfter(end)) {
-                return false;
-            }
-            if (!startTime.isAfter(start) && !endTime.isBefore(end)) {
-                return false;
-            }*/
         }
         return true;
     }

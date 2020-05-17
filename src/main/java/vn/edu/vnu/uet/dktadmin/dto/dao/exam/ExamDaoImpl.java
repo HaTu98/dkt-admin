@@ -5,6 +5,7 @@ import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
 import vn.edu.vnu.uet.dktadmin.dto.repository.ExamRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class ExamDaoImpl implements ExamDao {
     }
 
     @Override
-    public List<Exam> getByRoomAndDate( Long roomSemesterId, LocalDateTime date) {
+    public List<Exam> getByRoomAndDate( Long roomSemesterId, LocalDate date) {
         List<Exam> exams = examRepository.findByRoomSemesterIdAndDate(roomSemesterId, date);
         if (CollectionUtils.isEmpty(exams)) {
             return new ArrayList<>();

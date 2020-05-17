@@ -21,7 +21,7 @@ public class Exam {
     private Integer numberOfStudentSubscribe;
     private String examCode;
     private LocalDateTime startTime;
-    private LocalDateTime date;
+    private LocalDate date;
     private Long subjectSemesterId;
     private Long roomSemesterId;
     private Long semesterId;
