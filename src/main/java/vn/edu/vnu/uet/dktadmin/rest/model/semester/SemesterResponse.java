@@ -26,7 +26,7 @@ public class SemesterResponse {
     private String endDate;
 
     @JsonProperty(value = "Year")
-    private String year;
+    private Integer year;
 
     @JsonProperty(value = "Status")
     private Integer status;
