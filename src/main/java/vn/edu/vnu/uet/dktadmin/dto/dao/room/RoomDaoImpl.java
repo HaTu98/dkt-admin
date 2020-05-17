@@ -57,7 +57,7 @@ public class RoomDaoImpl implements RoomDao {
 
     @Override
     public List<Room> getAllRoom() {
-        List<Room> rooms = roomRepository.findAll();
+        List<Room> rooms = roomRepository.findAllByOrderByIdAsc();
         if (CollectionUtils.isEmpty(rooms))
             return new ArrayList<>();
         return rooms;

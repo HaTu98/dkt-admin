@@ -33,7 +33,7 @@ public class SemesterDaoImpl implements SemesterDao{
 
     @Override
     public List<Semester> getAll() {
-        return semesterRepository.findAll();
+        return semesterRepository.findAllByOrderByIdAsc();
     }
 
     @Override

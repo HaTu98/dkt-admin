@@ -41,7 +41,7 @@ public class SubjectDaoImpl implements SubjectDao {
 
     @Override
     public List<Subject> getAll() {
-        List<Subject> subjects = subjectRepository.findAll();
+        List<Subject> subjects = subjectRepository.findAllByOrderByIdAsc();
         if (CollectionUtils.isEmpty(subjects)) {
             return new ArrayList<>();
         }

@@ -12,4 +12,5 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findBySubjectCodeContains(String subjectCode);
     List<Subject> findBySubjectNameContains(String subjectName);
     List<Subject> findByIdIn(List<Long> ids);
+    List<Subject> findAllByOrderByIdAsc();
 }

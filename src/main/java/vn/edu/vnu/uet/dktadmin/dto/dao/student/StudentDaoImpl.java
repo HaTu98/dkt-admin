@@ -1,5 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.student;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
@@ -38,7 +39,7 @@ public class StudentDaoImpl implements StudentDao {
 
     @Override
     public List<Student> getAll() {
-        List<Student> students = studentRepository.findAll();
+        List<Student> students = studentRepository.findAllByOrderByIdAsc();
         if (CollectionUtils.isEmpty(students)) {
             return new ArrayList<>();
         }
