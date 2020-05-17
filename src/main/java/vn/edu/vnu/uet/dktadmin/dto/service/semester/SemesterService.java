@@ -126,13 +126,17 @@ public class SemesterService {
     }
 
     private SemesterListResponse getListStudentPaging(List<Semester> semesters,PageBase pageBase) {
-        List<Semester> semesterList = new ArrayList<>();
+        List<SemesterResponse> semesterList = new ArrayList<>();
         Integer page = pageBase.getPage();
         Integer size = pageBase.getSize();
         int total = semesters.size();
         int maxSize = Math.min(total, size * page);
         for (int i = size * (page - 1); i < maxSize; i++) {
-            semesterList.add(semesters.get(i));
+            SemesterResponse semesterResponse = mapperFacade.map(semesters.get(i), SemesterResponse.class);
+            semesterResponse.setStartDate(semesters.get(i).getStartDate().format(format));
+            semesterResponse.setEndDate(semesters.get(i).getEndDate().format(format));
+            semesterResponse.setStatus(semesters.get(i).getStatus());
+            semesterList.add(semesterResponse);
         }
         PageResponse pageResponse = new PageResponse(page, size, total);
         SemesterListResponse semesterListResponse = new SemesterListResponse(mapperFacade.mapAsList(semesterList, SemesterResponse.class));
