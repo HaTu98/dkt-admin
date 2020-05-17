@@ -48,7 +48,6 @@ public class SubjectService {
     public SubjectResponse updateSubject(SubjectRequest request) {
         validateUpdate(request);
         Subject subject = mapperFacade.map(request, Subject.class);
-        subject.setId(subjectDao.getBySubjectCode(request.getSubjectCode()).getId());
         return mapperFacade.map(subjectDao.store(subject),SubjectResponse.class);
     }
 
@@ -140,9 +139,6 @@ public class SubjectService {
         }
         if (StringUtils.isEmpty(request.getNumberOfCredit())) {
             throw new BadRequestException(400, "Số tín chỉ không thể null");
-        }
-        if (!isExistSubject(request.getSubjectCode())) {
-            throw new BadRequestException(400, "Môn học không tồn tại");
         }
     }
 
