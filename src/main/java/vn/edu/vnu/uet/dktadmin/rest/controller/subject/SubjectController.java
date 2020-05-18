@@ -1,7 +1,9 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.subject;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
@@ -14,6 +16,9 @@ import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/admin")
@@ -133,5 +138,18 @@ public class SubjectController {
             log.error(e.getMessage());
             return ApiDataResponse.error();
         }
+    }
+
+    @PostMapping("/subject/template")
+    public ResponseEntity<?> template(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        XSSFWorkbook xssfWorkbook = subjectService.template();
+        String excelFileName = "Template_Student.xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+        ServletOutputStream out = response.getOutputStream();
+        xssfWorkbook.write(out);
+        out.flush();
+        out.close();
+        return ResponseEntity.ok().build();
     }
 }

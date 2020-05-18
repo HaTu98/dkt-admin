@@ -2,6 +2,8 @@ package vn.edu.vnu.uet.dktadmin.dto.service.subject;
 
 import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
@@ -17,6 +19,9 @@ import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -140,6 +145,13 @@ public class SubjectService {
         if (StringUtils.isEmpty(request.getNumberOfCredit())) {
             throw new BadRequestException(400, "Số tín chỉ không thể null");
         }
+    }
+
+    public XSSFWorkbook template() throws IOException {
+        String templatePath = "\\template\\excel\\import_subject.xlsx";
+        File templateFile = new ClassPathResource(templatePath).getFile();
+        FileInputStream templateInputStream = new FileInputStream(templateFile);
+        return new XSSFWorkbook(templateInputStream);
     }
 
 }
