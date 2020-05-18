@@ -3,13 +3,16 @@ package vn.edu.vnu.uet.dktadmin.dto.service.subject;
 import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
+import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 import vn.edu.vnu.uet.dktadmin.dto.model.Student;
@@ -17,6 +20,7 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
@@ -157,7 +161,30 @@ public class SubjectService {
     }
 
     public List<XSSFRow> importSubject(MultipartFile file) throws IOException {
-        return null;
+        XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        List<XSSFRow> errors = new ArrayList<>();
+        storeImportSubject(sheet, errors);
+        return errors;
+    }
+
+    private void storeImportSubject(XSSFSheet sheet, List<XSSFRow> errors) {
+        int rowNumber = sheet.getPhysicalNumberOfRows();
+        for (int i = 5; i < rowNumber; i++) {
+            XSSFRow row = sheet.getRow(i);
+            try {
+                String stt = ExcelUtil.getValueInCell(row.getCell(0));
+                if (stt == null) continue;
+                SubjectRequest subjectRequest = new SubjectRequest();
+                subjectRequest.setSubjectName(ExcelUtil.getValueInCell(row.getCell(1)).trim());
+                subjectRequest.setSubjectCode(ExcelUtil.getValueInCell(row.getCell(2)));
+                subjectRequest.setNumberOfCredit(ExcelUtil.getValueInCell(row.getCell(3)));
+
+                this.createSubject(subjectRequest);
+            } catch (Exception e) {
+                errors.add(row);
+            }
+        }
     }
 
 }

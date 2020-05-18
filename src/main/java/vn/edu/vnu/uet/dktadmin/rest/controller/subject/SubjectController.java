@@ -150,7 +150,7 @@ public class SubjectController {
     public ResponseEntity<?> template(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         XSSFWorkbook xssfWorkbook = subjectService.template();
-        String excelFileName = "Template_Student.xlsx";
+        String excelFileName = "Template_Subject.xlsx";
         response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
         ServletOutputStream out = response.getOutputStream();
         xssfWorkbook.write(out);
@@ -160,8 +160,25 @@ public class SubjectController {
     }
 
     @PostMapping("/subject/import")
-    public ResponseEntity<?> importsubject(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
-
+    public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
+        List<XSSFRow> errors = subjectService.importSubject(file);
+        if (errors.size() > 0) {
+            Workbook fileErrors = subjectService.template();
+            Sheet sheetErrors = fileErrors.getSheetAt(0);
+            for (int i = 0 ; i < errors.size(); i++) {
+                Row rowOld = errors.get(i);
+                Row rowNew = sheetErrors.createRow(5 + i);
+                ExcelUtil.copyRow(rowNew, rowOld);
+            }
+            response.setContentType("application/vnd.ms-excel");
+            String excelFileName = "Errors_Subject.xlsx";
+            response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+            ServletOutputStream out = response.getOutputStream();
+            fileErrors.write(out);
+            out.flush();
+            out.close();
+            return ResponseEntity.ok().build();
+        }
         return ResponseEntity.ok("success");
     }
 }
