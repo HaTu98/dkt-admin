@@ -2,10 +2,12 @@ package vn.edu.vnu.uet.dktadmin.dto.service.subject;
 
 import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
@@ -152,6 +154,10 @@ public class SubjectService {
         File templateFile = new ClassPathResource(templatePath).getFile();
         FileInputStream templateInputStream = new FileInputStream(templateFile);
         return new XSSFWorkbook(templateInputStream);
+    }
+
+    public List<XSSFRow> importSubject(MultipartFile file) throws IOException {
+        return null;
     }
 
 }
