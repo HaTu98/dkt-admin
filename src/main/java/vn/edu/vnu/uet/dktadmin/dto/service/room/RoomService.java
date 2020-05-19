@@ -1,9 +1,16 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.room;
 
 import ma.glasnost.orika.MapperFacade;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
+import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
@@ -18,7 +25,12 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
+import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -136,6 +148,40 @@ public class RoomService {
     public boolean isExistRoom(String roomCode){
         Room room = roomDao.getByRoomCode(roomCode);
         return room != null;
+    }
+
+    public XSSFWorkbook template() throws IOException {
+        String templatePath = "\\template\\excel\\import_room.xlsx";
+        File templateFile = new ClassPathResource(templatePath).getFile();
+        FileInputStream templateInputStream = new FileInputStream(templateFile);
+        return new XSSFWorkbook(templateInputStream);
+    }
+
+    public List<XSSFRow> importRoom(MultipartFile file) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        List<XSSFRow> errors = new ArrayList<>();
+        storeImportRoom(sheet, errors);
+        return errors;
+    }
+
+    private void storeImportRoom(XSSFSheet sheet, List<XSSFRow> errors) {
+        int rowNumber = sheet.getPhysicalNumberOfRows();
+        for (int i = 5; i < rowNumber; i++) {
+            XSSFRow row = sheet.getRow(i);
+            try {
+                String stt = ExcelUtil.getValueInCell(row.getCell(0));
+                if (stt == null) continue;
+                RoomRequest roomRequest = new RoomRequest();
+                roomRequest.setRoomName(ExcelUtil.getValueInCell(row.getCell(1)).trim());
+                roomRequest.setRoomCode(ExcelUtil.getValueInCell(row.getCell(2)));
+                roomRequest.setLocation(ExcelUtil.getValueInCell(row.getCell(3)));
+
+                this.createRoom(roomRequest);
+            } catch (Exception e) {
+                errors.add(row);
+            }
+        }
     }
 
     private void validateRoom(RoomRequest request) {
