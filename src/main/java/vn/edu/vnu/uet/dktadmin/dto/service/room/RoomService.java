@@ -176,6 +176,7 @@ public class RoomService {
                 roomRequest.setRoomName(ExcelUtil.getValueInCell(row.getCell(1)).trim());
                 roomRequest.setRoomCode(ExcelUtil.getValueInCell(row.getCell(2)));
                 roomRequest.setLocation(ExcelUtil.getValueInCell(row.getCell(3)));
+                roomRequest.setDescription(ExcelUtil.getValueInCell(row.getCell(4)));
 
                 this.createRoom(roomRequest);
             } catch (Exception e) {
