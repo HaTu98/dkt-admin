@@ -19,7 +19,7 @@ public class StudentSubject {
     private Long subjectSemesterId;
     private Long semesterId;
     private Long subjectId;
-    private String status;
+    private Integer status;
     private Boolean isRegistered;
     private Instant createdAt;
     private Instant modifiedAt;

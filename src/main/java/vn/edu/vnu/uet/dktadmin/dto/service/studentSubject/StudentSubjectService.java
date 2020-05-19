@@ -15,9 +15,7 @@ import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.ListStudentSubjectResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectRequest;
-import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -121,6 +119,40 @@ public class StudentSubjectService {
             }
         }
         return getStudentSubjectPaging(new ArrayList<>( studentSubjectMap.values()), pageBase);
+    }
+
+    public ListStudentInSubjectResponse getListStudentInSubject(Long subjectSemesterId, PageBase pageBase) {
+        List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(subjectSemesterId);
+        return generateStudentInSubject(studentSubjects, pageBase, subjectSemesterId);
+    }
+
+    private ListStudentInSubjectResponse generateStudentInSubject(List<StudentSubject> studentSubjects, PageBase pageBase, Long subjectSemesterId) {
+        List<Long> listStudentId = new ArrayList<>();
+        Map<Long, StudentSubject> studentSubjectMap = new HashMap<>();
+        Integer page = pageBase.getPage();
+        Integer size = pageBase.getSize();
+        int total = studentSubjects.size();
+        int maxSize = Math.min(total, size * page);
+        for (int i = size * (page - 1); i < maxSize; i++) {
+            listStudentId.add(studentSubjects.get(i).getStudentId());
+            studentSubjectMap.put(studentSubjects.get(i).getId(), studentSubjects.get(i));
+        }
+        List<Student> students = studentDao.getStudentInList(listStudentId);
+        List<StudentInSubjectResponse> studentInSubjectResponses = new ArrayList<>();
+        for (Student student : students) {
+            StudentInSubjectResponse response = new StudentInSubjectResponse();
+            response.setCourse(student.getCourse());
+            response.setStatus(studentSubjectMap.get(student.getId()).getStatus());
+            response.setStudentCode(student.getStudentCode());
+            response.setStudentDateOfBirth(student.getDateOfBirth());
+            response.setStudentId(student.getId());
+            response.setStudentName(student.getFullName());
+            response.setStudentGender(student.getGender());
+            response.setSubjectSemesterId(subjectSemesterId);
+            studentInSubjectResponses.add(response);
+        }
+        PageResponse pageResponse = new PageResponse(page, size, total);
+        return new ListStudentInSubjectResponse(studentInSubjectResponses, pageResponse);
     }
 
     private ListStudentSubjectResponse getStudentSubjectPaging(List<StudentSubject> studentSubject, PageBase pageBase) {

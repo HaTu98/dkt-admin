@@ -9,12 +9,10 @@ import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.student.StudentController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
-import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.ListStudentSubjectResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectRequest;
-import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.*;
 
 @RestController
-@RequestMapping("/admin/student_subjects")
+@RequestMapping("/admin/student_subject")
 public class StudentSubjectController {
     private static final Logger log = LoggerFactory.getLogger(StudentSubjectController.class);
     private final StudentSubjectService studentSubjectService;
@@ -132,6 +130,25 @@ public class StudentSubjectController {
             log.info("get student subject unregistered");
             PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(studentSubjectService.getStudentSubjectUnregistered(id, pageBase));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @GetMapping("student_in_subject/{subjectSemesterId}/")
+    public ApiDataResponse<ListStudentInSubjectResponse> getStudentInSubjectSemester(
+            @PathVariable Long subjectSemesterId,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
+        try {
+            log.info("get student subject unregistered");
+            PageBase pageBase = PageUtil.validate(page,size);
+            return ApiDataResponse.ok(studentSubjectService.getListStudentInSubject(subjectSemesterId, pageBase));
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

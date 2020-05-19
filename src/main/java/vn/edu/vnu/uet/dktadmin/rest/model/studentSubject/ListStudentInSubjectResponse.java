@@ -9,16 +9,15 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ListStudentSubjectResponse {
+public class ListStudentInSubjectResponse {
     @JsonProperty(value = "StudentSubjects")
-    private List<StudentSubjectResponse> studentSubjectResponses;
+    List<StudentInSubjectResponse> studentSubjects;
 
     @JsonProperty(value = "Page")
     private PageResponse pageResponse;
 
-    public ListStudentSubjectResponse(List<StudentSubjectResponse> studentSubjectResponses, PageResponse pageResponse) {
-        this.studentSubjectResponses = studentSubjectResponses;
+    public ListStudentInSubjectResponse(List<StudentInSubjectResponse> studentSubjects, PageResponse pageResponse) {
+        this.studentSubjects = studentSubjects;
         this.pageResponse = pageResponse;
     }
-
 }
