@@ -213,7 +213,7 @@ public class StudentController extends BaseController {
     }
 
     @PostMapping("/student/import")
-        public ResponseEntity<?> importStudent(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> importStudent(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
         List<XSSFRow> errors = studentService.importStudent(file);
         if (errors.size() > 0) {
             Workbook fileErrors = studentService.template();
