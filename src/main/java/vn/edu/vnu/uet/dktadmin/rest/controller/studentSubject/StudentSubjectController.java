@@ -139,16 +139,16 @@ public class StudentSubjectController {
         }
     }
 
-    @GetMapping("student_in_subject/{subjectSemesterId}/")
+    @GetMapping("/student_in_subject/{id}")
     public ApiDataResponse<ListStudentInSubjectResponse> getStudentInSubjectSemester(
-            @PathVariable Long subjectSemesterId,
+            @PathVariable Long id,
             @RequestParam(required = false, value = "Size") Integer size,
             @RequestParam(required = false, value = "Page") Integer page
     ) {
         try {
-            log.info("get student subject unregistered");
+            log.info("get student subject in subject");
             PageBase pageBase = PageUtil.validate(page,size);
-            return ApiDataResponse.ok(studentSubjectService.getListStudentInSubject(subjectSemesterId, pageBase));
+            return ApiDataResponse.ok(studentSubjectService.getListStudentInSubject(id, pageBase));
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

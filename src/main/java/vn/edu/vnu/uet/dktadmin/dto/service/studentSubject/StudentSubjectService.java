@@ -135,20 +135,23 @@ public class StudentSubjectService {
         int maxSize = Math.min(total, size * page);
         for (int i = size * (page - 1); i < maxSize; i++) {
             listStudentId.add(studentSubjects.get(i).getStudentId());
-            studentSubjectMap.put(studentSubjects.get(i).getId(), studentSubjects.get(i));
+            studentSubjectMap.put(studentSubjects.get(i).getStudentId(), studentSubjects.get(i));
         }
         List<Student> students = studentDao.getStudentInList(listStudentId);
         List<StudentInSubjectResponse> studentInSubjectResponses = new ArrayList<>();
         for (Student student : students) {
             StudentInSubjectResponse response = new StudentInSubjectResponse();
             response.setCourse(student.getCourse());
-            response.setStatus(studentSubjectMap.get(student.getId()).getStatus());
             response.setStudentCode(student.getStudentCode());
             response.setStudentDateOfBirth(student.getDateOfBirth());
             response.setStudentId(student.getId());
             response.setStudentName(student.getFullName());
             response.setStudentGender(student.getGender());
             response.setSubjectSemesterId(subjectSemesterId);
+            if (studentSubjectMap.containsKey(student.getId())) {
+                response.setStatus(studentSubjectMap.get(student.getId()).getStatus());
+                response.setStudentSubjectId(studentSubjectMap.get(student.getId()).getId());
+            }
             studentInSubjectResponses.add(response);
         }
         PageResponse pageResponse = new PageResponse(page, size, total);
