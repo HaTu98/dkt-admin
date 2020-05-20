@@ -10,9 +10,6 @@ public class SubjectSemesterRequest {
     @JsonProperty(value = "Id")
     private Long id;
 
-    @JsonProperty(value = "SubjectSemesterCode")
-    private String subjectSemesterCode;
-
     @JsonProperty(value = "Description")
     private String description;
 

@@ -13,9 +13,8 @@ import java.time.Instant;
 public class SubjectSemester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
-    private String subjectSemesterCode;
     private String description;
     private Long subjectId;
     private Long semesterId;

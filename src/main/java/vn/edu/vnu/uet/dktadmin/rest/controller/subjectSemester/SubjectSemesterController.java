@@ -54,6 +54,21 @@ public class SubjectSemesterController {
         return ApiDataResponse.ok("success");
     }
 
+    @DeleteMapping("/list")
+    public ApiDataResponse<String> deleteList(@RequestBody List<Long> ids) {
+        try {
+            log.info("delete subjectSemester in list: {}", ids);
+            subjectSemesterService.deleteListSubjectSemester(ids);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
     @PutMapping
     public ApiDataResponse<SubjectSemesterResponse> update(@RequestBody SubjectSemesterRequest request) {
         try {

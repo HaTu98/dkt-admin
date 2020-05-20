@@ -59,11 +59,15 @@ public class SubjectSemesterService {
         subjectSemester.setDescription(request.getDescription());
         subjectSemester.setSemesterId(request.getSemesterId());
         subjectSemester.setSubjectId(request.getSubjectId());
-        subjectSemester.setSubjectSemesterCode(request.getSubjectSemesterCode());
         SubjectSemesterResponse response = mapperFacade.map(subjectSemesterDao.store(subjectSemester), SubjectSemesterResponse.class);
         Integer numberStudent = studentSubjectDao.countStudentInSubject(subjectSemester.getId());
         response.setNumberStudent(numberStudent);
         return response;
+    }
+
+    public void deleteListSubjectSemester(List<Long> ids) {
+        List<SubjectSemester> subjectSemesters = subjectSemesterDao.getBySubjectSemesterIdInList(ids);
+        subjectSemesterDao.deleteList(subjectSemesters);
     }
 
     public SubjectSemesterResponse getById(Long id) {
@@ -110,9 +114,6 @@ public class SubjectSemesterService {
     }
 
     private void validateSubjectSemester(SubjectSemesterRequest request) {
-        if (StringUtils.isEmpty(request.getSubjectSemesterCode())) {
-            throw new BadRequestException(400, "SubjectSemesterCode không thể null");
-        }
         if (request.getSubjectId() == null) {
             throw new BadRequestException(400, "Subject không thể null");
         }
@@ -131,9 +132,6 @@ public class SubjectSemesterService {
     }
 
     private void validateUpdateSubjectSemester(SubjectSemesterRequest request) {
-        if (StringUtils.isEmpty(request.getSubjectSemesterCode())) {
-            throw new BadRequestException(400, "SubjectSemesterCode không thể null");
-        }
         if (request.getSubjectId() == null) {
             throw new BadRequestException(400, "Subject không thể null");
         }

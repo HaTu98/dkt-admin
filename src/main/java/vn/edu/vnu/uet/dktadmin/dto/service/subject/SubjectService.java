@@ -10,17 +10,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
-import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
-import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
-import vn.edu.vnu.uet.dktadmin.dto.model.Student;
+import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
+import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectResponse;
@@ -29,16 +27,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
 public class SubjectService {
     private final SubjectDao subjectDao;
     private final MapperFacade mapperFacade;
+    private final SubjectSemesterDao subjectSemesterDao;
 
-    public SubjectService(SubjectDao subjectDao, MapperFacade mapperFacade) {
+    public SubjectService(SubjectDao subjectDao, MapperFacade mapperFacade, SubjectSemesterDao subjectSemesterDao) {
         this.subjectDao = subjectDao;
         this.mapperFacade = mapperFacade;
+        this.subjectSemesterDao = subjectSemesterDao;
     }
 
     public boolean isExistSubject(Long subjectId) {
@@ -69,6 +70,13 @@ public class SubjectService {
     public ListSubjectResponse getSubject(PageBase request) {
         List<Subject> subjects =  subjectDao.getAll();
         return pagingSubject(subjects,request);
+    }
+
+    public ListSubjectResponse getSubjectNotInSemester(Long id, PageBase pageBase) {
+        List<SubjectSemester> subjectSemesters = subjectSemesterDao.getBySemesterId(id);
+        List<Long> listSubjectId = subjectSemesters.stream().map(SubjectSemester::getId).collect(Collectors.toList());
+        List<Subject> subjects = subjectDao.getByIdNotIn(listSubjectId);
+        return pagingSubject(subjects, pageBase);
     }
 
     public ListSubjectResponse searchSubject(String query, PageBase pageRequest) {

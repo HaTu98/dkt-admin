@@ -117,6 +117,25 @@ public class SubjectController {
         }
     }
 
+    @GetMapping("/subject_not_in_semester/{id}")
+    public ApiDataResponse<ListSubjectResponse> subjectNotInSemester(
+            @PathVariable Long id,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
+        try {
+            log.info("get subject not in semester all");
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(subjectService.getSubjectNotInSemester(id, pageBase));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
     @PostMapping("/subject/check_exist")
     public ApiDataResponse existSubject (@RequestBody CheckExistRequest checkExistRequest) {
         try {

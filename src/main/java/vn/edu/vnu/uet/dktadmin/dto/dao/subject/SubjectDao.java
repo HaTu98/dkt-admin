@@ -14,4 +14,5 @@ public interface SubjectDao {
     List<Subject> getLikeCode(String code);
     List<Subject> getByIdIn(List<Long> id);
     void deleteListSubject(List<Subject> subjects);
+    List<Subject> getByIdNotIn(List<Long> ids);
 }

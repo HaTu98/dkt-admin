@@ -79,4 +79,15 @@ public class SubjectDaoImpl implements SubjectDao {
     public void deleteListSubject(List<Subject> subjects) {
         subjectRepository.deleteAll(subjects);
     }
+
+    @Override
+    public List<Subject> getByIdNotIn(List<Long> ids) {
+        List<Subject> subjects = subjectRepository.findByIdNotIn(ids);
+        if (CollectionUtils.isEmpty(subjects)) {
+            return new ArrayList<>();
+        }
+        return subjects;
+    }
+
+
 }
