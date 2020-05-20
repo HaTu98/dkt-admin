@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ListSubjectSemesterResponse {
+    @JsonProperty(value = "SubjectSemesters")
     List<SubjectSemesterResponse> subjectSemesterResponses;
     @JsonProperty(value = "Page")
     PageResponse pageResponse;

@@ -71,5 +71,11 @@ public class StudentSubjectDaoImpl implements StudentSubjectDao {
         return studentSubjects;
     }
 
+    @Override
+    public Integer countStudentInSubject(Long subjectSemesterId) {
+        Integer num = studentSubjectRepository.countBySubjectSemesterId(subjectSemesterId);
+        return num == null ? 0 : num;
+    }
+
 
 }

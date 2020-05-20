@@ -5,7 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
 import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.semester.SemesterService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subject.SubjectService;
@@ -24,12 +27,16 @@ public class SubjectSemesterService {
     private final MapperFacade mapperFacade;
     private final SubjectService subjectService;
     private final SemesterService semesterService;
+    private final StudentSubjectDao studentSubjectDao;
+    private final SubjectDao subjectDao;
 
-    public SubjectSemesterService(SubjectSemesterDao subjectSemesterDao, MapperFacade mapperFacade, SubjectService subjectService, SemesterService semesterService) {
+    public SubjectSemesterService(SubjectSemesterDao subjectSemesterDao, MapperFacade mapperFacade, SubjectService subjectService, SemesterService semesterService, StudentSubjectDao studentSubjectDao, SubjectDao subjectDao) {
         this.subjectSemesterDao = subjectSemesterDao;
         this.mapperFacade = mapperFacade;
         this.subjectService = subjectService;
         this.semesterService = semesterService;
+        this.studentSubjectDao = studentSubjectDao;
+        this.subjectDao = subjectDao;
     }
 
     @Transactional
@@ -37,7 +44,10 @@ public class SubjectSemesterService {
         validateSubjectSemester(request);
         SubjectSemester subjectSemester = mapperFacade.map(request, SubjectSemester.class);
 
-        return mapperFacade.map(store(subjectSemester), SubjectSemesterResponse.class);
+        SubjectSemesterResponse response = mapperFacade.map(store(subjectSemester), SubjectSemesterResponse.class);
+        Integer numberStudent = studentSubjectDao.countStudentInSubject(subjectSemester.getId());
+        response.setNumberStudent(numberStudent);
+        return response;
     }
 
     public SubjectSemesterResponse update(SubjectSemesterRequest request) {
@@ -50,7 +60,10 @@ public class SubjectSemesterService {
         subjectSemester.setSemesterId(request.getSemesterId());
         subjectSemester.setSubjectId(request.getSubjectId());
         subjectSemester.setSubjectSemesterCode(request.getSubjectSemesterCode());
-        return mapperFacade.map(subjectSemesterDao.store(subjectSemester), SubjectSemesterResponse.class);
+        SubjectSemesterResponse response = mapperFacade.map(subjectSemesterDao.store(subjectSemester), SubjectSemesterResponse.class);
+        Integer numberStudent = studentSubjectDao.countStudentInSubject(subjectSemester.getId());
+        response.setNumberStudent(numberStudent);
+        return response;
     }
 
     public SubjectSemesterResponse getById(Long id) {
@@ -73,17 +86,25 @@ public class SubjectSemesterService {
     }
 
     private ListSubjectSemesterResponse getSubjectSemesterPaging(List<SubjectSemester> subjectSemesters, PageBase pageBase) {
-        List<SubjectSemester> subjectSemesterList = new ArrayList<>();
+        List<SubjectSemesterResponse> responseList = new ArrayList<>();
         Integer page = pageBase.getPage();
         Integer size = pageBase.getSize();
         int total = subjectSemesters.size();
         int maxSize = Math.min(total, size * page);
         for (int i = size * (page - 1); i < maxSize; i++) {
-            subjectSemesterList.add(subjectSemesters.get(i));
+            SubjectSemesterResponse response = mapperFacade.map(subjectSemesters.get(i), SubjectSemesterResponse.class);
+            Integer numberStudent = studentSubjectDao.countStudentInSubject(subjectSemesters.get(i).getId());
+            Subject subject = subjectDao.getById(subjectSemesters.get(i).getSubjectId());
+
+            response.setNumberStudent(numberStudent);
+            response.setSubjectName(subject.getSubjectName());
+            response.setSubjectCode(subject.getSubjectCode());
+            response.setNumberOfCredit(subject.getNumberOfCredit());
+            responseList.add(response);
         }
         PageResponse pageResponse = new PageResponse(page, size, total);
         return new ListSubjectSemesterResponse(
-                mapperFacade.mapAsList(subjectSemesterList, SubjectSemesterResponse.class),
+                responseList,
                 pageResponse
         );
     }
