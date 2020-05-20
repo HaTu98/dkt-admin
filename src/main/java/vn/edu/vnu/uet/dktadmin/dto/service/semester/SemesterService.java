@@ -152,9 +152,9 @@ public class SemesterService {
             if (semesterById == null) return true;
             if (semester == null) return false;
             if (semester.getSemesterCode().equals(semesterById.getSemesterCode())) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
         throw new BadRequestException(400, "Mode không tồn tại");
     }
