@@ -283,9 +283,9 @@ public class StudentService {
             if (studentById == null) return true;
             if (student == null) return false;
             if (student.getStudentCode().equals(studentById.getStudentCode())) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
         throw new BadRequestException(400, "Mode không tồn tại");
     }
