@@ -9,8 +9,11 @@ import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterServic
 import vn.edu.vnu.uet.dktadmin.rest.controller.subject.SubjectController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
+import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterResponse;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/subject_semesters")
@@ -34,6 +37,21 @@ public class SubjectSemesterController {
             log.error(e.getMessage());
             return ApiDataResponse.error();
         }
+    }
+
+    @PostMapping("/list")
+    public ApiDataResponse<String> createList(@RequestBody List<SubjectSemesterRequest> requests) {
+        log.info("create list subjectSemester : {}", requests);
+        for ( SubjectSemesterRequest request : requests) {
+            try {
+                subjectSemesterService.create(request);
+            } catch (BaseException e) {
+                log.error(e.getMessage());
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+        }
+        return ApiDataResponse.ok("success");
     }
 
     @PutMapping

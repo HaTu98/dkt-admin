@@ -11,6 +11,8 @@ import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/student_subject")
 public class StudentSubjectController {
@@ -24,7 +26,7 @@ public class StudentSubjectController {
     @PostMapping()
     public ApiDataResponse<StudentSubjectResponse> create(@RequestBody StudentSubjectRequest request) {
         try {
-            log.info("create subjectSubject : {}", request );
+            log.info("create subjectSemester : {}", request );
             StudentSubjectResponse response = studentSubjectService.create(request);
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
