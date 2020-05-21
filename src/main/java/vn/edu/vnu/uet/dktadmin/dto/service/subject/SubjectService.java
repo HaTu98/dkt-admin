@@ -75,7 +75,7 @@ public class SubjectService {
 
     public ListSubjectResponse getSubjectNotInSemester(Long id, PageBase pageBase) {
         List<SubjectSemester> subjectSemesters = subjectSemesterDao.getBySemesterId(id);
-        List<Long> listSubjectId = subjectSemesters.stream().map(SubjectSemester::getId).collect(Collectors.toList());
+        List<Long> listSubjectId = subjectSemesters.stream().map(SubjectSemester::getSubjectId).collect(Collectors.toList());
         List<Subject> subjects;
         if (CollectionUtils.isEmpty(listSubjectId)) {
             subjects = subjectDao.getAll();

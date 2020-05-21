@@ -13,8 +13,8 @@ public class RoomSemesterRequest {
     @JsonProperty(value = "NumberOfComputer")
     private Integer numberOfComputer;
 
-    @JsonProperty(value = "AvailableComputer")
-    private Integer availableComputer;
+    @JsonProperty(value = "PreventiveComputer")
+    private Integer preventiveComputer;
 
     @JsonProperty(value = "RoomSemesterCode")
     private String roomSemesterCode;
