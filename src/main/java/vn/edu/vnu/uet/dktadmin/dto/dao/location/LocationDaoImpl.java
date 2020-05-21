@@ -32,6 +32,11 @@ public class LocationDaoImpl implements LocationDao {
     }
 
     @Override
+    public Location getById(Long id) {
+        return locationRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public List<Location> getAll() {
         List<Location> locations = locationRepository.findAll();
         if (CollectionUtils.isEmpty(locations)) {

@@ -3,11 +3,13 @@ package vn.edu.vnu.uet.dktadmin.dto.service.roomSemester;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester.RoomSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.Location;
+import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
-import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.service.room.RoomService;
 import vn.edu.vnu.uet.dktadmin.dto.service.semester.SemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
@@ -15,9 +17,6 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.ListRoomSemesterResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentListResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.ListSubjectSemesterResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,21 +28,23 @@ public class RoomSemesterService {
     private final RoomDao roomDao;
     private final RoomService roomService;
     private final SemesterService semesterService;
+    private final LocationDao locationDao;
     private final MapperFacade mapperFacade;
 
-    public RoomSemesterService(RoomSemesterDao roomSemesterDao, SemesterDao semesterDao, RoomDao roomDao, RoomService roomService, SemesterService semesterService, MapperFacade mapperFacade) {
+    public RoomSemesterService(RoomSemesterDao roomSemesterDao, SemesterDao semesterDao, RoomDao roomDao, RoomService roomService, SemesterService semesterService, LocationDao locationDao, MapperFacade mapperFacade) {
         this.roomSemesterDao = roomSemesterDao;
         this.semesterDao = semesterDao;
         this.roomDao = roomDao;
         this.roomService = roomService;
         this.semesterService = semesterService;
+        this.locationDao = locationDao;
         this.mapperFacade = mapperFacade;
     }
 
     public RoomSemesterResponse createRoomSemester(RoomSemesterRequest request) {
         validateRoomSemester(request);
         RoomSemester roomSemester = mapperFacade.map(request, RoomSemester.class);
-        return mapperFacade.map(roomSemesterDao.store(roomSemester), RoomSemesterResponse.class);
+        return generateResponse(roomSemesterDao.store(roomSemester));
     }
 
     public boolean isExistRoomSemester(Long id) {
@@ -56,9 +57,9 @@ public class RoomSemesterService {
     }
 
     public RoomSemesterResponse update(RoomSemesterRequest request) {
-        validateRoomSemester(request);
+        validateUpdateRoomSemester(request);
         RoomSemester roomSemester = mapperFacade.map(request, RoomSemester.class);
-        return mapperFacade.map(roomSemesterDao.store(roomSemester), RoomSemesterResponse.class);
+        return generateResponse(roomSemesterDao.store(roomSemester));
     }
 
     public RoomSemesterResponse getById(Long id) {
@@ -77,16 +78,16 @@ public class RoomSemesterService {
     }
 
     public ListRoomSemesterResponse getRoomSemesterPaging(List<RoomSemester> roomSemesters, PageBase pageBase) {
-        List<RoomSemester> roomSemesterList = new ArrayList<>();
+        List<RoomSemesterResponse> responseList = new ArrayList<>();
         Integer page = pageBase.getPage();
         Integer size = pageBase.getSize();
         int total = roomSemesters.size();
         int maxSize = Math.min(total, size * page);
         for (int i = size * (page - 1); i < maxSize; i++) {
-            roomSemesterList.add(roomSemesters.get(i));
+            responseList.add(generateResponse(roomSemesters.get(i)));
         }
         PageResponse pageResponse = new PageResponse(page, size, total);
-        return new ListRoomSemesterResponse(mapperFacade.mapAsList(roomSemesterList, RoomSemesterResponse.class), pageResponse);
+        return new ListRoomSemesterResponse(responseList, pageResponse);
     }
 
     private void validateRoomSemester(RoomSemesterRequest request) {
@@ -118,7 +119,8 @@ public class RoomSemesterService {
         if(request.getSemesterId() == null) {
             throw new BadRequestException(400,"Semester không thể null");
         }
-        if (!isExistRoomSemester(request.getRoomId(), request.getSemesterId())){
+        RoomSemester roomSemester = roomSemesterDao.getByRoomIdAndSemesterId(request.getRoomId(), request.getSemesterId());
+        if (roomSemester != null && !request.getId().equals(roomSemester.getId())) {
             throw new BadRequestException(400, "RoomSemester đã tồn tại");
         }
         if (!roomService.isExistRoom(request.getRoomId())) {
@@ -127,5 +129,21 @@ public class RoomSemesterService {
         if(!semesterService.isExistSemester(request.getSemesterId())) {
             throw new BadRequestException(400, "Semester không tồn tại");
         }
+    }
+    private RoomSemesterResponse generateResponse(RoomSemester roomSemester) {
+        RoomSemesterResponse response = new RoomSemesterResponse();
+        response.setId(roomSemester.getId());
+        response.setNumberOfComputer(roomSemester.getNumberOfComputer());
+        response.setPreventiveComputer(roomSemester.getPreventiveComputer());
+
+        Room room = roomDao.getById(roomSemester.getRoomId());
+        response.setDescription(room.getDescription());
+        response.setRoomCode(room.getRoomCode());
+        response.setRoomName(room.getRoomName());
+        response.setRoomId(room.getId());
+        Location location = locationDao.getById(room.getLocationId());
+        response.setLocation(location.getLocationName());
+        response.setSemesterId(roomSemester.getSemesterId());
+        return response;
     }
 }

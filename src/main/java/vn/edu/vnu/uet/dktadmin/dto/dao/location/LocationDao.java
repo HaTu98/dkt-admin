@@ -8,5 +8,6 @@ public interface LocationDao {
     Location store(Location location);
     Location getByLocationName(String name);
     Location getByLocationCode(String code);
+    Location getById(Long id);
     List<Location> getAll();
 }

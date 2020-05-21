@@ -16,9 +16,6 @@ public class RoomSemesterRequest {
     @JsonProperty(value = "PreventiveComputer")
     private Integer preventiveComputer;
 
-    @JsonProperty(value = "RoomSemesterCode")
-    private String roomSemesterCode;
-
     @JsonProperty(value = "SemesterId")
     private Long semesterId;
 

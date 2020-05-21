@@ -15,7 +15,6 @@ public class RoomSemester {
     private Long id;
 
     private Integer numberOfComputer;
-    private String roomSemesterCode;
     private Integer preventiveComputer;
     private Long semesterId;
     private Long roomId;
