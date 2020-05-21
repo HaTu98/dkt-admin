@@ -23,6 +23,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.subject.ListSubjectResponse;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -183,5 +184,22 @@ public class RoomController extends BaseController {
         return ResponseEntity.ok("success");
     }
 
-
+    @GetMapping("/room_not_in_semester/{id}")
+    public ApiDataResponse<ListSubjectResponse> subjectNotInSemester(
+            @PathVariable Long id,
+            @RequestParam(required = false, value = "Size") Integer size,
+            @RequestParam(required = false, value = "Page") Integer page
+    ) {
+        try {
+            log.info("get room not in semester all");
+            PageBase pageBase = PageUtil.validate(page, size);
+            return ApiDataResponse.ok(roomService.getRoomNotInSemester(id, pageBase));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
 }

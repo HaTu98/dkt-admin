@@ -8,16 +8,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
-import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
-import vn.edu.vnu.uet.dktadmin.dto.model.Location;
-import vn.edu.vnu.uet.dktadmin.dto.model.Room;
-import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
-import vn.edu.vnu.uet.dktadmin.dto.model.Student;
+import vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester.RoomSemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.location.LocationService;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
@@ -25,9 +22,8 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
-import vn.edu.vnu.uet.dktadmin.rest.model.subject.SubjectRequest;
 
+import java.awt.print.Pageable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,12 +36,14 @@ public class RoomService {
     private final LocationDao locationDao;
     private final LocationService locationService;
     private final MapperFacade mapperFacade;
+    private final RoomSemesterDao roomSemesterDao;
 
-    public RoomService(RoomDao roomDao, LocationDao locationDao, LocationService locationService, MapperFacade mapperFacade) {
+    public RoomService(RoomDao roomDao, LocationDao locationDao, LocationService locationService, MapperFacade mapperFacade, RoomSemesterDao roomSemesterDao) {
         this.roomDao = roomDao;
         this.locationDao = locationDao;
         this.locationService = locationService;
         this.mapperFacade = mapperFacade;
+        this.roomSemesterDao = roomSemesterDao;
     }
 
     public RoomResponse createRoom(RoomRequest request) {
@@ -163,6 +161,13 @@ public class RoomService {
         List<XSSFRow> errors = new ArrayList<>();
         storeImportRoom(sheet, errors);
         return errors;
+    }
+
+    public RoomListResponse getRoomNotInSemester(Long semesterId, PageBase  pageBase) {
+        List<RoomSemester> roomSemesters = roomSemesterDao.getBySemesterId(semesterId);
+        List<Long> listRoomIds = roomSemesters.stream().map(RoomSemester::getRoomId).collect(Collectors.toList());
+        List<Room> rooms = roomDao.getRoomNotInList(listRoomIds);
+        return getListRoomPaging(rooms, pageBase);
     }
 
     private void storeImportRoom(XSSFSheet sheet, List<XSSFRow> errors) {

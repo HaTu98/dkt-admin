@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
+import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
+import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.student.StudentController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
@@ -12,6 +14,8 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.ListRoomSemesterResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterResponse;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/room_semesters")
@@ -80,6 +84,39 @@ public class RoomSemesterController {
         } catch (Exception e) {
             return ApiDataResponse.error();
         }
+    }
+
+    @DeleteMapping("/list")
+    public ApiDataResponse<String> deleteListSubjectSemester(List<Long> ids) {
+        try {
+            log.info("delete roomSemester in list: {}", ids);
+            roomSemesterService.deleteListRoomSemester(ids);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @PostMapping("/list")
+    public ApiDataResponse<String> createList(List<RoomSemesterRequest> requests) {
+        log.info("delete roomSemester in list: {}", requests);
+        for (RoomSemesterRequest request : requests) {
+            try {
+                roomSemesterService.createRoomSemester(request);
+
+            } catch (BaseException e) {
+                log.error(e.getMessage());
+                return ApiDataResponse.error(e.getCode(), e.getMessage());
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                return ApiDataResponse.error();
+            }
+        }
+        return ApiDataResponse.ok("success");
     }
 
 }

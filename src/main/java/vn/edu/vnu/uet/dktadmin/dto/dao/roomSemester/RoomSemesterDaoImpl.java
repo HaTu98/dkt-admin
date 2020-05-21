@@ -1,9 +1,11 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
 import vn.edu.vnu.uet.dktadmin.dto.repository.RoomSemesterRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,5 +41,19 @@ public class RoomSemesterDaoImpl implements RoomSemesterDao{
     @Override
     public List<RoomSemester> getBySemesterId(Long id) {
         return roomSemesterRepository.findBySemesterId(id);
+    }
+
+    @Override
+    public List<RoomSemester> getRoomSemesterInList(List<Long> ids) {
+        List<RoomSemester> roomSemesters = roomSemesterRepository.findByIdIn(ids);
+        if (CollectionUtils.isEmpty(roomSemesters)) {
+            return new ArrayList<>();
+        }
+        return roomSemesters;
+    }
+
+    @Override
+    public void deleteList(List<RoomSemester> roomSemesters) {
+        roomSemesterRepository.deleteAll(roomSemesters);
     }
 }

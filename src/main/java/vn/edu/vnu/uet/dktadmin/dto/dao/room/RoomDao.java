@@ -14,4 +14,5 @@ public interface RoomDao {
     List<Room> getAllRoom();
     List<Room> getRoomInList(List<Long> id);
     void deleteRooms(List<Room> rooms);
+    List<Room> getRoomNotInList(List<Long> ids);
 }

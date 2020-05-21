@@ -10,4 +10,5 @@ import java.util.List;
 public interface RoomSemesterRepository extends JpaRepository<RoomSemester,Long> {
     RoomSemester findByRoomIdAndSemesterId(Long roomId, Long semesterId);
     List<RoomSemester> findBySemesterId(Long id);
+    List<RoomSemester> findByIdIn(List<Long> ids);
 }

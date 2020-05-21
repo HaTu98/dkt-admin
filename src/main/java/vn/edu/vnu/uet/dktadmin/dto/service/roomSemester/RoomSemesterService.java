@@ -71,6 +71,11 @@ public class RoomSemesterService {
         return getRoomSemesterPaging(roomSemesters, pageBase);
     }
 
+    public void deleteListRoomSemester(List<Long> ids) {
+        List<RoomSemester> roomSemesters = roomSemesterDao.getRoomSemesterInList(ids);
+        roomSemesterDao.deleteList(roomSemesters);
+    }
+
     public ListRoomSemesterResponse getRoomSemesterPaging(List<RoomSemester> roomSemesters, PageBase pageBase) {
         List<RoomSemester> roomSemesterList = new ArrayList<>();
         Integer page = pageBase.getPage();

@@ -19,4 +19,5 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findByIdIn(List<Long> id);
 
     List<Room> findAllByOrderByIdAsc();
+    List<Room> findByIdNotIn(List<Long> ids);
 }
