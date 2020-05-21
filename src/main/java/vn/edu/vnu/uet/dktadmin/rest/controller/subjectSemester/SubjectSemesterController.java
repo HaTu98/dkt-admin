@@ -1,4 +1,4 @@
-package vn.edu.vnu.uet.dktadmin.rest.controller.subjectSemester;
+package vn.edu.vnu.uet.dktadmin.    rest.controller.subjectSemester;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,6 @@ import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterServic
 import vn.edu.vnu.uet.dktadmin.rest.controller.subject.SubjectController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
-import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.StudentSubjectRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterResponse;
 

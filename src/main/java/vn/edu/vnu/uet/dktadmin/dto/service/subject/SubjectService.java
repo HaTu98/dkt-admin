@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
@@ -75,7 +76,12 @@ public class SubjectService {
     public ListSubjectResponse getSubjectNotInSemester(Long id, PageBase pageBase) {
         List<SubjectSemester> subjectSemesters = subjectSemesterDao.getBySemesterId(id);
         List<Long> listSubjectId = subjectSemesters.stream().map(SubjectSemester::getId).collect(Collectors.toList());
-        List<Subject> subjects = subjectDao.getByIdNotIn(listSubjectId);
+        List<Subject> subjects;
+        if (CollectionUtils.isEmpty(listSubjectId)) {
+            subjects = subjectDao.getAll();
+        } else {
+            subjects = subjectDao.getByIdNotIn(listSubjectId);
+        }
         return pagingSubject(subjects, pageBase);
     }
 
