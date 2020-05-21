@@ -6,6 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
@@ -166,7 +167,12 @@ public class RoomService {
     public RoomListResponse getRoomNotInSemester(Long semesterId, PageBase  pageBase) {
         List<RoomSemester> roomSemesters = roomSemesterDao.getBySemesterId(semesterId);
         List<Long> listRoomIds = roomSemesters.stream().map(RoomSemester::getRoomId).collect(Collectors.toList());
-        List<Room> rooms = roomDao.getRoomNotInList(listRoomIds);
+        List<Room> rooms;
+        if (CollectionUtils.isEmpty(listRoomIds)) {
+            rooms = roomDao.getAllRoom();
+        } else {
+            rooms = roomDao.getRoomNotInList(listRoomIds);
+        }
         return getListRoomPaging(rooms, pageBase);
     }
 
