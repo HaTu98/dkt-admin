@@ -102,7 +102,7 @@ public class RoomSemesterController {
     }
 
     @PostMapping("/list")
-    public ApiDataResponse<String> createList(List<RoomSemesterRequest> requests) {
+    public ApiDataResponse<String> createList(@RequestBody List<RoomSemesterRequest> requests) {
         log.info("delete roomSemester in list: {}", requests);
         for (RoomSemesterRequest request : requests) {
             try {
