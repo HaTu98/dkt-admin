@@ -87,7 +87,7 @@ public class RoomSemesterController {
     }
 
     @DeleteMapping("/list")
-    public ApiDataResponse<String> deleteListSubjectSemester(List<Long> ids) {
+    public ApiDataResponse<String> deleteListSubjectSemester(@RequestBody List<Long> ids) {
         try {
             log.info("delete roomSemester in list: {}", ids);
             roomSemesterService.deleteListRoomSemester(ids);
