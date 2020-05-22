@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface RoomSemesterDao {
     RoomSemester store(RoomSemester roomSemester);
+    void storeAll(List<RoomSemester> roomSemesters);
     List<RoomSemester> getAll();
     RoomSemester getById(Long id);
     RoomSemester getByRoomIdAndSemesterId(Long roomId, Long semesterId);

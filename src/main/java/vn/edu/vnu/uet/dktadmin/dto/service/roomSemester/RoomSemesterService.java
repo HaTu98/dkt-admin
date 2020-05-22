@@ -17,9 +17,12 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.ListRoomSemesterResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.UpdateRoomRequest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RoomSemesterService {
@@ -88,6 +91,22 @@ public class RoomSemesterService {
         }
         PageResponse pageResponse = new PageResponse(page, size, total);
         return new ListRoomSemesterResponse(responseList, pageResponse);
+    }
+
+    public void updateList(List<UpdateRoomRequest> requests) {
+        Map<Long, UpdateRoomRequest> mapData = new HashMap<>();
+        List<Long> listIds = new ArrayList<>();
+        for (UpdateRoomRequest request : requests) {
+            mapData.put(request.getId(), request);
+            listIds.add(request.getId());
+        }
+        List<RoomSemester> roomSemesters = roomSemesterDao.getRoomSemesterInList(listIds);
+        for (int i = 0; i < roomSemesters.size(); i++) {
+            UpdateRoomRequest updateRoom = mapData.get(roomSemesters.get(i).getId());
+            roomSemesters.get(i).setNumberOfComputer(updateRoom.getNumberOfComputer());
+            roomSemesters.get(i).setPreventiveComputer(updateRoom.getPreventiveComputer());
+        }
+        roomSemesterDao.storeAll(roomSemesters);
     }
 
     private void validateRoomSemester(RoomSemesterRequest request) {

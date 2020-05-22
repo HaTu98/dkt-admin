@@ -14,6 +14,7 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.ListRoomSemesterResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.UpdateRoomRequest;
 
 import java.util.List;
 
@@ -46,6 +47,21 @@ public class RoomSemesterController {
         try {
             log.info("Update Room Semester : {}", request);
             return ApiDataResponse.ok(roomSemesterService.update(request));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @PutMapping("/list")
+    public ApiDataResponse<String> updateList(@RequestBody List<UpdateRoomRequest> requests) {
+        try {
+            log.info("Update ListRoom Semester : {}", requests);
+            roomSemesterService.updateList(requests);
+            return ApiDataResponse.ok("success");
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

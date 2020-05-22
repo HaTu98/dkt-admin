@@ -24,6 +24,11 @@ public class RoomSemesterDaoImpl implements RoomSemesterDao{
     }
 
     @Override
+    public void storeAll(List<RoomSemester> roomSemesters) {
+        roomSemesterRepository.saveAll(roomSemesters);
+    }
+
+    @Override
     public List<RoomSemester> getAll() {
         return roomSemesterRepository.findAll();
     }
