@@ -10,6 +10,7 @@ import vn.edu.vnu.uet.dktadmin.rest.controller.student.StudentController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.*;
+import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterRequest;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class StudentSubjectController {
     @PostMapping()
     public ApiDataResponse<StudentSubjectResponse> create(@RequestBody StudentSubjectRequest request) {
         try {
-            log.info("create subjectSemester : {}", request );
+            log.info("create subjectSemester : {}", request);
             StudentSubjectResponse response = studentSubjectService.create(request);
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
@@ -41,7 +42,7 @@ public class StudentSubjectController {
     @PutMapping()
     public ApiDataResponse<StudentSubjectResponse> update(@RequestBody StudentSubjectRequest request) {
         try {
-            log.info("update subjectSubject : {}", request );
+            log.info("update subjectSubject : {}", request);
             StudentSubjectResponse response = studentSubjectService.update(request);
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
@@ -60,9 +61,9 @@ public class StudentSubjectController {
             @RequestParam(required = false, value = "Page") Integer page
     ) {
         try {
-            log.info("get subject_semester id : {}", id );
+            log.info("get subject_semester id : {}", id);
             PageBase pageBase = PageUtil.validate(page, size);
-            ListStudentSubjectResponse response = studentSubjectService.getBySubjectSemesterId(id,pageBase);
+            ListStudentSubjectResponse response = studentSubjectService.getBySubjectSemesterId(id, pageBase);
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
             log.error(e.getMessage());
@@ -80,9 +81,9 @@ public class StudentSubjectController {
             @RequestParam(required = false, value = "Page") Integer page
     ) {
         try {
-            log.info("get by semester id : {}", id );
+            log.info("get by semester id : {}", id);
             PageBase pageBase = PageUtil.validate(page, size);
-            ListStudentSubjectResponse response = studentSubjectService.getBySemesterId(id,pageBase);
+            ListStudentSubjectResponse response = studentSubjectService.getBySemesterId(id, pageBase);
             return ApiDataResponse.ok(response);
         } catch (BaseException e) {
             log.error(e.getMessage());
@@ -96,7 +97,7 @@ public class StudentSubjectController {
     @DeleteMapping("/{id}")
     public ApiDataResponse<String> delete(@PathVariable Long id) {
         try {
-            log.info("delete  id : {}", id );
+            log.info("delete  id : {}", id);
             studentSubjectService.delete(id);
             return ApiDataResponse.ok("success");
         } catch (BaseException e) {
@@ -111,7 +112,7 @@ public class StudentSubjectController {
     @GetMapping("/{id}")
     public ApiDataResponse<StudentSubjectResponse> getById(@PathVariable Long id) {
         try {
-            log.info("get  id : {}", id );
+            log.info("get  id : {}", id);
             return ApiDataResponse.ok(studentSubjectService.getById(id));
         } catch (BaseException e) {
             log.error(e.getMessage());
@@ -149,8 +150,37 @@ public class StudentSubjectController {
     ) {
         try {
             log.info("get student subject in subject");
-            PageBase pageBase = PageUtil.validate(page,size);
+            PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(studentSubjectService.getListStudentInSubject(id, pageBase));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @PostMapping("/add_one")
+    public ApiDataResponse<StudentSubjectResponse> createOne(@RequestBody StudentSubjectRequest request) {
+        try {
+            log.info("create  student in StudentSubject");
+            return ApiDataResponse.ok(studentSubjectService.createByStudentCode(request));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @PostMapping("/check_create")
+    public ApiDataResponse checkCreate(@RequestBody StudentSubjectRequest request) {
+        try {
+            log.info("check create");
+            studentSubjectService.validateCreateOne(request);
+            return ApiDataResponse.ok(null);
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

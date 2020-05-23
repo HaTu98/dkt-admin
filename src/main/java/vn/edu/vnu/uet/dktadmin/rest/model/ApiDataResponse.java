@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 
 @AllArgsConstructor
 @Data
@@ -38,5 +39,9 @@ public class ApiDataResponse<T> {
 
     public static ApiDataResponse error(Object data, int statusCode, String message) {
         return new ApiDataResponse(data, statusCode, message);
+    }
+
+    public static ApiDataResponse error(BaseException e){
+        return new ApiDataResponse(null,e.getCode(), e.getMessage() );
     }
 }

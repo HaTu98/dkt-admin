@@ -165,7 +165,7 @@ public class SubjectController {
         }
     }
 
-    @PostMapping("/subject/template")
+    @GetMapping("/subject/template")
     public ResponseEntity<?> template(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         XSSFWorkbook xssfWorkbook = subjectService.template();

@@ -4,6 +4,7 @@ import ma.glasnost.orika.MapperFacade;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
@@ -47,6 +48,14 @@ public class StudentSubjectService {
 
     public StudentSubject create(StudentSubject request) {
         return studentSubjectDao.store(request);
+    }
+
+    public StudentSubjectResponse createByStudentCode(StudentSubjectRequest request) {
+        validateCreateOne(request);
+        Student student = studentDao.getByStudentCode(request.getStudentCode());
+        request.setStudentId(student.getId());
+        StudentSubject studentSubject = studentSubjectDao.store(generateStudentSubject(request));
+        return mapperFacade.map(studentSubject, StudentSubjectResponse.class);
     }
 
     public List<StudentSubject> getAll() {
@@ -189,6 +198,22 @@ public class StudentSubjectService {
         studentSubject.setSemesterId(subjectSemester.getSemesterId());
 
         return studentSubject;
+    }
+
+    public void validateCreateOne(StudentSubjectRequest request) {
+        if (request.getStudentCode() == null) {
+            throw new BaseException(404, "StudentCode không tồn tại");
+        }
+        if (!studentService.existStudent(request.getStudentCode())) {
+            throw new BaseException(404, "StudentCode không tồn tại");
+        }
+        StudentSubject studentSubject = studentSubjectDao.getByStudentAndSubjectSemesterId(request.getStudentId(), request.getSubjectSemesterId());
+        if (studentSubject != null) {
+            throw new BaseException(409, "StudentSubject đã tồn tại");
+        }
+        if (!subjectSemesterService.existSubjectSemester(request.getSubjectSemesterId())) {
+            throw new BadRequestException(404, "Môn học trong học kì không tồn tại");
+        }
     }
 
     private void validateStudentSubject(StudentSubjectRequest request) {

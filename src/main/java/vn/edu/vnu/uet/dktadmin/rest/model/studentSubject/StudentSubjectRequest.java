@@ -13,6 +13,9 @@ public class StudentSubjectRequest {
     @JsonProperty(value = "StudentId")
     private Long studentId;
 
+    @JsonProperty(value = "StudentCode")
+    private String studentCode;
+
     @JsonProperty(value = "SubjectSemesterId")
     private Long subjectSemesterId;
 }

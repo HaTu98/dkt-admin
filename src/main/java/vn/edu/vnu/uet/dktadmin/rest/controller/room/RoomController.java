@@ -148,7 +148,7 @@ public class RoomController extends BaseController {
         }
     }
 
-    @PostMapping("/room/template")
+    @GetMapping("/room/template")
     public ResponseEntity<?> template(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         XSSFWorkbook xssfWorkbook = roomService.template();
