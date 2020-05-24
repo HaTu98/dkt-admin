@@ -65,6 +65,21 @@ public class StudentSubjectController {
         }
     }
 
+    @PutMapping("/status")
+    public ApiDataResponse<String> active(@RequestBody StudentSubjectStatus request) {
+        try {
+            log.info("update status : {}", request);
+            studentSubjectService.updateStatus(request);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
     @GetMapping("/subject_semester/{id}")
     public ApiDataResponse<ListStudentSubjectResponse> getBySubjectSemester(
             @PathVariable Long id,

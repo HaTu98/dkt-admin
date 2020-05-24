@@ -108,6 +108,19 @@ public class StudentSubjectService {
         return mapperFacade.map(studentSubjectDao.store(studentSubject), StudentSubjectResponse.class);
     }
 
+    public void updateStatus(StudentSubjectStatus request) {
+        StudentSubject studentSubject = studentSubjectDao.getById(request.getId());
+        if (studentSubject != null) {
+            if (request.getStatus() == Constant.active) {
+                studentSubject.setStatus(Constant.active);
+            }
+            if (request.getStatus() == Constant.inActive) {
+                studentSubject.setStatus(Constant.inActive);
+            }
+            studentSubjectDao.store(studentSubject);
+        }
+    }
+
     public ListStudentSubjectResponse getBySubjectSemesterId(Long id, PageBase pageBase) {
         List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(id);
         return getStudentSubjectPaging(studentSubjects, pageBase);
