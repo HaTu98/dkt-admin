@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
 import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
@@ -57,9 +58,7 @@ public class StudentService {
 
     @Transactional
     public StudentResponse createStudent(StudentRequest request) {
-        if (checkStudentExist(request)) {
-            throw new BadRequestException(400, "student đã tồn tại");
-        }
+        validateCreate(request);
         DktAdmin admin = accountService.getUserSession();
 
         String passwordEncode = passwordEncoder.encode(request.getStudentCode());
@@ -86,6 +85,21 @@ public class StudentService {
     public StudentListResponse getStudentInSubject(Long subjectSemesterId, PageBase pageRequest) {
         List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(subjectSemesterId);
         return getListStudentByStudentSubject(studentSubjects, pageRequest);
+    }
+
+    private void validateCreate(StudentRequest request) {
+        if (request.getStudentCode() == null ) {
+            throw new BaseException(400, "StudentCode không thể null");
+        }
+        if (studentDao.getByStudentCode(request.getStudentCode()) != null) {
+            throw new BaseException(400, "StudentCode đã  tồn tại");
+        }
+        if (request.getEmail() == null) {
+            throw new BaseException(400, "StudentEmail không thể null");
+        }
+        if (studentDao.getByEmail(request.getEmail()) != null) {
+            throw new BaseException(400, "StudentEmail đã tồn tại");
+        }
     }
 
     private StudentListResponse getListStudentByStudentSubject(List<StudentSubject> studentSubjects, PageBase pageRequest) {
