@@ -15,4 +15,6 @@ public interface StudentSubjectDao {
     List<StudentSubject> getByIsNotRegistered(Long id);
     List<StudentSubject> getByIsRegisteredAndStudentId(Long id, Long studentId);
     Integer countStudentInSubject(Long subjectSemesterid);
+    List<StudentSubject> getStudentSubjectInList(List<Long> ids);
+    void deleteAll(List<StudentSubject> studentSubjects);
 }

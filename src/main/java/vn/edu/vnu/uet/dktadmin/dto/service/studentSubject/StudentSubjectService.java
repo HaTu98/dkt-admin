@@ -125,6 +125,11 @@ public class StudentSubjectService {
         }
     }
 
+    public void deleteList(List<Long> ids) {
+        List<StudentSubject> studentSubjects = studentSubjectDao.getStudentSubjectInList(ids);
+        studentSubjectDao.deleteAll(studentSubjects);
+    }
+
     public StudentSubjectResponse getById(Long id) {
         return mapperFacade.map(studentSubjectDao.getById(id), StudentSubjectResponse.class);
     }

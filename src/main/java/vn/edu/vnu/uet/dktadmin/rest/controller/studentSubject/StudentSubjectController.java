@@ -120,6 +120,21 @@ public class StudentSubjectController {
         }
     }
 
+    @DeleteMapping("/list")
+    public ApiDataResponse<String> deleteList(@RequestBody List<Long> ids) {
+        try {
+            log.info("delete  ids : {}", ids);
+            studentSubjectService.deleteList(ids);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
     @GetMapping("/{id}")
     public ApiDataResponse<StudentSubjectResponse> getById(@PathVariable Long id) {
         try {
