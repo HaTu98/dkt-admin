@@ -87,6 +87,15 @@ public class StudentSubjectDaoImpl implements StudentSubjectDao {
     }
 
     @Override
+    public List<StudentSubject> getStudentSubjectInStudentIdInList(List<Long> ids) {
+        List<StudentSubject> studentSubjects = studentSubjectRepository.findByStudentIdIn(ids);
+        if (CollectionUtils.isEmpty(studentSubjects)) {
+            return new ArrayList<>();
+        }
+        return studentSubjects;
+    }
+
+    @Override
     public void deleteAll(List<StudentSubject> studentSubjects) {
         studentSubjectRepository.deleteAll(studentSubjects);
     }

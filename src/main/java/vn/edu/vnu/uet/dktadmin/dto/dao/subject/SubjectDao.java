@@ -1,6 +1,7 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.subject;
 
 import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
+import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 
 import java.util.List;
 

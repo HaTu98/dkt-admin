@@ -12,4 +12,5 @@ public interface SubjectSemesterDao {
     List<SubjectSemester> getBySemesterId(Long semesterId);
     List<SubjectSemester> getBySubjectSemesterIdInList(List<Long> ids);
     void deleteList(List<SubjectSemester> subjectSemesters);
+    List<SubjectSemester> getBySubjectIdIn(List<Long> ids);
 }

@@ -49,4 +49,13 @@ public class SubjectSemesterDaoImpl implements SubjectSemesterDao {
     public void deleteList(List<SubjectSemester> subjectSemesters) {
         subjectSemesterRepository.deleteAll(subjectSemesters);
     }
+
+    @Override
+    public List<SubjectSemester> getBySubjectIdIn(List<Long> ids) {
+        List<SubjectSemester> subjectSemesters = subjectSemesterRepository.findBySubjectIdIn(ids);
+        if (CollectionUtils.isEmpty(subjectSemesters)) {
+            return new ArrayList<>();
+        }
+        return subjectSemesters;
+    }
 }

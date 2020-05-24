@@ -10,6 +10,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
@@ -118,6 +119,10 @@ public class RoomService {
 
     public void deleteListRoom(List<Long> ids) {
         List<Room> rooms = roomDao.getRoomInList(ids);
+        List<RoomSemester> roomSemesters = roomSemesterDao.getByRoomIdIn(ids);
+        if (!CollectionUtils.isEmpty(roomSemesters)) {
+            throw new BaseException(400, "Không thể xóa room");
+        }
         roomDao.deleteRooms(rooms);
     }
 

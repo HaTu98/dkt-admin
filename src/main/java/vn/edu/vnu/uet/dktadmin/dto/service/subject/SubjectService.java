@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
@@ -121,6 +122,10 @@ public class SubjectService {
 
     public void deleteListSubject(List<Long> ids) {
         List<Subject> semesters = subjectDao.getByIdIn(ids);
+        List<SubjectSemester> subjectSemesters = subjectSemesterDao.getBySubjectIdIn(ids);
+        if (!CollectionUtils.isEmpty(subjectSemesters)) {
+            throw new BaseException(400, "Không thể xóa subject");
+        }
         subjectDao.deleteListSubject(semesters);
     }
 

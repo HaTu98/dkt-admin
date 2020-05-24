@@ -11,6 +11,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
@@ -162,6 +163,10 @@ public class StudentService {
 
     public void deleteListStudent(List<Long> ids) {
         List<Student> students = studentDao.getStudentInList(ids);
+        List<StudentSubject> studentSubjects = studentSubjectDao.getStudentSubjectInStudentIdInList(ids);
+        if (!CollectionUtils.isEmpty(studentSubjects)) {
+            throw new BaseException(400, "Không thể xóa student");
+        }
         studentDao.deleteListStudent(students);
     }
 
