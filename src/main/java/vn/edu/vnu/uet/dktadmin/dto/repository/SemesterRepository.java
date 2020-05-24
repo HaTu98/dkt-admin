@@ -13,4 +13,5 @@ public interface SemesterRepository extends JpaRepository<Semester, Long> {
     List<Semester> findBySemesterNameContains(String name);
     List<Semester> findByIdIn(List<Long> id);
     List<Semester> findAllByOrderByIdAsc();
+    Semester findBySemesterName(String semesterName);
 }

@@ -17,6 +17,7 @@ import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
+import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.common.validator.EmailValidator;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
@@ -213,12 +214,12 @@ public class StudentService {
                 String stt = getValueInCell(row.getCell(0));
                 if (stt == null) continue;
                 StudentRequest studentRequest = new StudentRequest();
-                studentRequest.setFullName(getValueInCell(row.getCell(1)).trim());
-                studentRequest.setStudentCode(getValueInCell(row.getCell(2)));
-                studentRequest.setDateOfBirth(getValueInCell(row.getCell(3)));
-                studentRequest.setEmail(getValueInCell(row.getCell(4)));
-                studentRequest.setCourse(getValueInCell(row.getCell(5)));
-                String gender = getValueInCell(row.getCell(6));
+                studentRequest.setFullName(ExcelUtil.getValueInCell(row.getCell(1)).trim());
+                studentRequest.setStudentCode(ExcelUtil.getValueInCell(row.getCell(2)));
+                studentRequest.setDateOfBirth(ExcelUtil.getValueInCell(row.getCell(3)));
+                studentRequest.setEmail(ExcelUtil.getValueInCell(row.getCell(4)));
+                studentRequest.setCourse(ExcelUtil.getValueInCell(row.getCell(5)));
+                String gender = ExcelUtil.getValueInCell(row.getCell(6));
                 studentRequest.setGender(Gender.getValue(gender).getValue());
 
                 this.createStudent(studentRequest);

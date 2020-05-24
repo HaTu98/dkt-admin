@@ -1,12 +1,20 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.studentSubject;
 
 import ma.glasnost.orika.MapperFacade;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
+import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
 import vn.edu.vnu.uet.dktadmin.common.security.AccountService;
+import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
+import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam.StudentSubjectExamDao;
@@ -16,8 +24,12 @@ import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +46,9 @@ public class StudentSubjectService {
     private final SubjectSemesterService subjectSemesterService;
     private final AccountService accountService;
     private final StudentSubjectExamDao studentSubjectExamDao;
+    private final SemesterDao semesterDao;
 
-    public StudentSubjectService(MapperFacade mapperFacade, StudentSubjectDao studentSubjectDao, StudentDao studentDao, SubjectSemesterDao subjectSemesterDao, StudentService studentService, SubjectSemesterService subjectSemesterService, AccountService accountService, StudentSubjectExamDao studentSubjectExamDao) {
+    public StudentSubjectService(MapperFacade mapperFacade, StudentSubjectDao studentSubjectDao, StudentDao studentDao, SubjectSemesterDao subjectSemesterDao, StudentService studentService, SubjectSemesterService subjectSemesterService, AccountService accountService, StudentSubjectExamDao studentSubjectExamDao, SemesterDao semesterDao) {
         this.mapperFacade = mapperFacade;
         this.studentSubjectDao = studentSubjectDao;
         this.studentDao = studentDao;
@@ -44,6 +57,7 @@ public class StudentSubjectService {
         this.subjectSemesterService = subjectSemesterService;
         this.accountService = accountService;
         this.studentSubjectExamDao = studentSubjectExamDao;
+        this.semesterDao = semesterDao;
     }
 
     public StudentSubject create(StudentSubject request) {
@@ -133,6 +147,53 @@ public class StudentSubjectService {
     public ListStudentInSubjectResponse getListStudentInSubject(Long subjectSemesterId, PageBase pageBase) {
         List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(subjectSemesterId);
         return generateStudentInSubject(studentSubjects, pageBase, subjectSemesterId);
+    }
+
+    public List<XSSFRow> importStudentSubject(MultipartFile file) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        List<XSSFRow> errors = new ArrayList<>();
+        storeImportStudentSubject(sheet, errors);
+        return errors;
+    }
+
+    public XSSFWorkbook template() throws IOException {
+        String templatePath = "\\template\\excel\\import_student_subject.xlsx";
+        File templateFile = new ClassPathResource(templatePath).getFile();
+        FileInputStream templateInputStream = new FileInputStream(templateFile);
+        return new XSSFWorkbook(templateInputStream);
+    }
+
+    private void storeImportStudentSubject(XSSFSheet sheet, List<XSSFRow> errors) {
+        int rowNumber = sheet.getPhysicalNumberOfRows();
+        for (int i = 5; i < rowNumber; i++) {
+            XSSFRow row = sheet.getRow(i);
+            try {
+                String stt = ExcelUtil.getValueInCell(row.getCell(0));
+                if (stt == null) {
+                    continue;
+                }
+                String studentCode = ExcelUtil.getValueInCell(row.getCell(2));
+                StudentSubjectRequest studentSubjectRequest = new StudentSubjectRequest();
+                Student student = studentDao.getByStudentCode(studentCode);
+                if (student == null) {
+                    errors.add(row);
+                    continue;
+                }
+
+                studentSubjectRequest.setStudentId(student.getId());
+                String semesterName = ExcelUtil.getValueInCell(row.getCell(5));
+                Semester semester = semesterDao.getBySemesterName(semesterName);
+                if (semester == null) {
+                    errors.add(row);
+                    continue;
+                }
+                studentSubjectRequest.setSubjectSemesterId(semester.getId());
+                this.create(studentSubjectRequest);
+            } catch (Exception e) {
+                errors.add(row);
+            }
+        }
     }
 
     private ListStudentInSubjectResponse generateStudentInSubject(List<StudentSubject> studentSubjects, PageBase pageBase, Long subjectSemesterId) {

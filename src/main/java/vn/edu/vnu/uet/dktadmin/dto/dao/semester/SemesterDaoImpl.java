@@ -1,12 +1,10 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.semester;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 import vn.edu.vnu.uet.dktadmin.dto.repository.SemesterRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SemesterDaoImpl implements SemesterDao{
@@ -54,5 +52,10 @@ public class SemesterDaoImpl implements SemesterDao{
     @Override
     public void deleteSemester(List<Semester> semesters) {
         semesterRepository.deleteAll(semesters);
+    }
+
+    @Override
+    public Semester getBySemesterName(String semesterName) {
+        return semesterRepository.findBySemesterName(semesterName);
     }
 }
