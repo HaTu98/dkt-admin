@@ -4,10 +4,16 @@ import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
+import vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester.RoomSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
+import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
@@ -23,13 +29,16 @@ import java.util.stream.Collectors;
 @Service
 public class SemesterService {
     private final SemesterDao semesterDao;
-
+    private final SubjectSemesterDao subjectSemesterDao;
+    private final RoomSemesterDao roomSemesterDao;
     private final MapperFacade mapperFacade;
     private final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    public SemesterService(MapperFacade mapperFacade, SemesterDao semesterDao) {
+    public SemesterService(MapperFacade mapperFacade, SemesterDao semesterDao, SubjectSemesterDao subjectSemesterDao, RoomSemesterDao roomSemesterDao) {
         this.mapperFacade = mapperFacade;
         this.semesterDao = semesterDao;
+        this.subjectSemesterDao = subjectSemesterDao;
+        this.roomSemesterDao = roomSemesterDao;
     }
 
     public boolean isExistSemester(String semesterCode) {
@@ -106,6 +115,14 @@ public class SemesterService {
 
     public void deleteListSemester(List<Long> ids) {
         List<Semester> semesters = semesterDao.getSemesterIdIn(ids);
+        List<SubjectSemester> subjectSemesters = subjectSemesterDao.getBySemesterIdIn(ids);
+        if (!CollectionUtils.isEmpty(subjectSemesters)) {
+            throw new BaseException(400, "Không thể xóa Semester");
+        }
+        List<RoomSemester> roomSemesters = roomSemesterDao.getRoomSemesterInList(ids);
+        if (!CollectionUtils.isEmpty(roomSemesters)) {
+            throw new BaseException(400, "Không thể xóa Semester");
+        }
         semesterDao.deleteSemester(semesters);
     }
 

@@ -12,6 +12,7 @@ public interface RoomSemesterDao {
     RoomSemester getByRoomIdAndSemesterId(Long roomId, Long semesterId);
     List<RoomSemester> getBySemesterId(Long id);
     List<RoomSemester> getRoomSemesterInList(List<Long> ids);
+    List<RoomSemester> getBySemesterIdIn(List<Long> ids);
     void deleteList(List<RoomSemester> roomSemesters);
     List<RoomSemester> getByRoomIdIn(List<Long> ids);
 }

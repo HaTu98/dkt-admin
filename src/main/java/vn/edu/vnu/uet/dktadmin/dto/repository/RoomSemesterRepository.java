@@ -12,4 +12,5 @@ public interface RoomSemesterRepository extends JpaRepository<RoomSemester,Long>
     List<RoomSemester> findBySemesterId(Long id);
     List<RoomSemester> findByIdIn(List<Long> ids);
     List<RoomSemester> findByRoomIdIn(List<Long> ids);
+    List<RoomSemester> findBySemesterIdIn(List<Long> ids);
 }

@@ -58,6 +58,15 @@ public class RoomSemesterDaoImpl implements RoomSemesterDao{
     }
 
     @Override
+    public List<RoomSemester> getBySemesterIdIn(List<Long> ids) {
+        List<RoomSemester> roomSemesters = roomSemesterRepository.findBySemesterIdIn(ids);
+        if (CollectionUtils.isEmpty(roomSemesters)) {
+            return new ArrayList<>();
+        }
+        return roomSemesters;
+    }
+
+    @Override
     public void deleteList(List<RoomSemester> roomSemesters) {
         roomSemesterRepository.deleteAll(roomSemesters);
     }

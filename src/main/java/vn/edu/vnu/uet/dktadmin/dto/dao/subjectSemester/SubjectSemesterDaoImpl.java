@@ -58,4 +58,13 @@ public class SubjectSemesterDaoImpl implements SubjectSemesterDao {
         }
         return subjectSemesters;
     }
+
+    @Override
+    public List<SubjectSemester> getBySemesterIdIn(List<Long> ids) {
+        List<SubjectSemester> subjectSemesters = subjectSemesterRepository.findBySemesterIdIn(ids);
+        if (CollectionUtils.isEmpty(subjectSemesters)) {
+            return new ArrayList<>();
+        }
+        return subjectSemesters;
+    }
 }
