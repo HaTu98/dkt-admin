@@ -283,10 +283,11 @@ public class StudentSubjectService {
         if (request.getStudentCode() == null) {
             throw new BaseException(404, "StudentCode không tồn tại");
         }
-        if (!studentService.existStudent(request.getStudentCode())) {
+        Student student = studentDao.getByStudentCode(request.getStudentCode());
+        if (student == null) {
             throw new BaseException(404, "StudentCode không tồn tại");
         }
-        StudentSubject studentSubject = studentSubjectDao.getByStudentAndSubjectSemesterId(request.getStudentId(), request.getSubjectSemesterId());
+        StudentSubject studentSubject = studentSubjectDao.getByStudentAndSubjectSemesterId(student.getId(), request.getSubjectSemesterId());
         if (studentSubject != null) {
             throw new BaseException(409, "StudentSubject đã tồn tại");
         }
