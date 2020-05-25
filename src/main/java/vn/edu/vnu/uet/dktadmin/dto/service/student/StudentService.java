@@ -247,29 +247,24 @@ public class StudentService {
             cellStt.setCellStyle(cellStyle);
 
             Cell cellFullName = row.createCell(1);
-            setCellValueAndStyle(cellFullName, student.getFullName(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellFullName, student.getFullName(), cellStyle);
 
             Cell cellMSSV = row.createCell(2);
-            setCellValueAndStyle(cellMSSV, student.getStudentCode(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellMSSV, student.getStudentCode(), cellStyle);
 
             Cell cellBirthDay = row.createCell(3);
-            setCellValueAndStyle(cellBirthDay, student.getDateOfBirth(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellBirthDay, student.getDateOfBirth(), cellStyle);
 
             Cell cellEmail = row.createCell(4);
-            setCellValueAndStyle(cellEmail, student.getEmail(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellEmail, student.getEmail(), cellStyle);
 
             Cell cellCourse = row.createCell(5);
-            setCellValueAndStyle(cellCourse, student.getCourse(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellCourse, student.getCourse(), cellStyle);
 
             Cell getGender = row.createCell(6);
             String gender = Gender.getByValue(student.getGender()).getName();
-            setCellValueAndStyle(getGender, gender, cellStyle);
+            ExcelUtil.setCellValueAndStyle(getGender, gender, cellStyle);
         }
-    }
-
-    private void setCellValueAndStyle(Cell cell, String value, CellStyle style) {
-        cell.setCellValue(value);
-        cell.setCellStyle(style);
     }
 
     private void storeImportStudent(XSSFSheet sheet, List<XSSFRow> errors) {

@@ -202,4 +202,17 @@ public class SubjectController {
         }
         return ResponseEntity.ok("success");
     }
+
+    @GetMapping("/subject/export")
+    public ResponseEntity<?> export(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        Workbook workbook = subjectService.export();
+        String excelFileName = "Subjects.xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
+        out.close();
+        return ResponseEntity.ok().build();
+    }
 }

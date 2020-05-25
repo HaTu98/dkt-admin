@@ -2,6 +2,7 @@ package vn.edu.vnu.uet.dktadmin.dto.service.subject;
 
 import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -16,6 +17,7 @@ import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
 import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.rest.model.CheckExistRequest;
@@ -185,6 +187,38 @@ public class SubjectService {
         List<XSSFRow> errors = new ArrayList<>();
         storeImportSubject(sheet, errors);
         return errors;
+    }
+
+    public Workbook export() throws IOException {
+        List<Subject> subjects = subjectDao.getAll();
+
+        Workbook workbook = template();
+        Sheet sheet = workbook.getSheetAt(0);
+        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+
+        writeXSSFSheet(sheet, subjects, cellStyle);
+        return workbook;
+    }
+
+    private void writeXSSFSheet(Sheet sheet, List<Subject> subjects, CellStyle cellStyle) {
+        for (int i = 0; i < subjects.size(); i++) {
+            Subject subject = subjects.get(i);
+            Row row = sheet.createRow(i + 4);
+
+            Cell cellStt = row.createCell(0);
+            cellStt.setCellValue(i+1);
+            cellStt.setCellStyle(cellStyle);
+
+            Cell cellSubjectName = row.createCell(1);
+            ExcelUtil.setCellValueAndStyle(cellSubjectName, subject.getSubjectName(), cellStyle);
+
+            Cell cellSubjectCode = row.createCell(2);
+            ExcelUtil.setCellValueAndStyle(cellSubjectCode, subject.getSubjectCode(), cellStyle);
+
+            String numberCredit = subject.getNumberOfCredit().toString();
+            Cell cellNumberCredit = row.createCell(3);
+            ExcelUtil.setCellValueAndStyle(cellNumberCredit, numberCredit, cellStyle);
+        }
     }
 
     private void storeImportSubject(XSSFSheet sheet, List<XSSFRow> errors) {

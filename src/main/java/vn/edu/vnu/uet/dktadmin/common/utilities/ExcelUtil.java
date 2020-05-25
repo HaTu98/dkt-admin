@@ -71,7 +71,7 @@ public class ExcelUtil {
         return cellStyle;
     }
 
-    private static void setCellValueAndStyle(Cell cell, String value, CellStyle style) {
+    public static void setCellValueAndStyle(Cell cell, String value, CellStyle style) {
         cell.setCellValue(value);
         cell.setCellStyle(style);
     }

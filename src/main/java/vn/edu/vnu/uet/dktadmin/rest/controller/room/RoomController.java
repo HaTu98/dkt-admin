@@ -204,4 +204,17 @@ public class RoomController extends BaseController {
             return ApiDataResponse.error();
         }
     }
+
+    @GetMapping("/room/export")
+    public ResponseEntity<?> export(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        Workbook workbook = roomService.export();
+        String excelFileName = "Rooms.xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
+        out.close();
+        return ResponseEntity.ok().build();
+    }
 }

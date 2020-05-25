@@ -85,4 +85,13 @@ public class RoomDaoImpl implements RoomDao {
         }
         return rooms;
     }
+
+    @Override
+    public List<Room> getAll() {
+        List<Room> rooms = roomRepository.findAll();
+        if (CollectionUtils.isEmpty(rooms)) {
+            return new ArrayList<>();
+        }
+        return rooms;
+    }
 }

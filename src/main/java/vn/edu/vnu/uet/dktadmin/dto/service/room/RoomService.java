@@ -1,6 +1,7 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.room;
 
 import ma.glasnost.orika.MapperFacade;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
+import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
@@ -167,6 +169,41 @@ public class RoomService {
         List<XSSFRow> errors = new ArrayList<>();
         storeImportRoom(sheet, errors);
         return errors;
+    }
+
+    public Workbook export() throws IOException {
+        List<Room> rooms = roomDao.getAll();
+
+        Workbook workbook = template();
+        Sheet sheet = workbook.getSheetAt(0);
+        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+
+        writeXSSFSheet(sheet, rooms, cellStyle);
+        return workbook;
+    }
+
+    private void writeXSSFSheet(Sheet sheet, List<Room> rooms, CellStyle cellStyle) {
+        for (int i = 0; i < rooms.size(); i++) {
+            Room room = rooms.get(i);
+            Row row = sheet.createRow(i + 4);
+
+            Cell cellStt = row.createCell(0);
+            cellStt.setCellValue(i+1);
+            cellStt.setCellStyle(cellStyle);
+
+            Cell cellRoomName = row.createCell(1);
+            ExcelUtil.setCellValueAndStyle(cellRoomName, room.getRoomName(), cellStyle);
+
+            Cell cellRoomCode = row.createCell(2);
+            ExcelUtil.setCellValueAndStyle(cellRoomCode, room.getRoomCode(), cellStyle);
+
+            String location = locationDao.getById(room.getLocationId()).getLocationName();
+            Cell cellLocation = row.createCell(3);
+            ExcelUtil.setCellValueAndStyle(cellLocation, location, cellStyle);
+
+            Cell cellDescription = row.createCell(4);
+            ExcelUtil.setCellValueAndStyle(cellDescription, room.getDescription(), cellStyle);
+        }
     }
 
     public RoomListResponse getRoomNotInSemester(Long semesterId, PageBase  pageBase) {
