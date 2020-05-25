@@ -217,11 +217,12 @@ public class StudentController extends BaseController {
         List<XSSFRow> errors = studentService.importStudent(file);
         if (errors.size() > 0) {
             Workbook fileErrors = studentService.template();
+            CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(fileErrors);
             Sheet sheetErrors = fileErrors.getSheetAt(0);
             for (int i = 0 ; i < errors.size(); i++) {
                 Row rowOld = errors.get(i);
                 Row rowNew = sheetErrors.createRow(5 + i);
-                ExcelUtil.copyRow(rowNew, rowOld);
+                ExcelUtil.copyRow(rowNew, rowOld, cellStyle);
             }
             response.setContentType("application/vnd.ms-excel");
             String excelFileName = "Errors_Student.xlsx";
@@ -243,6 +244,19 @@ public class StudentController extends BaseController {
         response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
         ServletOutputStream out = response.getOutputStream();
         xssfWorkbook.write(out);
+        out.flush();
+        out.close();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/student/export")
+    public ResponseEntity<?> export(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        Workbook workbook = studentService.export();
+        String excelFileName = "Students.xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
         out.flush();
         out.close();
         return ResponseEntity.ok().build();

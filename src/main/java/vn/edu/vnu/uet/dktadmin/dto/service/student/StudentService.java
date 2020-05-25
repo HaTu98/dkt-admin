@@ -2,8 +2,7 @@ package vn.edu.vnu.uet.dktadmin.dto.service.student;
 
 import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +47,7 @@ public class StudentService {
     private final AccountService accountService;
     private final PasswordEncoder passwordEncoder;
     private final MapperFacade mapperFacade;
+    private final DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public StudentService(EmailValidator emailValidator, StudentDao studentDao, StudentSubjectDao studentSubjectDao, AccountService accountService, PasswordEncoder passwordEncoder, MapperFacade mapperFacade) {
         this.emailValidator = emailValidator;
@@ -225,6 +226,52 @@ public class StudentService {
         return new XSSFWorkbook(templateInputStream);
     }
 
+    public Workbook export() throws IOException {
+        List<Student> students = studentDao.getAll();
+
+        Workbook workbook = template();
+        Sheet sheet = workbook.getSheetAt(0);
+        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+
+        writeXSSFSheet(sheet, students, cellStyle);
+        return workbook;
+    }
+
+    private void writeXSSFSheet(Sheet sheet, List<Student> students, CellStyle cellStyle) {
+        for (int i = 0; i < students.size(); i++) {
+            Student student = students.get(i);
+            Row row = sheet.createRow(i + 4);
+
+            Cell cellStt = row.createCell(0);
+            cellStt.setCellValue(i+1);
+            cellStt.setCellStyle(cellStyle);
+
+            Cell cellFullName = row.createCell(1);
+            setCellValueAndStyle(cellFullName, student.getFullName(), cellStyle);
+
+            Cell cellMSSV = row.createCell(2);
+            setCellValueAndStyle(cellMSSV, student.getStudentCode(), cellStyle);
+
+            Cell cellBirthDay = row.createCell(3);
+            setCellValueAndStyle(cellBirthDay, student.getDateOfBirth(), cellStyle);
+
+            Cell cellEmail = row.createCell(4);
+            setCellValueAndStyle(cellEmail, student.getEmail(), cellStyle);
+
+            Cell cellCourse = row.createCell(5);
+            setCellValueAndStyle(cellCourse, student.getCourse(), cellStyle);
+
+            Cell getGender = row.createCell(6);
+            String gender = Gender.getByValue(student.getGender()).getName();
+            setCellValueAndStyle(getGender, gender, cellStyle);
+        }
+    }
+
+    private void setCellValueAndStyle(Cell cell, String value, CellStyle style) {
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
+    }
+
     private void storeImportStudent(XSSFSheet sheet, List<XSSFRow> errors) {
         int rowNumber = sheet.getPhysicalNumberOfRows();
         for (int i = 5; i < rowNumber; i++) {
@@ -239,7 +286,7 @@ public class StudentService {
                 studentRequest.setEmail(ExcelUtil.getValueInCell(row.getCell(4)));
                 studentRequest.setCourse(ExcelUtil.getValueInCell(row.getCell(5)));
                 String gender = ExcelUtil.getValueInCell(row.getCell(6));
-                studentRequest.setGender(Gender.getValue(gender).getValue());
+                studentRequest.setGender(Gender.getByName(gender).getValue());
 
                 this.createStudent(studentRequest);
             } catch (Exception e) {

@@ -1,8 +1,11 @@
 package vn.edu.vnu.uet.dktadmin.common.utilities;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import javax.swing.*;
 
 public class ExcelUtil {
 
@@ -19,10 +22,11 @@ public class ExcelUtil {
         }
     }
 
-    public static void copyRow(Row rowNew, Row rowOld) {
+    public static void copyRow(Row rowNew, Row rowOld, CellStyle cellStyle) {
         for (int i = 0; i < rowOld.getLastCellNum(); i++) {
             Cell cellOld = rowOld.getCell(i);
             Cell cellNew = rowNew.createCell(i);
+            cellNew.setCellStyle(cellStyle);
             if (cellOld == null) {
                 cellNew = null;
                 continue;
@@ -49,5 +53,26 @@ public class ExcelUtil {
         } else {
             cellNew.setCellValue("");
         }
+    }
+
+    public static CellStyle createDefaultCellStyle(Workbook workbook) {
+        Font font = workbook.createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 11);
+
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        cellStyle.setFont(font);
+
+        return cellStyle;
+    }
+
+    private static void setCellValueAndStyle(Cell cell, String value, CellStyle style) {
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
     }
 }

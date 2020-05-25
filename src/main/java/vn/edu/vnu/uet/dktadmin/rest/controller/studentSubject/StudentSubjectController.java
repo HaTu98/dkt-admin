@@ -1,5 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.studentSubject;
 
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -236,11 +237,12 @@ public class StudentSubjectController {
         List<XSSFRow> errors = studentSubjectService.importStudentSubject(file);
         if (errors.size() > 0) {
             Workbook fileErrors = studentSubjectService.template();
+            CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(fileErrors);
             Sheet sheetErrors = fileErrors.getSheetAt(0);
             for (int i = 0 ; i < errors.size(); i++) {
                 Row rowOld = errors.get(i);
                 Row rowNew = sheetErrors.createRow(5 + i);
-                ExcelUtil.copyRow(rowNew, rowOld);
+                ExcelUtil.copyRow(rowNew, rowOld, cellStyle);
             }
             response.setContentType("application/vnd.ms-excel");
             String excelFileName = "Errors_Student_Subject.xlsx";
