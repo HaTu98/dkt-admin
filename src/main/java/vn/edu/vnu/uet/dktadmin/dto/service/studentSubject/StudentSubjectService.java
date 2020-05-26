@@ -8,7 +8,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
-import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
@@ -18,13 +17,13 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.semester.SemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam.StudentSubjectExamDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.student.StudentRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.*;
 
 import java.io.File;
@@ -47,8 +46,9 @@ public class StudentSubjectService {
     private final AccountService accountService;
     private final StudentSubjectExamDao studentSubjectExamDao;
     private final SemesterDao semesterDao;
+    private final SubjectDao subjectDao;
 
-    public StudentSubjectService(MapperFacade mapperFacade, StudentSubjectDao studentSubjectDao, StudentDao studentDao, SubjectSemesterDao subjectSemesterDao, StudentService studentService, SubjectSemesterService subjectSemesterService, AccountService accountService, StudentSubjectExamDao studentSubjectExamDao, SemesterDao semesterDao) {
+    public StudentSubjectService(MapperFacade mapperFacade, StudentSubjectDao studentSubjectDao, StudentDao studentDao, SubjectSemesterDao subjectSemesterDao, StudentService studentService, SubjectSemesterService subjectSemesterService, AccountService accountService, StudentSubjectExamDao studentSubjectExamDao, SemesterDao semesterDao, SubjectDao subjectDao) {
         this.mapperFacade = mapperFacade;
         this.studentSubjectDao = studentSubjectDao;
         this.studentDao = studentDao;
@@ -58,6 +58,7 @@ public class StudentSubjectService {
         this.accountService = accountService;
         this.studentSubjectExamDao = studentSubjectExamDao;
         this.semesterDao = semesterDao;
+        this.subjectDao = subjectDao;
     }
 
     public StudentSubject create(StudentSubject request) {
@@ -184,7 +185,16 @@ public class StudentSubjectService {
 
     private void storeImportStudentSubject(XSSFSheet sheet, List<XSSFRow> errors) {
         int rowNumber = sheet.getPhysicalNumberOfRows();
-        for (int i = 5; i < rowNumber; i++) {
+        XSSFRow subjectRow = sheet.getRow(3);
+        String subjectCode = ExcelUtil.getValueInCell(subjectRow.getCell(1));
+        Subject subject = subjectDao.getBySubjectCode(subjectCode);
+
+        XSSFRow semesterRow = sheet.getRow(5);
+        String semesterName = ExcelUtil.getValueInCell(semesterRow.getCell(1));
+        Semester semester = semesterDao.getBySemesterName(semesterName);
+
+        SubjectSemester subjectSemester = subjectSemesterDao.getBySubjectIdAndSemesterId(subject.getId(), semester.getId());
+        for (int i = 9; i < rowNumber; i++) {
             XSSFRow row = sheet.getRow(i);
             try {
                 String stt = ExcelUtil.getValueInCell(row.getCell(0));
@@ -198,15 +208,8 @@ public class StudentSubjectService {
                     errors.add(row);
                     continue;
                 }
-
                 studentSubjectRequest.setStudentId(student.getId());
-                String semesterName = ExcelUtil.getValueInCell(row.getCell(5));
-                Semester semester = semesterDao.getBySemesterName(semesterName);
-                if (semester == null) {
-                    errors.add(row);
-                    continue;
-                }
-                studentSubjectRequest.setSubjectSemesterId(semester.getId());
+                studentSubjectRequest.setSubjectSemesterId(subjectSemester.getId());
                 this.create(studentSubjectRequest);
             } catch (Exception e) {
                 errors.add(row);
@@ -235,6 +238,7 @@ public class StudentSubjectService {
             response.setStudentId(student.getId());
             response.setStudentName(student.getFullName());
             response.setStudentGender(student.getGender());
+            response.setEmail(student.getEmail());
             response.setSubjectSemesterId(subjectSemesterId);
             if (studentSubjectMap.containsKey(student.getId())) {
                 response.setStatus(studentSubjectMap.get(student.getId()).getStatus());

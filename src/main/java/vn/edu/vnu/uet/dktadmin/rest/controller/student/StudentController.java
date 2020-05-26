@@ -97,7 +97,7 @@ public class StudentController extends BaseController {
         }
     }
 
-    @GetMapping("/student_in_subject/{subjectSemesterId}")
+    /*@GetMapping("/student_in_subject/{subjectSemesterId}")
     public ApiDataResponse<StudentResponse> getStudentInSubject(
             @PathVariable Long subjectSemesterId,
             @RequestParam(required = false, value = "Size") Integer size,
@@ -115,7 +115,7 @@ public class StudentController extends BaseController {
             log.error(e.getMessage());
             return ApiDataResponse.error();
         }
-    }
+    }*/
 
     @GetMapping("/student/all")
     public ApiDataResponse<StudentListResponse> getAllStudent(

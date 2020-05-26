@@ -6,13 +6,12 @@ import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester.RoomSemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
-import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
-import vn.edu.vnu.uet.dktadmin.dto.model.Room;
-import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
-import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
+import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
@@ -20,13 +19,14 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.ListExamResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.exam.ListRegisterResultResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.exam.RegisterResultResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ExamService {
@@ -36,17 +36,21 @@ public class ExamService {
     private final RoomSemesterService roomSemesterService;
     private final SubjectSemesterDao subjectSemesterDao;
     private final RoomSemesterDao roomSemesterDao;
+    private final SubjectDao subjectDao;
+    private final LocationDao locationDao;
     private final RoomDao roomDao;
     private final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private final DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public ExamService(ExamDao examDao, MapperFacade mapperFacade, SubjectSemesterService subjectSemesterService, RoomSemesterService roomSemesterService, SubjectSemesterDao subjectSemesterDao, RoomSemesterDao roomSemesterDao, RoomDao roomDao) {
+    public ExamService(ExamDao examDao, MapperFacade mapperFacade, SubjectSemesterService subjectSemesterService, RoomSemesterService roomSemesterService, SubjectSemesterDao subjectSemesterDao, RoomSemesterDao roomSemesterDao, SubjectDao subjectDao, LocationDao locationDao, RoomDao roomDao) {
         this.examDao = examDao;
         this.mapperFacade = mapperFacade;
         this.subjectSemesterService = subjectSemesterService;
         this.roomSemesterService = roomSemesterService;
         this.subjectSemesterDao = subjectSemesterDao;
         this.roomSemesterDao = roomSemesterDao;
+        this.subjectDao = subjectDao;
+        this.locationDao = locationDao;
         this.roomDao = roomDao;
     }
 
@@ -72,9 +76,50 @@ public class ExamService {
         return getExamResponse(exam);
     }
 
-    public ListExamResponse getBySemesterId(Long id, PageBase pageBase) {
+    public ListRegisterResultResponse getBySemesterId(Long id, PageBase pageBase) {
         List<Exam> exams = examDao.getBySemesterId(id);
-        return getExamPaging(exams, pageBase);
+        return generateListRegister(exams, pageBase);
+    }
+
+    public ListRegisterResultResponse generateListRegister(List<Exam> exams, PageBase pageBase) {
+        List<Exam> examList = new ArrayList<>();
+        Integer page = pageBase.getPage();
+        Integer size = pageBase.getSize();
+        int total = exams.size();
+        int maxSize = Math.min(total, size * page);
+        for (int i = size * (page - 1); i < maxSize; i++) {
+            examList.add(exams.get(i));
+        }
+
+        List<RegisterResultResponse> responses = new ArrayList<>();
+        for (Exam exam : examList) {
+            RegisterResultResponse response = new RegisterResultResponse();
+            response.setId(exam.getId());
+            response.setSubjectSemesterId(exam.getSubjectSemesterId());
+
+            Subject subject = subjectDao.getById(exam.getSubjectId());
+            response.setSubjectName(subject.getSubjectName());
+            response.setSubjectCode(subject.getSubjectCode());
+            response.setNumberOfCredit(subject.getNumberOfCredit());
+
+            RoomSemester roomSemester = roomSemesterDao.getById(exam.getRoomSemesterId());
+            Room room = roomDao.getById(roomSemester.getRoomId());
+            response.setRoomName(room.getRoomName());
+
+            Location location = locationDao.getById(exam.getLocationId());
+            response.setLocation(location.getLocationName());
+
+            response.setNumberStudent(exam.getNumberOfStudent());
+            response.setNumberOfStudentSubscribe(exam.getNumberOfStudentSubscribe());
+            response.setDate(exam.getDate().format(formatDate));
+
+            String startDate = exam.getStartTime().format(format);
+            String endDate = exam.getEndTime().format(format);
+            String time = startDate.substring(11) + "-" + endDate.substring(11);
+            response.setTime(time);
+            responses.add(response);
+        }
+        return new ListRegisterResultResponse(responses, new PageResponse(page, size, total));
     }
 
     public ListExamResponse getExamPaging(List<Exam> exams, PageBase pageBase) {
@@ -112,6 +157,12 @@ public class ExamService {
         if (!validateConflictExam(request)) {
             throw new BadRequestException(400, "Thời gian không hợp lệ");
         }
+    }
+
+    public ListRegisterResultResponse getAll(Long id) {
+        List<Exam> exams = examDao.getBySemesterId(id);
+        RegisterResultResponse registerResultResponse = new RegisterResultResponse();
+        return null;
     }
 
     private ExamResponse getExamResponse(Exam exam) {

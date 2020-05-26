@@ -5,15 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
-import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
 import vn.edu.vnu.uet.dktadmin.dto.service.studentSubjectExam.StudentSubjectExamService;
-import vn.edu.vnu.uet.dktadmin.rest.controller.studentSubject.StudentSubjectController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
-import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.AutoRegisterResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.ListStudentSubjectExamResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamRequest;
-import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.*;
 
 @RestController
 @RequestMapping("/admin/student_subject_exam")

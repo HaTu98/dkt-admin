@@ -6,12 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
 import vn.edu.vnu.uet.dktadmin.dto.service.exam.ExamService;
-import vn.edu.vnu.uet.dktadmin.rest.controller.student.StudentController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
-import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamRequest;
-import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.exam.ListExamResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.exam.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -66,7 +63,7 @@ public class ExamController {
     }
 
     @GetMapping("/exam/semester/{id}")
-    public ApiDataResponse<ListExamResponse> getExamBySemesterId(
+    public ApiDataResponse<ListRegisterResultResponse> getExamBySemesterId(
             @PathVariable Long id,
             @RequestParam(required = false, value = "Size") Integer size,
             @RequestParam(required = false, value = "Page") Integer page

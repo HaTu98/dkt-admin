@@ -16,11 +16,7 @@ import vn.edu.vnu.uet.dktadmin.dto.service.exam.ExamService;
 import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.ListStudentSubjectResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.AutoRegisterResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.ListStudentSubjectExamResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamRequest;
-import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.StudentSubjectExamResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
