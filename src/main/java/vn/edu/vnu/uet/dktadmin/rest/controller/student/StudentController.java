@@ -221,7 +221,7 @@ public class StudentController extends BaseController {
             Sheet sheetErrors = fileErrors.getSheetAt(0);
             for (int i = 0 ; i < errors.size(); i++) {
                 Row rowOld = errors.get(i);
-                Row rowNew = sheetErrors.createRow(5 + i);
+                Row rowNew = sheetErrors.createRow(4 + i);
                 ExcelUtil.copyRow(rowNew, rowOld, cellStyle);
             }
             response.setContentType("application/vnd.ms-excel");

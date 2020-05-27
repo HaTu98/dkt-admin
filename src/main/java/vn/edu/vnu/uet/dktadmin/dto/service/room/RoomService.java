@@ -220,7 +220,7 @@ public class RoomService {
 
     private void storeImportRoom(XSSFSheet sheet, List<XSSFRow> errors) {
         int rowNumber = sheet.getPhysicalNumberOfRows();
-        for (int i = 5; i < rowNumber; i++) {
+        for (int i = 4; i < rowNumber; i++) {
             XSSFRow row = sheet.getRow(i);
             try {
                 String stt = ExcelUtil.getValueInCell(row.getCell(0));

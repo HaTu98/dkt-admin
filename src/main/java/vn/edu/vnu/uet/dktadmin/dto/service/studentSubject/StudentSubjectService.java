@@ -194,7 +194,7 @@ public class StudentSubjectService {
         Semester semester = semesterDao.getBySemesterName(semesterName);
 
         SubjectSemester subjectSemester = subjectSemesterDao.getBySubjectIdAndSemesterId(subject.getId(), semester.getId());
-        for (int i = 9; i < rowNumber; i++) {
+        for (int i = 8; i < rowNumber; i++) {
             XSSFRow row = sheet.getRow(i);
             try {
                 String stt = ExcelUtil.getValueInCell(row.getCell(0));
