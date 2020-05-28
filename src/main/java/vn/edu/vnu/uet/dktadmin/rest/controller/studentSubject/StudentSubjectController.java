@@ -269,8 +269,16 @@ public class StudentSubjectController {
         return ResponseEntity.ok().build();
     }
 
-    /*@GetMapping("/export")
-    public ResponseEntity<?> export(HttpServletResponse response) throws IOException {
-
-    }*/
+    @GetMapping("/export/student_subject/{id}")
+    public ResponseEntity<?> export(@PathVariable Long id,HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        Workbook workbook = studentSubjectService.export(id);
+        String excelFileName = "StudentSubject.xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
+        out.close();
+        return ResponseEntity.ok().build();
+    }   
 }

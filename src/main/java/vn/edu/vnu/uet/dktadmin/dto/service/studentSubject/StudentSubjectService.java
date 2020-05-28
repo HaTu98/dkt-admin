@@ -1,13 +1,17 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.studentSubject;
 
 import ma.glasnost.orika.MapperFacade;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
+import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.model.DktAdmin;
@@ -22,6 +26,7 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
+import vn.edu.vnu.uet.dktadmin.rest.controller.exam.ExamController;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.*;
@@ -37,6 +42,7 @@ import java.util.Map;
 
 @Service
 public class StudentSubjectService {
+    private static final Logger log = LoggerFactory.getLogger(StudentSubjectService.class);
     private final StudentSubjectDao studentSubjectDao;
     private final StudentDao studentDao;
     private final SubjectSemesterDao subjectSemesterDao;
@@ -183,6 +189,78 @@ public class StudentSubjectService {
         return new XSSFWorkbook(templateInputStream);
     }
 
+    public Workbook export(Long subjectSemesterId) throws IOException {
+        List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(subjectSemesterId);
+        Workbook workbook = template();
+        writeXSSFSheet(workbook, studentSubjects);
+        return workbook;
+    }
+
+    private void writeXSSFSheet(Workbook workbook, List<StudentSubject> studentSubjects) {
+        Subject subject = subjectDao.getById(studentSubjects.get(0).getSubjectId());
+
+        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
+        Sheet sheet = workbook.getSheetAt(0);
+        Row row2 = sheet.getRow(2);
+        Cell subjectNameCell = row2.createCell(1);
+        subjectNameCell.setCellValue(subject.getSubjectName());
+        subjectNameCell.setCellStyle(cellStyleLeft);
+
+        Row row3 = sheet.getRow(3);
+        Cell subjectCodeCell = row3.createCell(1);
+        subjectCodeCell.setCellValue(subject.getSubjectCode());
+        subjectCodeCell.setCellStyle(cellStyleLeft);
+
+        Row row4 = sheet.getRow(4);
+        Cell numberOfCredit = row4.createCell(1);
+        numberOfCredit.setCellValue(subject.getNumberOfCredit());
+        numberOfCredit.setCellStyle(cellStyleLeft);
+
+        Semester semester = semesterDao.getById(studentSubjects.get(0).getSemesterId());
+        Row row5 = sheet.getRow(5);
+        Cell semesterCellName = row5.createCell(1);
+        semesterCellName.setCellValue(semester.getSemesterName());
+        semesterCellName.setCellStyle(cellStyleLeft);
+
+        for (int i = 0; i < studentSubjects.size(); i++) {
+            try {
+                StudentSubject studentSubject = studentSubjects.get(i);
+                Row row = sheet.createRow(i + 8);
+
+                Cell cellStt = row.createCell(0);
+                cellStt.setCellValue(i + 1);
+                cellStt.setCellStyle(cellStyle);
+
+                Student student = studentDao.getById(studentSubject.getStudentId());
+                Cell studentNameCell = row.createCell(1);
+                ExcelUtil.setCellValueAndStyle(studentNameCell, student.getFullName(), cellStyleLeft);
+
+                Cell studentCodeCell = row.createCell(2);
+                ExcelUtil.setCellValueAndStyle(studentCodeCell, Double.parseDouble(student.getStudentCode()), cellStyle);
+
+                Cell studentDoBCell = row.createCell(3);
+                studentDoBCell.setCellValue(student.getDateOfBirth());
+                studentDoBCell.setCellStyle(cellStyle);
+
+                Cell studentEmailCell = row.createCell(4);
+                studentEmailCell.setCellValue(student.getEmail());
+                studentEmailCell.setCellStyle(cellStyle);
+
+                Cell studentCourseCell = row.createCell(5);
+                studentCourseCell.setCellValue(student.getCourse());
+                studentCourseCell.setCellStyle(cellStyle);
+
+                Cell studentGenderCell = row.createCell(6);
+                String gender = Gender.getByValue(student.getGender()).getName();
+                studentGenderCell.setCellValue(gender);
+                studentGenderCell.setCellStyle(cellStyle);
+            }catch (Exception e) {
+                log.error("error export :", e);
+            }
+        }
+    }
+
     private void storeImportStudentSubject(XSSFSheet sheet, List<XSSFRow> errors) {
         int rowNumber = sheet.getPhysicalNumberOfRows();
         XSSFRow subjectRow = sheet.getRow(3);
@@ -197,6 +275,7 @@ public class StudentSubjectService {
         for (int i = 8; i < rowNumber; i++) {
             XSSFRow row = sheet.getRow(i);
             try {
+                if (row == null) continue;
                 String stt = ExcelUtil.getValueInCell(row.getCell(0));
                 if (stt == null) {
                     continue;

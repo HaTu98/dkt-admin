@@ -1,5 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.common.utilities;
 
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -71,8 +72,30 @@ public class ExcelUtil {
         return cellStyle;
     }
 
+    public static CellStyle createLeftCellStyle(Workbook workbook) {
+        Font font = workbook.createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 11);
+
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+        cellStyle.setAlignment(HorizontalAlignment.LEFT);
+        cellStyle.setFont(font);
+
+        return cellStyle;
+    }
+
     public static void setCellValueAndStyle(Cell cell, String value, CellStyle style) {
         cell.setCellValue(value);
         cell.setCellStyle(style);
+    }
+
+    public static void setCellValueAndStyle(Cell cell, double value, CellStyle style) {
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
+        style.setDataFormat(HSSFDataFormat.getBuiltinFormat("###0"));
     }
 }
