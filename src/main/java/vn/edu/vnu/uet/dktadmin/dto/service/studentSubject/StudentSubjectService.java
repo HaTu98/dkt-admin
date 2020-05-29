@@ -174,11 +174,11 @@ public class StudentSubjectService {
         return generateStudentInSubject(studentSubjects, pageBase, subjectSemesterId);
     }
 
-    public List<XSSFRow> importStudentSubject(MultipartFile file) throws IOException {
+    public List<XSSFRow> importStudentSubject(MultipartFile file, Long subjectSemesterId) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
         XSSFSheet sheet = workbook.getSheetAt(0);
         List<XSSFRow> errors = new ArrayList<>();
-        storeImportStudentSubject(sheet, errors);
+        storeImportStudentSubject(sheet, errors, subjectSemesterId);
         return errors;
     }
 
@@ -191,7 +191,10 @@ public class StudentSubjectService {
 
     public Workbook export(Long subjectSemesterId) throws IOException {
         List<StudentSubject> studentSubjects = studentSubjectDao.getBySubjectSemesterId(subjectSemesterId);
-        Workbook workbook = template();
+        String templatePath = "\\template\\excel\\export_student_subject.xlsx";
+        File templateFile = new ClassPathResource(templatePath).getFile();
+        FileInputStream templateInputStream = new FileInputStream(templateFile);
+        Workbook workbook  = new XSSFWorkbook(templateInputStream);
         writeXSSFSheet(workbook, studentSubjects);
         return workbook;
     }
@@ -239,40 +242,38 @@ public class StudentSubjectService {
                 Cell studentCodeCell = row.createCell(2);
                 ExcelUtil.setCellValueAndStyle(studentCodeCell, Double.parseDouble(student.getStudentCode()), cellStyle);
 
-                Cell studentDoBCell = row.createCell(3);
-                studentDoBCell.setCellValue(student.getDateOfBirth());
-                studentDoBCell.setCellStyle(cellStyle);
-
-                Cell studentEmailCell = row.createCell(4);
-                studentEmailCell.setCellValue(student.getEmail());
-                studentEmailCell.setCellStyle(cellStyle);
-
-                Cell studentCourseCell = row.createCell(5);
-                studentCourseCell.setCellValue(student.getCourse());
-                studentCourseCell.setCellStyle(cellStyle);
-
-                Cell studentGenderCell = row.createCell(6);
+                Cell studentGenderCell = row.createCell(3);
                 String gender = Gender.getByValue(student.getGender()).getName();
                 studentGenderCell.setCellValue(gender);
                 studentGenderCell.setCellStyle(cellStyle);
+
+                Cell studentDoBCell = row.createCell(4);
+                studentDoBCell.setCellValue(student.getDateOfBirth());
+                studentDoBCell.setCellStyle(cellStyle);
+
+                Cell studentEmailCell = row.createCell(5);
+                studentEmailCell.setCellValue(student.getEmail());
+                studentEmailCell.setCellStyle(cellStyle);
+
+                Cell studentCourseCell = row.createCell(6);
+                studentCourseCell.setCellValue(student.getCourse());
+                studentCourseCell.setCellStyle(cellStyle);
+
+                Cell statusCell = row.createCell(7);
+                String status = studentSubject.getStatus() == 1 ? "" : "Không";
+                statusCell.setCellValue(status);
+                statusCell.setCellStyle(cellStyle);
             }catch (Exception e) {
                 log.error("error export :", e);
             }
         }
     }
 
-    private void storeImportStudentSubject(XSSFSheet sheet, List<XSSFRow> errors) {
+    private void storeImportStudentSubject(XSSFSheet sheet, List<XSSFRow> errors, Long subjectSemesterId) {
         int rowNumber = sheet.getPhysicalNumberOfRows();
-        XSSFRow subjectRow = sheet.getRow(3);
-        String subjectCode = ExcelUtil.getValueInCell(subjectRow.getCell(1));
-        Subject subject = subjectDao.getBySubjectCode(subjectCode);
 
-        XSSFRow semesterRow = sheet.getRow(5);
-        String semesterName = ExcelUtil.getValueInCell(semesterRow.getCell(1));
-        Semester semester = semesterDao.getBySemesterName(semesterName);
-
-        SubjectSemester subjectSemester = subjectSemesterDao.getBySubjectIdAndSemesterId(subject.getId(), semester.getId());
-        for (int i = 8; i < rowNumber; i++) {
+        SubjectSemester subjectSemester = subjectSemesterDao.getById(subjectSemesterId);
+        for (int i = 4; i < rowNumber; i++) {
             XSSFRow row = sheet.getRow(i);
             try {
                 if (row == null) continue;

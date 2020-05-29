@@ -232,16 +232,16 @@ public class StudentSubjectController {
         }
     }
 
-    @PostMapping("/import")
-    public ResponseEntity<?> importStudent(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
-        List<XSSFRow> errors = studentSubjectService.importStudentSubject(file);
+    @PostMapping("/import/subject_semester/{id}")
+    public ResponseEntity<?> importStudent(@RequestParam("file") MultipartFile file,@PathVariable Long id, HttpServletResponse response) throws IOException {
+        List<XSSFRow> errors = studentSubjectService.importStudentSubject(file, id);
         if (errors.size() > 0) {
             Workbook fileErrors = studentSubjectService.template();
             CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(fileErrors);
             Sheet sheetErrors = fileErrors.getSheetAt(0);
             for (int i = 0 ; i < errors.size(); i++) {
                 Row rowOld = errors.get(i);
-                Row rowNew = sheetErrors.createRow(8 + i);
+                Row rowNew = sheetErrors.createRow(4 + i);
                 ExcelUtil.copyRow(rowNew, rowOld, cellStyle);
             }
             response.setContentType("application/vnd.ms-excel");
@@ -269,7 +269,7 @@ public class StudentSubjectController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/export/student_subject/{id}")
+    @GetMapping("/export/subject_semester/{id}")
     public ResponseEntity<?> export(@PathVariable Long id,HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         Workbook workbook = studentSubjectService.export(id);
