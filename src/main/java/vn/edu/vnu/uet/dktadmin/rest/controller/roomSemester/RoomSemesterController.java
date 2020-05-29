@@ -1,7 +1,9 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.roomSemester;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
@@ -16,6 +18,9 @@ import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.UpdateRoomRequest;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -133,6 +138,20 @@ public class RoomSemesterController {
             }
         }
         return ApiDataResponse.ok("success");
+    }
+
+    @GetMapping("/export/semester/{id}")
+    public ResponseEntity<String> export(@PathVariable Long id, HttpServletResponse response) throws IOException {
+        log.info("export room semester");
+        response.setContentType("application/vnd.ms-excel");
+        Workbook workbook = roomSemesterService.export(id);
+        String excelFileName = "RoomSemester.xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
+        out.close();
+        return ResponseEntity.ok().build();
     }
 
 }

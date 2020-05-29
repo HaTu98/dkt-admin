@@ -1,8 +1,14 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.roomSemester;
 
 import ma.glasnost.orika.MapperFacade;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester.RoomSemesterDao;
@@ -12,6 +18,7 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.room.RoomService;
 import vn.edu.vnu.uet.dktadmin.dto.service.semester.SemesterService;
+import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.ListRoomSemesterResponse;
@@ -19,13 +26,18 @@ import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.RoomSemesterResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.UpdateRoomRequest;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomSemesterService {
+    private static final Logger log = LoggerFactory.getLogger(RoomSemesterService.class);
     private final RoomSemesterDao roomSemesterDao;
     private final SemesterDao semesterDao;
     private final RoomDao roomDao;
@@ -107,6 +119,60 @@ public class RoomSemesterService {
             roomSemesters.get(i).setPreventiveComputer(updateRoom.getPreventiveComputer());
         }
         roomSemesterDao.storeAll(roomSemesters);
+    }
+
+    public Workbook export(Long semesterId) throws IOException {
+        List<RoomSemester> roomSemesters = roomSemesterDao.getBySemesterId(semesterId);
+        String templatePath = "\\template\\excel\\template_room_semester.xlsx";
+        File templateFile = new ClassPathResource(templatePath).getFile();
+        FileInputStream templateInputStream = new FileInputStream(templateFile);
+        Workbook workbook = new XSSFWorkbook(templateInputStream);
+
+        writeXSSFSheet(workbook, roomSemesters);
+        return workbook;
+    }
+
+    private void writeXSSFSheet(Workbook workbook, List<RoomSemester> roomSemesters) {
+        Sheet sheet = workbook.getSheetAt(0);
+        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        List<Room> rooms = roomDao.getAllRoom();
+        Map<Long, Room> roomMap = rooms.stream().collect(Collectors.toMap(Room::getId, x -> x));
+
+        List<Location> locations = locationDao.getAll();
+        Map<Long, Location> longLocationMap = locations.stream().collect(Collectors.toMap(Location::getId, x -> x));
+        for (int i = 0; i < roomSemesters.size(); i++) {
+            try {
+                RoomSemester roomSemester = roomSemesters.get(i);
+                Row row = sheet.getRow(4 + i);
+
+                Cell cellStt = row.createCell(0);
+                cellStt.setCellValue(i + 1);
+                cellStt.setCellStyle(cellStyle);
+
+                Room room = roomMap.get(roomSemester.getRoomId());
+                Cell roomNameCell = row.createCell(1);
+                ExcelUtil.setCellValueAndStyle(roomNameCell, room.getRoomName(), cellStyle);
+
+                Cell roomCodeCell = row.createCell(2);
+                ExcelUtil.setCellValueAndStyle(roomCodeCell, room.getRoomName(), cellStyle);
+
+                Location location = longLocationMap.get(room.getLocationId());
+                Cell locationCell = row.createCell(3);
+                ExcelUtil.setCellValueAndStyle(locationCell, location.getLocationName(), cellStyle);
+
+                Cell descriptionCell = row.createCell(4);
+                ExcelUtil.setCellValueAndStyle(descriptionCell, room.getDescription(), cellStyle);
+
+                Cell numberComputerCell = row.createCell(5);
+                ExcelUtil.setCellValueAndStyle(numberComputerCell, roomSemester.getNumberOfComputer(), cellStyle);
+
+                Cell preventiveComputerCell = row.createCell(6);
+                ExcelUtil.setCellValueAndStyle(preventiveComputerCell, roomSemester.getNumberOfComputer(), cellStyle);
+            } catch (Exception e) {
+                log.error("error export :", e);
+            }
+
+        }
     }
 
     private void validateRoomSemester(RoomSemesterRequest request) {
