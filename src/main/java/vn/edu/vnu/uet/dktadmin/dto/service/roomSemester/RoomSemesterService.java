@@ -143,7 +143,7 @@ public class RoomSemesterService {
         for (int i = 0; i < roomSemesters.size(); i++) {
             try {
                 RoomSemester roomSemester = roomSemesters.get(i);
-                Row row = sheet.getRow(4 + i);
+                Row row = sheet.createRow(4 + i);
 
                 Cell cellStt = row.createCell(0);
                 cellStt.setCellValue(i + 1);
@@ -160,14 +160,16 @@ public class RoomSemesterService {
                 Cell locationCell = row.createCell(3);
                 ExcelUtil.setCellValueAndStyle(locationCell, location.getLocationName(), cellStyle);
 
-                Cell descriptionCell = row.createCell(4);
-                ExcelUtil.setCellValueAndStyle(descriptionCell, room.getDescription(), cellStyle);
-
-                Cell numberComputerCell = row.createCell(5);
+                Cell numberComputerCell = row.createCell(4);
                 ExcelUtil.setCellValueAndStyle(numberComputerCell, roomSemester.getNumberOfComputer(), cellStyle);
 
-                Cell preventiveComputerCell = row.createCell(6);
-                ExcelUtil.setCellValueAndStyle(preventiveComputerCell, roomSemester.getNumberOfComputer(), cellStyle);
+                Cell preventiveComputerCell = row.createCell(5);
+                ExcelUtil.setCellValueAndStyle(preventiveComputerCell, roomSemester.getPreventiveComputer(), cellStyle);
+
+                Cell descriptionCell = row.createCell(6);
+                ExcelUtil.setCellValueAndStyle(descriptionCell, room.getDescription(), cellStyle);
+
+
             } catch (Exception e) {
                 log.error("error export :", e);
             }
