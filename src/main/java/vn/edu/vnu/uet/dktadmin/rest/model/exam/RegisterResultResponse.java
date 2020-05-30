@@ -13,6 +13,9 @@ public class RegisterResultResponse {
     @JsonProperty(value = "SubjectSemesterId")
     private Long subjectSemesterId;
 
+    @JsonProperty(value = "RoomSemesterId")
+    private Long roomSemesterId;
+
     @JsonProperty(value = "SubjectName")
     private String subjectName;
 

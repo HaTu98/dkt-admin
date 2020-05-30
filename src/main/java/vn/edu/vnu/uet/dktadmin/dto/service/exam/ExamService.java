@@ -1,6 +1,8 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.exam;
 
 import ma.glasnost.orika.MapperFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
@@ -14,22 +16,22 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
+import vn.edu.vnu.uet.dktadmin.rest.controller.exam.ExamController;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamRequest;
-import vn.edu.vnu.uet.dktadmin.rest.model.exam.ExamResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.exam.ListExamResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.exam.ListRegisterResultResponse;
-import vn.edu.vnu.uet.dktadmin.rest.model.exam.RegisterResultResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.exam.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ExamService {
+    private static final Logger log = LoggerFactory.getLogger(ExamController.class);
     private final ExamDao examDao;
     private final MapperFacade mapperFacade;
     private final SubjectSemesterService subjectSemesterService;
@@ -78,10 +80,10 @@ public class ExamService {
 
     public ListRegisterResultResponse getBySemesterId(Long id, PageBase pageBase) {
         List<Exam> exams = examDao.getBySemesterId(id);
-        return generateListRegister(exams, pageBase);
+        return generateListRegister(exams, pageBase, id);
     }
 
-    public ListRegisterResultResponse generateListRegister(List<Exam> exams, PageBase pageBase) {
+    public ListRegisterResultResponse generateListRegister(List<Exam> exams, PageBase pageBase, Long semesterId) {
         List<Exam> examList = new ArrayList<>();
         Integer page = pageBase.getPage();
         Integer size = pageBase.getSize();
@@ -92,32 +94,52 @@ public class ExamService {
         }
 
         List<RegisterResultResponse> responses = new ArrayList<>();
+        List<RoomSemester> roomSemesters = roomSemesterDao.getBySemesterId(semesterId);
+        Map<Long,RoomSemester> roomSemesterMap = roomSemesters.stream()
+                .collect(Collectors.toMap(RoomSemester::getId, x -> x));
+        List<Subject> subjects = subjectDao.getAll();
+        Map<Long,Subject> subjectMap = subjects.stream().collect(Collectors.toMap(Subject::getId, x -> x));
+        List<Room> rooms = roomDao.getAllRoom();
+        Map<Long, Room> roomMap = rooms.stream().collect(Collectors.toMap(Room::getId, x ->x));
+        List<Location> locations = locationDao.getAll();
+        Map<Long, Location> locationMap = locations.stream().collect(Collectors.toMap(Location::getId, x -> x));
         for (Exam exam : examList) {
-            RegisterResultResponse response = new RegisterResultResponse();
-            response.setId(exam.getId());
-            response.setSubjectSemesterId(exam.getSubjectSemesterId());
+            try {
+                RegisterResultResponse response = new RegisterResultResponse();
+                response.setId(exam.getId());
+                response.setSubjectSemesterId(exam.getSubjectSemesterId());
 
-            Subject subject = subjectDao.getById(exam.getSubjectId());
-            response.setSubjectName(subject.getSubjectName());
-            response.setSubjectCode(subject.getSubjectCode());
-            response.setNumberOfCredit(subject.getNumberOfCredit());
+                //Subject subject = subjectDao.getById(exam.getSubjectId());
+                Subject subject = subjectMap.get(exam.getSubjectId());
+                response.setSubjectName(subject.getSubjectName());
+                response.setSubjectCode(subject.getSubjectCode());
+                response.setNumberOfCredit(subject.getNumberOfCredit());
 
-            RoomSemester roomSemester = roomSemesterDao.getById(exam.getRoomSemesterId());
-            Room room = roomDao.getById(roomSemester.getRoomId());
-            response.setRoomName(room.getRoomName());
+                //RoomSemester roomSemester = roomSemesterDao.getById(exam.getRoomSemesterId());
+                RoomSemester roomSemester = roomSemesterMap.get(exam.getRoomSemesterId());
+                //Room room = roomDao.getById(roomSemester.getRoomId());
+                Room room = roomMap.get(roomSemester.getRoomId());
+                response.setRoomName(room.getRoomName());
 
-            Location location = locationDao.getById(exam.getLocationId());
-            response.setLocation(location.getLocationName());
+                //Location location = locationDao.getById(exam.getLocationId());
+                Location location = locationMap.get(exam.getLocationId());
+                response.setLocation(location.getLocationName());
 
-            response.setNumberStudent(exam.getNumberOfStudent());
-            response.setNumberOfStudentSubscribe(exam.getNumberOfStudentSubscribe());
-            response.setDate(exam.getDate().format(formatDate));
+                response.setNumberStudent(exam.getNumberOfStudent());
+                response.setNumberOfStudentSubscribe(exam.getNumberOfStudentSubscribe());
+                response.setDate(exam.getDate().format(formatDate));
 
-            String startDate = exam.getStartTime().format(format);
-            String endDate = exam.getEndTime().format(format);
-            String time = startDate.substring(11) + "-" + endDate.substring(11);
-            response.setTime(time);
-            responses.add(response);
+                response.setRoomSemesterId(exam.getRoomSemesterId());
+
+                String startDate = exam.getStartTime().format(format);
+                String endDate = exam.getEndTime().format(format);
+                String time = startDate.substring(11) + "-" + endDate.substring(11);
+                response.setTime(time);
+                responses.add(response);
+            } catch (Exception e) {
+                log.error("get exam error", e);
+            }
+
         }
         return new ListRegisterResultResponse(responses, new PageResponse(page, size, total));
     }
