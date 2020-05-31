@@ -15,9 +15,6 @@ public class ExamRequest {
     @JsonProperty(value = "NumberOfStudent")
     private Integer numberOfStudent;
 
-    @JsonProperty(value = "ExamCode")
-    private String examCode;
-
     @JsonProperty(value = "StartTime")
     private String startTime;
 

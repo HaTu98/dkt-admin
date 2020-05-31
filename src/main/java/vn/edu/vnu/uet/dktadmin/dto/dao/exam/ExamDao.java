@@ -10,7 +10,6 @@ import java.util.List;
 public interface ExamDao {
     Exam store(Exam exam);
     Exam getById(Long id);
-    Exam getByExamCode(String examCode);
     List<Exam> getBySemesterId(Long semesterId);
     List<Exam> getByRoomAndDate(Long roomSemesterId, LocalDate date);
     List<Exam> getBySemesterIdAndSubjectId(Long semesterId, Long subjectId);

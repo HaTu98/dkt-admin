@@ -67,6 +67,21 @@ public class ExamService {
         return getExamResponse(response);
     }
 
+    public void createList(List<ExamRequest> requests, Long semesterId) {
+        List<Exam> exams = examDao.getBySemesterId(semesterId);
+        if (!CollectionUtils.isEmpty(exams)) {
+            examDao.deleteList(exams);
+        }
+        for (ExamRequest examRequest : requests) {
+            try {
+                log.info("create exam :", examRequest);
+                create(examRequest);
+            } catch (Exception e) {
+                log.error("không thể thêm kì thi", e);
+            }
+        }
+    }
+
     public ExamResponse update(ExamRequest request) {
         validateUpdate(request);
         Exam exam = generateExam(request);
@@ -77,11 +92,6 @@ public class ExamService {
 
     public boolean isExistExam(Long examId) {
         Exam exam = examDao.getById(examId);
-        return exam != null;
-    }
-
-    public boolean isExistExam(String examCode) {
-        Exam exam = examDao.getByExamCode(examCode);
         return exam != null;
     }
 
@@ -255,7 +265,6 @@ public class ExamService {
         exam.setStartTime(startTime);
         LocalDateTime endTime = LocalDateTime.parse(request.getEndTime(), format);
         exam.setEndTime(endTime);
-        exam.setExamCode(request.getExamCode());
 
         RoomSemester roomSemester = roomSemesterDao.getById(request.getRoomSemesterId());
         Room room = roomDao.getById(roomSemester.getRoomId());

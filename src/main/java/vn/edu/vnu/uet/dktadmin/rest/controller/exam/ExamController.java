@@ -36,6 +36,21 @@ public class ExamController {
         }
     }
 
+    @PostMapping("/exam/list/semester/{id}")
+    public ApiDataResponse<String> createListExam(@RequestBody List<ExamRequest> requests, @PathVariable Long id) {
+        try {
+            log.info("create list exam {}", requests);
+            examService.createList(requests, id);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
     @PutMapping("/exam")
     public ApiDataResponse<ExamResponse> updateExam(@RequestBody ExamRequest request) {
         try {
