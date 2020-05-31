@@ -131,4 +131,16 @@ public class ExamController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/exam/result_export/semester/{id}")
+    public ResponseEntity<?> resultExport(@PathVariable Long id, HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        Workbook workbook = examService.resultExport(id);
+        String excelFileName = "ExamResult.xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
+        out.close();
+        return ResponseEntity.ok().build();
+    }
 }

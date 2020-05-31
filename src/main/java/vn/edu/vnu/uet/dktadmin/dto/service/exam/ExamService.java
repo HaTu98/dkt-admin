@@ -261,6 +261,16 @@ public class ExamService {
         return workbook;
     }
 
+    public Workbook resultExport(Long semesterId) throws IOException {
+        List<Exam> exams = examDao.getBySemesterId(semesterId);
+        String templatePath = "\\template\\excel\\template_exam_result.xlsx";
+        File templateFile = new ClassPathResource(templatePath).getFile();
+        FileInputStream templateInputStream = new FileInputStream(templateFile);
+        Workbook workbook = new XSSFWorkbook(templateInputStream);
+        writeExcelResult(workbook, exams, semesterId);
+        return workbook;
+    }
+
     public void writeExcel(Workbook workbook, List<Exam> exams, Long semesterId) {
         CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
         Sheet sheet = workbook.getSheetAt(0);
@@ -311,11 +321,82 @@ public class ExamService {
             Location location = locationMap.get(exam.getLocationId());
             Cell cellLocation = row.createCell(6);
             cellLocation.setCellValue(location.getLocationName());
+            cellLocation.setCellStyle(cellStyle);
+
+            String date = exam.getDate().format(formatDate);
+            Cell cellDate = row.createCell(7);
+            cellDate.setCellValue(date);
+            cellDate.setCellStyle(cellStyle);
 
             String startDate = exam.getStartTime().format(format);
             String endDate = exam.getEndTime().format(format);
             String time = startDate.substring(11) + "-" + endDate.substring(11);
-            Cell cellTime = row.createCell(7);
+            Cell cellTime = row.createCell(8);
+            cellTime.setCellValue(time);
+            cellTime.setCellStyle(cellStyle);
+        }
+    }
+
+    public void writeExcelResult(Workbook workbook, List<Exam> exams, Long semesterId) {
+        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        Sheet sheet = workbook.getSheetAt(0);
+        int size = exams.size();
+
+        List<RoomSemester> roomSemesters = roomSemesterDao.getBySemesterId(semesterId);
+        Map<Long,RoomSemester> roomSemesterMap = roomSemesters.stream()
+                .collect(Collectors.toMap(RoomSemester::getId, x -> x));
+        List<Subject> subjects = subjectDao.getAll();
+        Map<Long,Subject> subjectMap = subjects.stream().collect(Collectors.toMap(Subject::getId, x -> x));
+        List<Room> rooms = roomDao.getAllRoom();
+        Map<Long, Room> roomMap = rooms.stream().collect(Collectors.toMap(Room::getId, x ->x));
+        List<Location> locations = locationDao.getAll();
+        Map<Long, Location> locationMap = locations.stream().collect(Collectors.toMap(Location::getId, x -> x));
+        for (int i = 0; i < size; i++) {
+            Exam exam = exams.get(i);
+            Row row = sheet.createRow(i + 4);
+
+            Cell cellStt = row.createCell(0);
+            cellStt.setCellValue(i+1);
+            cellStt.setCellStyle(cellStyle);
+
+            Subject subject = subjectMap.get(exam.getSubjectId());
+            Cell cellSubjectName = row.createCell(1);
+            cellSubjectName.setCellValue(subject.getSubjectName());
+            cellSubjectName.setCellStyle(cellStyle);
+
+            Cell cellSubjectCode = row.createCell(2);
+            cellSubjectCode.setCellValue(subject.getSubjectCode());
+            cellSubjectCode.setCellStyle(cellStyle);
+
+            Cell cellNumberCredit = row.createCell(3);
+            cellNumberCredit.setCellValue(subject.getNumberOfCredit());
+            cellNumberCredit.setCellStyle(cellStyle);
+
+            Room room = roomMap.get(exam.getRoomId());
+            Cell cellRoom = row.createCell(4);
+            cellRoom.setCellValue(room.getRoomName());
+            cellRoom.setCellStyle(cellStyle);
+
+            Location location = locationMap.get(exam.getLocationId());
+            Cell cellLocation = row.createCell(5);
+            cellLocation.setCellValue(location.getLocationName());
+            cellLocation.setCellStyle(cellStyle);
+
+            Cell cellNumStudent = row.createCell(6);
+            Integer numStudent = exam.getNumberOfStudent();
+            Integer numStudentSubscribe = exam.getNumberOfStudentSubscribe();
+            cellNumStudent.setCellValue(numStudentSubscribe + "/" + numStudent);
+            cellNumStudent.setCellStyle(cellStyle);
+
+            String date = exam.getDate().format(formatDate);
+            Cell cellDate = row.createCell(7);
+            cellDate.setCellValue(date);
+            cellDate.setCellStyle(cellStyle);
+
+            String startDate = exam.getStartTime().format(format);
+            String endDate = exam.getEndTime().format(format);
+            String time = startDate.substring(11) + "-" + endDate.substring(11);
+            Cell cellTime = row.createCell(8);
             cellTime.setCellValue(time);
             cellTime.setCellStyle(cellStyle);
         }
