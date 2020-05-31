@@ -15,4 +15,5 @@ public interface ExamDao {
     List<Exam> getByRoomAndDate(Long roomSemesterId, LocalDate date);
     List<Exam> getBySemesterIdAndSubjectId(Long semesterId, Long subjectId);
     List<Exam> getExamInListId(List<Long> ids);
+    void deleteList(List<Exam> exams);
 }

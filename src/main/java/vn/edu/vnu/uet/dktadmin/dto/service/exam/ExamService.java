@@ -6,11 +6,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.room.RoomDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.roomSemester.RoomSemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam.StudentSubjectExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.*;
@@ -41,10 +43,11 @@ public class ExamService {
     private final SubjectDao subjectDao;
     private final LocationDao locationDao;
     private final RoomDao roomDao;
+    private final StudentSubjectExamDao studentSubjectExamDao;
     private final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private final DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public ExamService(ExamDao examDao, MapperFacade mapperFacade, SubjectSemesterService subjectSemesterService, RoomSemesterService roomSemesterService, SubjectSemesterDao subjectSemesterDao, RoomSemesterDao roomSemesterDao, SubjectDao subjectDao, LocationDao locationDao, RoomDao roomDao) {
+    public ExamService(ExamDao examDao, MapperFacade mapperFacade, SubjectSemesterService subjectSemesterService, RoomSemesterService roomSemesterService, SubjectSemesterDao subjectSemesterDao, RoomSemesterDao roomSemesterDao, SubjectDao subjectDao, LocationDao locationDao, RoomDao roomDao, StudentSubjectExamDao studentSubjectExamDao) {
         this.examDao = examDao;
         this.mapperFacade = mapperFacade;
         this.subjectSemesterService = subjectSemesterService;
@@ -54,11 +57,20 @@ public class ExamService {
         this.subjectDao = subjectDao;
         this.locationDao = locationDao;
         this.roomDao = roomDao;
+        this.studentSubjectExamDao = studentSubjectExamDao;
     }
 
     public ExamResponse create(ExamRequest request) {
         validateExam(request);
         Exam exam = generateExam(request);
+        Exam response = examDao.store(exam);
+        return getExamResponse(response);
+    }
+
+    public ExamResponse update(ExamRequest request) {
+        validateUpdate(request);
+        Exam exam = generateExam(request);
+        exam.setId(request.getId());
         Exam response = examDao.store(exam);
         return getExamResponse(response);
     }
@@ -179,12 +191,47 @@ public class ExamService {
         if (!validateConflictExam(request)) {
             throw new BadRequestException(400, "Thời gian không hợp lệ");
         }
+
+    }
+
+    public void validateUpdate(ExamRequest request) {
+        if (request.getId() == null) {
+            throw new BaseException(400, "Exam không thể null");
+        }
+        Exam exam = examDao.getById(request.getId());
+        if (exam == null) {
+            throw new BaseException(404, "Exam không tồn tại");
+        }
+        if (request.getRoomSemesterId() == null) {
+            throw new BaseException(400, "RoomSemester không thể null");
+        }
+        if (request.getSubjectSemesterId() == null) {
+            throw new BaseException(400, "SubjectSemester không thể null");
+        }
+        if (!subjectSemesterService.existSubjectSemester(request.getSubjectSemesterId())) {
+            throw new BaseException(404, "SubjectSemester không tồn tại");
+        }
+        if (!roomSemesterService.isExistRoomSemester(request.getRoomSemesterId())) {
+            throw new BaseException(404, "RoomSemester không tồn tại");
+        }
+        if (!validateConflictExam(request)) {
+            throw new BadRequestException(400, "Thời gian không hợp lệ");
+        }
     }
 
     public ListRegisterResultResponse getAll(Long id) {
         List<Exam> exams = examDao.getBySemesterId(id);
         RegisterResultResponse registerResultResponse = new RegisterResultResponse();
         return null;
+    }
+
+    public void deleteList(List<Long> examIds) {
+        List<Exam> exams = examDao.getExamInListId(examIds);
+        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getByExamIdInList(examIds);
+        if (studentSubjectExams.size() > 0) {
+            throw new BaseException(400, "Không thể xóa Exam");
+        }
+        examDao.deleteList(exams);
     }
 
     private ExamResponse getExamResponse(Exam exam) {
@@ -231,6 +278,7 @@ public class ExamService {
         LocalDateTime startTime = LocalDateTime.parse(request.getStartTime(), format);
         LocalDateTime endTime = LocalDateTime.parse(request.getEndTime(), format);
         for (Exam exam : exams) {
+            if (exam.getId().equals(request.getId())) continue;
             LocalDateTime start = exam.getStartTime();
             LocalDateTime end = exam.getEndTime();
             if (!Util.validateTime(start, end, startTime, endTime)) {

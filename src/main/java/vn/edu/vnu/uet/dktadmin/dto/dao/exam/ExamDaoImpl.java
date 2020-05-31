@@ -65,4 +65,9 @@ public class ExamDaoImpl implements ExamDao {
         }
         return exams;
     }
+
+    @Override
+    public void deleteList(List<Exam> exams) {
+        examRepository.deleteAll(exams);
+    }
 }

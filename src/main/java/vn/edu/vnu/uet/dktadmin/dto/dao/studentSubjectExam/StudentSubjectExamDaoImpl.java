@@ -1,12 +1,15 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
 import vn.edu.vnu.uet.dktadmin.dto.repository.StudentSubjectExamRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentSubjectExamDaoImpl implements StudentSubjectExamDao {
@@ -49,5 +52,14 @@ public class StudentSubjectExamDaoImpl implements StudentSubjectExamDao {
     @Override
     public List<StudentSubjectExam> getByStudentIdAndSemesterId(Long studentId, Long semesterId) {
         return studentSubjectExamRepository.findByStudentIdAndSemesterId(studentId, semesterId);
+    }
+
+    @Override
+    public List<StudentSubjectExam> getByExamIdInList(List<Long> ids) {
+        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamRepository.findByExamIdIn(ids);
+        if (CollectionUtils.isEmpty(studentSubjectExams)) {
+            return new ArrayList<>();
+        }
+        return studentSubjectExams;
     }
 }

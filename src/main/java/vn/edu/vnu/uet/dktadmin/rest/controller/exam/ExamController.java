@@ -10,6 +10,8 @@ import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin")
 public class ExamController {
@@ -38,7 +40,7 @@ public class ExamController {
     public ApiDataResponse<ExamResponse> updateExam(@RequestBody ExamRequest request) {
         try {
             log.info("update exam {}", request);
-            return ApiDataResponse.ok(examService.create(request));
+            return ApiDataResponse.ok(examService.update(request));
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());
@@ -72,6 +74,21 @@ public class ExamController {
             log.info("get exam in semester : {}" , id);
             PageBase pageBase = PageUtil.validate(page, size);
             return ApiDataResponse.ok(examService.getBySemesterId(id, pageBase));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
+
+    @DeleteMapping("/exam/list")
+    public ApiDataResponse<String> deleteList(@RequestBody List<Long> ids) {
+        try {
+            log.info("delete exam in ids : {}" , ids);
+            examService.deleteList(ids);
+            return ApiDataResponse.ok("success");
         } catch (BaseException e) {
             log.error(e.getMessage());
             return ApiDataResponse.error(e.getCode(), e.getMessage());

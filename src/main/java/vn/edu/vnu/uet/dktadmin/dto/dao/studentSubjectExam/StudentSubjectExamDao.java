@@ -13,4 +13,5 @@ public interface StudentSubjectExamDao {
     List<StudentSubjectExam> getByStudentSubjectId(Long studentSubjectId);
     void delete(StudentSubjectExam studentSubjectExam);
     List<StudentSubjectExam> getByStudentIdAndSemesterId(Long studentId, Long semesterId);
+    List<StudentSubjectExam> getByExamIdInList(List<Long> ids);
 }

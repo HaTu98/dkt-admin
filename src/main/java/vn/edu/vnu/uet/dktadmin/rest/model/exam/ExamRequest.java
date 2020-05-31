@@ -9,6 +9,9 @@ import java.time.Instant;
 @Getter
 @Setter
 public class ExamRequest {
+    @JsonProperty(value = "Id")
+    private Long id;
+
     @JsonProperty(value = "NumberOfStudent")
     private Integer numberOfStudent;
 
