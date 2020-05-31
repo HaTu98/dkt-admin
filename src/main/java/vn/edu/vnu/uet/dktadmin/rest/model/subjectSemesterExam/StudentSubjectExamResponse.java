@@ -16,9 +16,21 @@ public class StudentSubjectExamResponse {
     @JsonProperty("StudentSubjectId")
     private Long studentSubjectId;
 
-    @JsonProperty("Status")
-    private String status;
+    @JsonProperty("FullName")
+    private String fullName;
 
-    @JsonProperty("LocationId")
-    private Long locationId;
+    @JsonProperty("StudentCode")
+    private String studentCode;
+
+    @JsonProperty("Gender")
+    private Integer gender;
+
+    @JsonProperty("DateOfBirth")
+    private String dateOfBirth;
+
+    @JsonProperty(value = "Course")
+    private String course;
+
+    @JsonProperty("Status")
+    private Integer status;
 }

@@ -1,15 +1,21 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.studentSubjectExam;
 
 import ma.glasnost.orika.MapperFacade;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
+import vn.edu.vnu.uet.dktadmin.dto.dao.student.StudentDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubjectExam.StudentSubjectExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.Exam;
+import vn.edu.vnu.uet.dktadmin.dto.model.Student;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubjectExam;
 import vn.edu.vnu.uet.dktadmin.dto.service.exam.ExamService;
@@ -18,10 +24,14 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemesterExam.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,14 +42,16 @@ public class StudentSubjectExamService {
     private final StudentSubjectDao studentSubjectDao;
     private final StudentSubjectService studentSubjectService;
     private final ExamService examService;
+    private final StudentDao studentDao;
     private final ExamDao examDao;
 
-    public StudentSubjectExamService(MapperFacade mapperFacade, StudentSubjectExamDao studentSubjectExamDao, StudentSubjectDao studentSubjectDao, StudentSubjectService studentSubjectService, ExamService examService, ExamDao examDao) {
+    public StudentSubjectExamService(MapperFacade mapperFacade, StudentSubjectExamDao studentSubjectExamDao, StudentSubjectDao studentSubjectDao, StudentSubjectService studentSubjectService, ExamService examService, StudentDao studentDao, ExamDao examDao) {
         this.mapperFacade = mapperFacade;
         this.studentSubjectExamDao = studentSubjectExamDao;
         this.studentSubjectDao = studentSubjectDao;
         this.studentSubjectService = studentSubjectService;
         this.examService = examService;
+        this.studentDao = studentDao;
         this.examDao = examDao;
     }
 
@@ -48,7 +60,6 @@ public class StudentSubjectExamService {
         validateStudentSubjectExam(request);
         Exam exam = examDao.getById(request.getExamId());
         StudentSubjectExam studentSubjectExam = mapperFacade.map(request, StudentSubjectExam.class);
-        studentSubjectExam.setStatus(Constant.active);
         studentSubjectExam.setSemesterId(exam.getSemesterId());
 
         StudentSubject studentSubject = studentSubjectDao.getById(request.getStudentSubjectId());
@@ -66,7 +77,6 @@ public class StudentSubjectExamService {
         studentSubjectDao.store(studentSubject);
 
         StudentSubjectExamResponse response = mapperFacade.map(studentSubjectExamDao.store(studentSubjectExam), StudentSubjectExamResponse.class);
-        response.setLocationId(exam.getLocationId());
         return response;
     }
 
@@ -136,6 +146,17 @@ public class StudentSubjectExamService {
         return getStudentExamPaging(studentSubjectExams, pageBase);
     }
 
+    public Workbook export(Long subjectSemesterId) throws IOException {
+        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getByStudentSubjectId(subjectSemesterId);
+        List<StudentSubjectExamResponse> studentSubjectExamResponses = generateResponse(studentSubjectExams);
+        String templatePath = "\\template\\excel\\export_student_subject.xlsx";
+        File templateFile = new ClassPathResource(templatePath).getFile();
+        FileInputStream templateInputStream = new FileInputStream(templateFile);
+        Workbook workbook  = new XSSFWorkbook(templateInputStream);
+        writeExcel(workbook, studentSubjectExamResponses);
+        return workbook;
+    }
+
     public StudentSubjectExamResponse getById(Long id) {
         return mapperFacade.map(studentSubjectExamDao.getById(id), StudentSubjectExamResponse.class);
     }
@@ -147,7 +168,6 @@ public class StudentSubjectExamService {
             try {
                 Exam exam = autoGetRegisterSubject(studentSubject);
                 StudentSubjectExam studentSubjectExam = new StudentSubjectExam();
-                studentSubjectExam.setStatus(Constant.active);
                 studentSubjectExam.setSemesterId(exam.getSemesterId());
                 studentSubjectExam.setExamId(exam.getId());
                 studentSubjectExam.setStudentSubjectId(studentSubject.getId());
@@ -176,6 +196,19 @@ public class StudentSubjectExamService {
         studentSubjectDao.store(studentSubject);
 
         return studentSubjectExamDao.store(studentSubjectExam);
+    }
+
+    private void writeExcel(Workbook workbook, List<StudentSubjectExamResponse> studentSubjectExamResponses) {
+        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
+        Sheet sheet = workbook.getSheetAt(0);
+        /*for (StudentSubjectExamResponse response : studentSubjectExamResponses) {
+            Row row = sheet.createRow(i + 8);
+
+            Cell cellStt = row.createCell(0);
+            cellStt.setCellValue(i + 1);
+            cellStt.setCellStyle(cellStyle);
+        }*/
     }
 
     private Exam autoGetRegisterSubject(StudentSubject studentSubject) {
@@ -224,9 +257,35 @@ public class StudentSubjectExamService {
             studentSubjectExamList.add(studentSubjectExams.get(i));
         }
         PageResponse pageResponse = new PageResponse(page, size, total);
-        return new ListStudentSubjectExamResponse(
-                mapperFacade.mapAsList(studentSubjectExamList, StudentSubjectExamResponse.class),
-                pageResponse
-        );
+        List<StudentSubjectExamResponse> responses = generateResponse(studentSubjectExamList);
+        return new ListStudentSubjectExamResponse(responses, pageResponse);
+    }
+
+    private List<StudentSubjectExamResponse> generateResponse(List<StudentSubjectExam> studentSubjectExams) {
+        List<StudentSubjectExamResponse> responses = new ArrayList<>();
+        List<Long> studentIds = studentSubjectExams.stream().map(StudentSubjectExam::getStudentId).collect(Collectors.toList());
+        List<Student> students = studentDao.getStudentInList(studentIds);
+        Map<Long, Student> studentMap = students.stream().collect(Collectors.toMap(Student::getId, x -> x));
+
+        List<Long> studentSubjectIds = studentSubjectExams.stream().map(StudentSubjectExam::getStudentSubjectId).collect(Collectors.toList());
+        List<StudentSubject> studentSubjects = studentSubjectDao.getStudentSubjectInList(studentSubjectIds);
+        Map<Long, StudentSubject> studentSubjectMap = studentSubjects.stream().collect(Collectors.toMap(StudentSubject::getId, x -> x));
+        for (StudentSubjectExam studentExam : studentSubjectExams) {
+            StudentSubjectExamResponse response = new StudentSubjectExamResponse();
+            Student student = studentMap.get(studentExam.getStudentId());
+            StudentSubject studentSubject = studentSubjectMap.get(studentExam.getStudentSubjectId());
+            if (student == null || studentSubject == null) continue;
+            response.setId(studentExam.getId());
+            response.setExamId(studentExam.getExamId());
+            response.setStudentSubjectId(studentExam.getStudentSubjectId());
+            response.setStatus(studentSubject.getStatus());
+            response.setCourse(student.getCourse());
+            response.setDateOfBirth(student.getDateOfBirth());
+            response.setFullName(student.getFullName());
+            response.setGender(student.getGender());
+            response.setStudentCode(student.getStudentCode());
+            responses.add(response);
+        }
+        return responses;
     }
 }

@@ -14,7 +14,6 @@ public class StudentSubjectExam {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    private Integer status;
     private Long examId;
     private Long semesterId;
     private Long studentSubjectId;
