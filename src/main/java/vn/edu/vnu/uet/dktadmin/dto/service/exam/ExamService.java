@@ -1,12 +1,16 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.exam;
 
 import ma.glasnost.orika.MapperFacade;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
+import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
@@ -23,6 +27,9 @@ import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -244,6 +251,76 @@ public class ExamService {
         examDao.deleteList(exams);
     }
 
+    public Workbook export(Long semesterId) throws IOException {
+        List<Exam> exams = examDao.getBySemesterId(semesterId);
+        String templatePath = "\\template\\excel\\template_exam.xlsx";
+        File templateFile = new ClassPathResource(templatePath).getFile();
+        FileInputStream templateInputStream = new FileInputStream(templateFile);
+        Workbook workbook = new XSSFWorkbook(templateInputStream);
+        writeExcel(workbook, exams, semesterId);
+        return workbook;
+    }
+
+    public void writeExcel(Workbook workbook, List<Exam> exams, Long semesterId) {
+        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        Sheet sheet = workbook.getSheetAt(0);
+        int size = exams.size();
+
+        List<RoomSemester> roomSemesters = roomSemesterDao.getBySemesterId(semesterId);
+        Map<Long,RoomSemester> roomSemesterMap = roomSemesters.stream()
+                .collect(Collectors.toMap(RoomSemester::getId, x -> x));
+        List<Subject> subjects = subjectDao.getAll();
+        Map<Long,Subject> subjectMap = subjects.stream().collect(Collectors.toMap(Subject::getId, x -> x));
+        List<Room> rooms = roomDao.getAllRoom();
+        Map<Long, Room> roomMap = rooms.stream().collect(Collectors.toMap(Room::getId, x ->x));
+        List<Location> locations = locationDao.getAll();
+        Map<Long, Location> locationMap = locations.stream().collect(Collectors.toMap(Location::getId, x -> x));
+        for (int i = 0; i < size; i++) {
+            Exam exam = exams.get(i);
+            Row row = sheet.createRow(i + 4);
+
+            Cell cellStt = row.createCell(0);
+            cellStt.setCellValue(i+1);
+            cellStt.setCellStyle(cellStyle);
+
+            Subject subject = subjectMap.get(exam.getSubjectId());
+            Cell cellSubjectName = row.createCell(1);
+            cellSubjectName.setCellValue(subject.getSubjectName());
+            cellSubjectName.setCellStyle(cellStyle);
+
+            Cell cellSubjectCode = row.createCell(2);
+            cellSubjectCode.setCellValue(subject.getSubjectCode());
+            cellSubjectCode.setCellStyle(cellStyle);
+
+            Room room = roomMap.get(exam.getRoomId());
+            Cell cellRoom = row.createCell(3);
+            cellRoom.setCellValue(room.getRoomName());
+            cellRoom.setCellStyle(cellStyle);
+
+            RoomSemester roomSemester = roomSemesterMap.get(exam.getRoomSemesterId());
+            Cell cellNumComputer = row.createCell(4);
+            Integer numComputer = roomSemester.getNumberOfComputer();
+            cellNumComputer.setCellValue(numComputer == null ? 0 : numComputer);
+            cellNumComputer.setCellStyle(cellStyle);
+
+            Cell cellPreventiveComputer = row.createCell(5);
+            Integer preventiveComputer = roomSemester.getPreventiveComputer();
+            cellPreventiveComputer.setCellValue(preventiveComputer == null ? 0 : preventiveComputer);
+            cellPreventiveComputer.setCellStyle(cellStyle);
+
+            Location location = locationMap.get(exam.getLocationId());
+            Cell cellLocation = row.createCell(6);
+            cellLocation.setCellValue(location.getLocationName());
+
+            String startDate = exam.getStartTime().format(format);
+            String endDate = exam.getEndTime().format(format);
+            String time = startDate.substring(11) + "-" + endDate.substring(11);
+            Cell cellTime = row.createCell(7);
+            cellTime.setCellValue(time);
+            cellTime.setCellStyle(cellStyle);
+        }
+    }
+
     private ExamResponse getExamResponse(Exam exam) {
         ExamResponse examResponse = mapperFacade.map(exam, ExamResponse.class);
         examResponse.setStartTime(exam.getStartTime().format(format));
@@ -268,6 +345,7 @@ public class ExamService {
 
         RoomSemester roomSemester = roomSemesterDao.getById(request.getRoomSemesterId());
         Room room = roomDao.getById(roomSemester.getRoomId());
+        exam.setRoomId(room.getId());
         exam.setLocationId(room.getLocationId());
 
         SubjectSemester subjectSemester = subjectSemesterDao.getById(request.getSubjectSemesterId());

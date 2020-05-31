@@ -1,7 +1,9 @@
 package vn.edu.vnu.uet.dktadmin.rest.controller.exam;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
@@ -10,6 +12,9 @@ import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.exam.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -111,6 +116,19 @@ public class ExamController {
             log.error(e.getMessage());
             return ApiDataResponse.error();
         }
+    }
+
+    @GetMapping("/exam/export/semester/{id}")
+    public ResponseEntity<?> export(@PathVariable Long id, HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        Workbook workbook = examService.export(id);
+        String excelFileName = "Exams.xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
+        out.close();
+        return ResponseEntity.ok().build();
     }
 
 }
