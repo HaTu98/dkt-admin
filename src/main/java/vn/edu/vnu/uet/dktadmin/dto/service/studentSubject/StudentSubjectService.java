@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
@@ -26,7 +27,6 @@ import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
 import vn.edu.vnu.uet.dktadmin.dto.model.*;
 import vn.edu.vnu.uet.dktadmin.dto.service.student.StudentService;
 import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterService;
-import vn.edu.vnu.uet.dktadmin.rest.controller.exam.ExamController;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.studentSubject.*;
@@ -195,12 +195,14 @@ public class StudentSubjectService {
         File templateFile = new ClassPathResource(templatePath).getFile();
         FileInputStream templateInputStream = new FileInputStream(templateFile);
         Workbook workbook  = new XSSFWorkbook(templateInputStream);
-        writeXSSFSheet(workbook, studentSubjects);
+        writeExcel(workbook, studentSubjects, subjectSemesterId);
         return workbook;
     }
 
-    private void writeXSSFSheet(Workbook workbook, List<StudentSubject> studentSubjects) {
-        Subject subject = subjectDao.getById(studentSubjects.get(0).getSubjectId());
+    public void writeExcel(Workbook workbook, List<StudentSubject> studentSubjects, Long subjectSemesterId) {
+        StudentSubject ss = studentSubjectDao.getById(subjectSemesterId);
+        if (ss == null) return;
+        Subject subject = subjectDao.getById(ss.getSubjectId());
 
         CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
         CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);

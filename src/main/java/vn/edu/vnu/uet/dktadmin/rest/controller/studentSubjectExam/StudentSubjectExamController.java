@@ -126,7 +126,7 @@ public class StudentSubjectExamController {
     public ResponseEntity<?> export(@PathVariable Long id, HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         Workbook workbook = studentSubjectExamService.export(id);
-        String excelFileName = "StudentSubject.xlsx";
+        String excelFileName = "StudentSubjectExam.xlsx";
         response.setHeader("Content-Disposition", "attachment; filename=" + excelFileName);
         ServletOutputStream out = response.getOutputStream();
         workbook.write(out);

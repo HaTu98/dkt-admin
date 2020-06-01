@@ -148,12 +148,15 @@ public class StudentSubjectExamService {
 
     public Workbook export(Long subjectSemesterId) throws IOException {
         List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getByStudentSubjectId(subjectSemesterId);
-        List<StudentSubjectExamResponse> studentSubjectExamResponses = generateResponse(studentSubjectExams);
+       //List<StudentSubjectExamResponse> studentSubjectExamResponses = generateResponse(studentSubjectExams);
+        List<Long> studentSubjectIds = studentSubjectExams.stream()
+                .map(StudentSubjectExam::getStudentSubjectId).collect(Collectors.toList());
+        List<StudentSubject> studentSubjects = studentSubjectDao.getStudentSubjectInList(studentSubjectIds);
         String templatePath = "\\template\\excel\\export_student_subject.xlsx";
         File templateFile = new ClassPathResource(templatePath).getFile();
         FileInputStream templateInputStream = new FileInputStream(templateFile);
         Workbook workbook  = new XSSFWorkbook(templateInputStream);
-        writeExcel(workbook, studentSubjectExamResponses);
+        studentSubjectService.writeExcel(workbook, studentSubjects,subjectSemesterId);
         return workbook;
     }
 
@@ -198,18 +201,18 @@ public class StudentSubjectExamService {
         return studentSubjectExamDao.store(studentSubjectExam);
     }
 
-    private void writeExcel(Workbook workbook, List<StudentSubjectExamResponse> studentSubjectExamResponses) {
+    /*private void writeExcel(Workbook workbook, List<StudentSubjectExamResponse> studentSubjectExamResponses) {
         CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
         CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
         Sheet sheet = workbook.getSheetAt(0);
-        /*for (StudentSubjectExamResponse response : studentSubjectExamResponses) {
+        for (StudentSubjectExamResponse response : studentSubjectExamResponses) {
             Row row = sheet.createRow(i + 8);
 
             Cell cellStt = row.createCell(0);
             cellStt.setCellValue(i + 1);
             cellStt.setCellStyle(cellStyle);
-        }*/
-    }
+        }
+    }*/
 
     private Exam autoGetRegisterSubject(StudentSubject studentSubject) {
         List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao
