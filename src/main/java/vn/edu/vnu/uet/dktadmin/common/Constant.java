@@ -13,4 +13,6 @@ public interface Constant {
     int REGISTERED = 3;
     String EDIT = "edit";
     String ADD = "add";
+    String FROM_EMAIL = "dkt.tuhv@gmail.com";
+    String FROM_EMAIL_PASSWORD = "dkt12345";
 }

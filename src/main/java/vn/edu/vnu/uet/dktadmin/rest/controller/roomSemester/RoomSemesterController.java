@@ -7,8 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.PageUtil;
-import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
-import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.roomSemester.RoomSemesterService;
 import vn.edu.vnu.uet.dktadmin.rest.controller.student.StudentController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;

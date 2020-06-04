@@ -18,7 +18,6 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Room;
 import vn.edu.vnu.uet.dktadmin.dto.model.RoomSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.room.RoomService;
 import vn.edu.vnu.uet.dktadmin.dto.service.semester.SemesterService;
-import vn.edu.vnu.uet.dktadmin.dto.service.studentSubject.StudentSubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.roomSemester.ListRoomSemesterResponse;

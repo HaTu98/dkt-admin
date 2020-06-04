@@ -1,7 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.location;
 
 import ma.glasnost.orika.MapperFacade;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.location.LocationDao;
