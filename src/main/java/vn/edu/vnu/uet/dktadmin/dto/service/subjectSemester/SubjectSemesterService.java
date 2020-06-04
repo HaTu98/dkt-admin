@@ -1,7 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester;
 
 import ma.glasnost.orika.MapperFacade;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
-import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.ExcelUtil;
@@ -27,7 +26,6 @@ import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomListResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.room.RoomResponse;
 
-import java.awt.print.Pageable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

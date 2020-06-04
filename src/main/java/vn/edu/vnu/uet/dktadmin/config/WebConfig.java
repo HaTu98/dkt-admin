@@ -54,7 +54,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js")
                 .permitAll()
                 .antMatchers(
-                        "/admin/auth/login",
+                        "/admin/auth/*",
                         "/admin/student/import",
                         "/admin/student/template")
                 .permitAll()
