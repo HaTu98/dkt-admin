@@ -273,6 +273,8 @@ public class ExamService {
 
     public void writeExcel(Workbook workbook, List<Exam> exams, Long semesterId) {
         CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
+        CellStyle cellStyleRight = ExcelUtil.createRightCellStyle(workbook);
         Sheet sheet = workbook.getSheetAt(0);
         int size = exams.size();
 
@@ -296,42 +298,46 @@ public class ExamService {
             Subject subject = subjectMap.get(exam.getSubjectId());
             Cell cellSubjectName = row.createCell(1);
             cellSubjectName.setCellValue(subject.getSubjectName());
-            cellSubjectName.setCellStyle(cellStyle);
+            cellSubjectName.setCellStyle(cellStyleLeft);
 
             Cell cellSubjectCode = row.createCell(2);
             cellSubjectCode.setCellValue(subject.getSubjectCode());
-            cellSubjectCode.setCellStyle(cellStyle);
+            cellSubjectCode.setCellStyle(cellStyleLeft);
+
+            Cell cellNumberCredit = row.createCell(3);
+            cellNumberCredit.setCellValue(subject.getNumberOfCredit());
+            cellNumberCredit.setCellStyle(cellStyleRight);
 
             Room room = roomMap.get(exam.getRoomId());
-            Cell cellRoom = row.createCell(3);
+            Cell cellRoom = row.createCell(4);
             cellRoom.setCellValue(room.getRoomName());
-            cellRoom.setCellStyle(cellStyle);
-
-            RoomSemester roomSemester = roomSemesterMap.get(exam.getRoomSemesterId());
-            Cell cellNumComputer = row.createCell(4);
-            Integer numComputer = roomSemester.getNumberOfComputer();
-            cellNumComputer.setCellValue(numComputer == null ? 0 : numComputer);
-            cellNumComputer.setCellStyle(cellStyle);
-
-            Cell cellPreventiveComputer = row.createCell(5);
-            Integer preventiveComputer = roomSemester.getPreventiveComputer();
-            cellPreventiveComputer.setCellValue(preventiveComputer == null ? 0 : preventiveComputer);
-            cellPreventiveComputer.setCellStyle(cellStyle);
+            cellRoom.setCellStyle(cellStyleLeft);
 
             Location location = locationMap.get(exam.getLocationId());
-            Cell cellLocation = row.createCell(6);
+            Cell cellLocation = row.createCell(5);
             cellLocation.setCellValue(location.getLocationName());
-            cellLocation.setCellStyle(cellStyle);
+            cellLocation.setCellStyle(cellStyleLeft);
+
+            RoomSemester roomSemester = roomSemesterMap.get(exam.getRoomSemesterId());
+            Cell cellNumComputer = row.createCell(6);
+            Integer numComputer = roomSemester.getNumberOfComputer();
+            cellNumComputer.setCellValue(numComputer == null ? 0 : numComputer);
+            cellNumComputer.setCellStyle(cellStyleRight);
+
+            Cell cellPreventiveComputer = row.createCell(7);
+            Integer preventiveComputer = roomSemester.getPreventiveComputer();
+            cellPreventiveComputer.setCellValue(preventiveComputer == null ? 0 : preventiveComputer);
+            cellPreventiveComputer.setCellStyle(cellStyleRight);
 
             String date = exam.getDate().format(formatDate);
-            Cell cellDate = row.createCell(7);
+            Cell cellDate = row.createCell(8);
             cellDate.setCellValue(date);
             cellDate.setCellStyle(cellStyle);
 
             String startDate = exam.getStartTime().format(format);
             String endDate = exam.getEndTime().format(format);
             String time = startDate.substring(11) + "-" + endDate.substring(11);
-            Cell cellTime = row.createCell(8);
+            Cell cellTime = row.createCell(9);
             cellTime.setCellValue(time);
             cellTime.setCellStyle(cellStyle);
         }

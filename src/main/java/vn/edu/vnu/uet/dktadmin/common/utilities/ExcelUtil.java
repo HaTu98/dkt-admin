@@ -62,10 +62,6 @@ public class ExcelUtil {
         font.setFontHeightInPoints((short) 11);
 
         CellStyle cellStyle = workbook.createCellStyle();
-        /*cellStyle.setBorderBottom(BorderStyle.THIN);
-        cellStyle.setBorderLeft(BorderStyle.THIN);
-        cellStyle.setBorderTop(BorderStyle.THIN);
-        cellStyle.setBorderRight(BorderStyle.THIN);*/
         cellStyle.setAlignment(HorizontalAlignment.CENTER);
         cellStyle.setFont(font);
 
@@ -78,11 +74,19 @@ public class ExcelUtil {
         font.setFontHeightInPoints((short) 11);
 
         CellStyle cellStyle = workbook.createCellStyle();
-        /*cellStyle.setBorderBottom(BorderStyle.THIN);
-        cellStyle.setBorderLeft(BorderStyle.THIN);
-        cellStyle.setBorderTop(BorderStyle.THIN);
-        cellStyle.setBorderRight(BorderStyle.THIN);*/
         cellStyle.setAlignment(HorizontalAlignment.LEFT);
+        cellStyle.setFont(font);
+
+        return cellStyle;
+    }
+
+    public static CellStyle createRightCellStyle(Workbook workbook) {
+        Font font = workbook.createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 11);
+
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setAlignment(HorizontalAlignment.RIGHT);
         cellStyle.setFont(font);
 
         return cellStyle;
