@@ -200,7 +200,7 @@ public class StudentSubjectService {
     }
 
     public void writeExcel(Workbook workbook, List<StudentSubject> studentSubjects, Long subjectSemesterId) {
-        StudentSubject ss = studentSubjectDao.getById(subjectSemesterId);
+        SubjectSemester ss = subjectSemesterDao.getById(subjectSemesterId);
         if (ss == null) return;
         Subject subject = subjectDao.getById(ss.getSubjectId());
 

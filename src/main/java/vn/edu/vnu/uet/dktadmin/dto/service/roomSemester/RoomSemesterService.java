@@ -154,7 +154,7 @@ public class RoomSemesterService {
                 ExcelUtil.setCellValueAndStyle(roomNameCell, room.getRoomName(), cellStyle);
 
                 Cell roomCodeCell = row.createCell(2);
-                ExcelUtil.setCellValueAndStyle(roomCodeCell, room.getRoomName(), cellStyle);
+                ExcelUtil.setCellValueAndStyle(roomCodeCell, room.getRoomCode(), cellStyle);
 
                 Location location = longLocationMap.get(room.getLocationId());
                 Cell locationCell = row.createCell(3);
