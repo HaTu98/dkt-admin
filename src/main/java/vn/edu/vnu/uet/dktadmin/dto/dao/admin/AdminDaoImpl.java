@@ -19,4 +19,9 @@ public class AdminDaoImpl implements AdminDao{
     public Admin getByEmail(String email) {
         return adminRepository.findByEmail(email);
     }
+
+    @Override
+    public Admin save(Admin admin) {
+        return adminRepository.save(admin);
+    }
 }
