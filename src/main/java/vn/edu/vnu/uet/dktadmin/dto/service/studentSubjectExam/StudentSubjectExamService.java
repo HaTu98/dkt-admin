@@ -62,6 +62,7 @@ public class StudentSubjectExamService {
 
         StudentSubject studentSubject = studentSubjectDao.getById(request.getStudentSubjectId());
         studentSubjectExam.setStudentId(studentSubject.getStudentId());
+        studentSubjectExam.setSubjectSemesterId(studentSubject.getSubjectSemesterId());
         Integer numberStudent = exam.getNumberOfStudentSubscribe();
         if (numberStudent == null) {
             numberStudent = 1;
@@ -140,12 +141,12 @@ public class StudentSubjectExamService {
     }
 
     public ListStudentSubjectExamResponse getBySubjectSemester(Long subjectSemesterId, PageBase pageBase) {
-        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getByStudentSubjectId(subjectSemesterId);
+        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getBySubjectSemesterId(subjectSemesterId);
         return getStudentExamPaging(studentSubjectExams, pageBase);
     }
 
     public Workbook export(Long subjectSemesterId) throws IOException {
-        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getByStudentSubjectId(subjectSemesterId);
+        List<StudentSubjectExam> studentSubjectExams = studentSubjectExamDao.getBySubjectSemesterId(subjectSemesterId);
        //List<StudentSubjectExamResponse> studentSubjectExamResponses = generateResponse(studentSubjectExams);
         List<Long> studentSubjectIds = studentSubjectExams.stream()
                 .map(StudentSubjectExam::getStudentSubjectId).collect(Collectors.toList());
@@ -173,6 +174,7 @@ public class StudentSubjectExamService {
                 studentSubjectExam.setExamId(exam.getId());
                 studentSubjectExam.setStudentSubjectId(studentSubject.getId());
                 studentSubjectExam.setStudentId(studentSubject.getStudentId());
+                studentSubjectExam.setSubjectSemesterId(studentSubject.getSubjectSemesterId());
                 storeStudentSubjectExam(studentSubject, exam, studentSubjectExam);
                 success += 1;
             } catch (Exception e) {

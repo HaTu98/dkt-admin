@@ -18,4 +18,5 @@ public class StudentSubjectExam {
     private Long semesterId;
     private Long studentSubjectId;
     private Long studentId;
+    private Long subjectSemesterId;
 }

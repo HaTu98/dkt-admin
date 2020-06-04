@@ -122,7 +122,7 @@ public class StudentSubjectExamController {
         }
     }
 
-    @GetMapping("/export/student_subject/{id}")
+    @GetMapping("/export/subject_semester/{id}")
     public ResponseEntity<?> export(@PathVariable Long id, HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         Workbook workbook = studentSubjectExamService.export(id);

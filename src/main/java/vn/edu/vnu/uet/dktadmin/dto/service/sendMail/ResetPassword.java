@@ -11,9 +11,6 @@ import vn.edu.vnu.uet.dktadmin.dto.model.Admin;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 @Service
 public class ResetPassword extends Thread{
