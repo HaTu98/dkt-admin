@@ -26,6 +26,7 @@ public class AdminAccount {
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode("admin@123"));
         admin.setFullName("Admin");
+        admin.setEmail("dkt.tuhv@gmail.com");
         admin.setCreatedAt(Instant.now());
         adminRepository.save(admin);
     }

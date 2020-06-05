@@ -38,7 +38,7 @@ public class AuthenticationService {
             DktAdmin dktAdmin = DktAdmin.builder()
                     .id(0l)
                     .email("")
-                    .fullName("Admin")
+                    .fullName("TuHV")
                     .username(username)
                     .role("Admin")
                     .build();
