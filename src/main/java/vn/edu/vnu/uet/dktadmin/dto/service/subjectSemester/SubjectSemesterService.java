@@ -3,10 +3,13 @@ package vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.dto.dao.studentSubject.StudentSubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subject.SubjectDao;
 import vn.edu.vnu.uet.dktadmin.dto.dao.subjectSemester.SubjectSemesterDao;
+import vn.edu.vnu.uet.dktadmin.dto.model.Student;
+import vn.edu.vnu.uet.dktadmin.dto.model.StudentSubject;
 import vn.edu.vnu.uet.dktadmin.dto.model.Subject;
 import vn.edu.vnu.uet.dktadmin.dto.model.SubjectSemester;
 import vn.edu.vnu.uet.dktadmin.dto.service.semester.SemesterService;
@@ -14,11 +17,14 @@ import vn.edu.vnu.uet.dktadmin.dto.service.subject.SubjectService;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.ListSubjectSemesterResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectConflictResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SubjectSemesterService {
@@ -86,6 +92,38 @@ public class SubjectSemesterService {
     public ListSubjectSemesterResponse getSemester(Long id,PageBase pageBase) {
         List<SubjectSemester> subjectSemesters = subjectSemesterDao.getBySemesterId(id);
         return getSubjectSemesterPaging(subjectSemesters, pageBase);
+    }
+
+    public List<SubjectConflictResponse> getSubjectConflict(Long id) {
+        List<SubjectConflictResponse> subjectConflicts = new ArrayList<>();
+        List<StudentSubject> studentSubjects = studentSubjectDao.getBySemesterId(id);
+        List<SubjectSemester> subjectSemesters = subjectSemesterDao.getBySemesterId(id);
+        Map<Long, List<Long>> studentSubjectGroupStudent = studentSubjects.stream()
+                .collect(Collectors.groupingBy(StudentSubject::getStudentId,
+                        Collectors.mapping(StudentSubject::getSubjectSemesterId, Collectors.toList())));
+        Map<Long, List<Long>> studentSubjectGroupSubject = studentSubjects.stream()
+                .collect(Collectors.groupingBy(StudentSubject::getSubjectSemesterId,
+                        Collectors.mapping(StudentSubject::getStudentId,Collectors.toList())));
+        for (SubjectSemester subjectSemester : subjectSemesters) {
+            SubjectConflictResponse subjectConflictResponse = new SubjectConflictResponse();
+            List<Long> subjectConflict = new ArrayList<>();
+            List<Long>  studentIds = studentSubjectGroupSubject.get(subjectSemester.getId());
+            if (CollectionUtils.isEmpty(studentIds)) continue;
+            for (Long studentId : studentIds) {
+                List<Long> subjectSemesterIds = studentSubjectGroupStudent.get(studentId);
+                if(CollectionUtils.isEmpty(subjectSemesterIds)) continue;
+                subjectConflict.addAll(subjectSemesterIds);
+            }
+            subjectConflict = subjectConflict.stream()
+                    .filter(idConflict -> idConflict != subjectSemester.getId())
+                    .distinct().collect(Collectors.toList());
+
+            subjectConflictResponse.setSubjectId(subjectSemester.getId());
+            subjectConflictResponse.setSubjectConflict(subjectConflict);
+
+            subjectConflicts.add(subjectConflictResponse);
+        }
+        return subjectConflicts;
     }
 
     private ListSubjectSemesterResponse getSubjectSemesterPaging(List<SubjectSemester> subjectSemesters, PageBase pageBase) {

@@ -9,6 +9,7 @@ import vn.edu.vnu.uet.dktadmin.dto.service.subjectSemester.SubjectSemesterServic
 import vn.edu.vnu.uet.dktadmin.rest.controller.subject.SubjectController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.PageBase;
+import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectConflictResponse;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.subjectSemester.SubjectSemesterResponse;
 
@@ -116,5 +117,18 @@ public class SubjectSemesterController {
         }
     }
 
+    @GetMapping("/subject_conflict/semester/{id}")
+    public ApiDataResponse<List<SubjectConflictResponse>> getConflictSubject(@PathVariable Long id){
+        try {
+            log.info("get subject conflict by  semester : {}", id);
+            return ApiDataResponse.ok(subjectSemesterService.getSubjectConflict(id));
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiDataResponse.error();
+        }
+    }
 
 }
