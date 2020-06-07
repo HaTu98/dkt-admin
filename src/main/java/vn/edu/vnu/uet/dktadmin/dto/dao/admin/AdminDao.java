@@ -6,4 +6,5 @@ public interface AdminDao {
     Admin getByUsername(String username);
     Admin getByEmail(String email);
     Admin save(Admin admin);
+    Admin getById(Long id);
 }

@@ -24,4 +24,9 @@ public class AdminDaoImpl implements AdminDao{
     public Admin save(Admin admin) {
         return adminRepository.save(admin);
     }
+
+    @Override
+    public Admin getById(Long id) {
+        return adminRepository.findById(id).orElse(null);
+    }
 }

@@ -5,11 +5,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vn.edu.vnu.uet.dktadmin.common.exception.BaseException;
 import vn.edu.vnu.uet.dktadmin.common.exception.UnAuthorizeException;
 import vn.edu.vnu.uet.dktadmin.dto.service.auth.AuthenticationService;
 import vn.edu.vnu.uet.dktadmin.dto.service.sendMail.ResetPassword;
 import vn.edu.vnu.uet.dktadmin.rest.controller.BaseController;
 import vn.edu.vnu.uet.dktadmin.rest.model.ApiDataResponse;
+import vn.edu.vnu.uet.dktadmin.rest.model.auth.ChangePasswordRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.auth.LoginRequest;
 import vn.edu.vnu.uet.dktadmin.rest.model.auth.LoginResponse;
 
@@ -40,5 +42,17 @@ public class AuthController extends BaseController {
         String email = request.get("Email");
         resetPassword.resetPassword(email);
         return ApiDataResponse.ok("success");
+    }
+
+    @PostMapping("/change_password")
+    public ApiDataResponse<String> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            authenticationService.changePassword(request);
+            return ApiDataResponse.ok("success");
+        } catch (BaseException e) {
+            return ApiDataResponse.error(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return ApiDataResponse.error();
+        }
     }
 }
