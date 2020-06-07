@@ -183,7 +183,7 @@ public class SubjectController {
         List<XSSFRow> errors = subjectService.importSubject(file);
         if (errors.size() > 0) {
             Workbook fileErrors = subjectService.template();
-            CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(fileErrors);
+            CellStyle cellStyle = ExcelUtil.createCenterCellStyle(fileErrors);
             Sheet sheetErrors = fileErrors.getSheetAt(0);
             for (int i = 0 ; i < errors.size(); i++) {
                 Row rowOld = errors.get(i);

@@ -203,8 +203,9 @@ public class StudentSubjectService {
         if (ss == null) return;
         Subject subject = subjectDao.getById(ss.getSubjectId());
 
-        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        CellStyle cellStyleCenter = ExcelUtil.createCenterCellStyle(workbook);
         CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
+        CellStyle cellStyleRight = ExcelUtil.createRightCellStyle(workbook);
         Sheet sheet = workbook.getSheetAt(0);
         Row row2 = sheet.getRow(2);
         Cell subjectNameCell = row2.createCell(1);
@@ -234,36 +235,36 @@ public class StudentSubjectService {
 
                 Cell cellStt = row.createCell(0);
                 cellStt.setCellValue(i + 1);
-                cellStt.setCellStyle(cellStyle);
+                cellStt.setCellStyle(cellStyleRight);
 
                 Student student = studentDao.getById(studentSubject.getStudentId());
                 Cell studentNameCell = row.createCell(1);
                 ExcelUtil.setCellValueAndStyle(studentNameCell, student.getFullName(), cellStyleLeft);
 
                 Cell studentCodeCell = row.createCell(2);
-                ExcelUtil.setCellValueAndStyle(studentCodeCell, Double.parseDouble(student.getStudentCode()), cellStyle);
+                ExcelUtil.setCellValueAndStyle(studentCodeCell, Double.parseDouble(student.getStudentCode()), cellStyleLeft);
 
                 Cell studentGenderCell = row.createCell(3);
                 String gender = Gender.getByValue(student.getGender()).getName();
                 studentGenderCell.setCellValue(gender);
-                studentGenderCell.setCellStyle(cellStyle);
+                studentGenderCell.setCellStyle(cellStyleLeft);
 
                 Cell studentDoBCell = row.createCell(4);
                 studentDoBCell.setCellValue(student.getDateOfBirth());
-                studentDoBCell.setCellStyle(cellStyle);
+                studentDoBCell.setCellStyle(cellStyleCenter);
 
                 Cell studentEmailCell = row.createCell(5);
                 studentEmailCell.setCellValue(student.getEmail());
-                studentEmailCell.setCellStyle(cellStyle);
+                studentEmailCell.setCellStyle(cellStyleLeft);
 
                 Cell studentCourseCell = row.createCell(6);
                 studentCourseCell.setCellValue(student.getCourse());
-                studentCourseCell.setCellStyle(cellStyle);
+                studentCourseCell.setCellStyle(cellStyleLeft);
 
                 Cell statusCell = row.createCell(7);
                 String status = studentSubject.getStatus() == 1 ? "" : "Không";
                 statusCell.setCellValue(status);
-                statusCell.setCellStyle(cellStyle);
+                statusCell.setCellStyle(cellStyleLeft);
             }catch (Exception e) {
                 log.error("error export :", e);
             }

@@ -149,8 +149,10 @@ public class RoomService {
         return room != null;
     }
 
-    public boolean isExistRoom(String roomCode){
-        Room room = roomDao.getByRoomCode(roomCode);
+    public boolean isExistRoom(String roomCode, String locationName){
+        Location location = locationDao.getByLocationName(locationName);
+        if (location == null) return false;
+        Room room = roomDao.getByRoomCodeAndLocationId(roomCode, location.getId());
         return room != null;
     }
 
@@ -173,34 +175,36 @@ public class RoomService {
         List<Room> rooms = roomDao.getAll();
 
         Workbook workbook = template();
-        Sheet sheet = workbook.getSheetAt(0);
-        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
 
-        writeXSSFSheet(sheet, rooms, cellStyle);
+        writeXSSFSheet(workbook, rooms);
         return workbook;
     }
 
-    private void writeXSSFSheet(Sheet sheet, List<Room> rooms, CellStyle cellStyle) {
+    private void writeXSSFSheet(Workbook workbook, List<Room> rooms) {
+        Sheet sheet = workbook.getSheetAt(0);
+        CellStyle cellStyleCenter = ExcelUtil.createCenterCellStyle(workbook);
+        CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
+        CellStyle cellStyleRight = ExcelUtil.createRightCellStyle(workbook);
         for (int i = 0; i < rooms.size(); i++) {
             Room room = rooms.get(i);
             Row row = sheet.createRow(i + 4);
 
             Cell cellStt = row.createCell(0);
             cellStt.setCellValue(i+1);
-            cellStt.setCellStyle(cellStyle);
+            cellStt.setCellStyle(cellStyleRight);
 
             Cell cellRoomName = row.createCell(1);
-            ExcelUtil.setCellValueAndStyle(cellRoomName, room.getRoomName(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellRoomName, room.getRoomName(), cellStyleLeft);
 
             Cell cellRoomCode = row.createCell(2);
-            ExcelUtil.setCellValueAndStyle(cellRoomCode, room.getRoomCode(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellRoomCode, room.getRoomCode(), cellStyleLeft);
 
             String location = locationDao.getById(room.getLocationId()).getLocationName();
             Cell cellLocation = row.createCell(3);
-            ExcelUtil.setCellValueAndStyle(cellLocation, location, cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellLocation, location, cellStyleLeft);
 
             Cell cellDescription = row.createCell(4);
-            ExcelUtil.setCellValueAndStyle(cellDescription, room.getDescription(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellDescription, room.getDescription(), cellStyleLeft);
         }
     }
 
@@ -244,7 +248,7 @@ public class RoomService {
         if(request.getRoomName() == null) {
             throw new BadRequestException(400,"RoomName không thể null");
         }
-        if(isExistRoom(roomCode)) {
+        if(isExistRoom(roomCode, request.getLocation())) {
             throw new BadRequestException(400, "Room đã tồn tại");
         }
         if (request.getLocation() == null) {

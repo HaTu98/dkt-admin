@@ -272,7 +272,7 @@ public class ExamService {
     }
 
     public void writeExcel(Workbook workbook, List<Exam> exams, Long semesterId) {
-        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        CellStyle cellStyle = ExcelUtil.createCenterCellStyle(workbook);
         CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
         CellStyle cellStyleRight = ExcelUtil.createRightCellStyle(workbook);
         Sheet sheet = workbook.getSheetAt(0);
@@ -344,7 +344,7 @@ public class ExamService {
     }
 
     public void writeExcelResult(Workbook workbook, List<Exam> exams, Long semesterId) {
-        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        CellStyle cellStyle = ExcelUtil.createCenterCellStyle(workbook);
         Sheet sheet = workbook.getSheetAt(0);
         int size = exams.size();
 

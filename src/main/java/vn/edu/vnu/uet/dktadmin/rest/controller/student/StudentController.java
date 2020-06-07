@@ -215,7 +215,7 @@ public class StudentController extends BaseController {
         List<XSSFRow> errors = studentService.importStudent(file);
         if (errors.size() > 0) {
             Workbook fileErrors = studentService.template();
-            CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(fileErrors);
+            CellStyle cellStyle = ExcelUtil.createCenterCellStyle(fileErrors);
             Sheet sheetErrors = fileErrors.getSheetAt(0);
             for (int i = 0 ; i < errors.size(); i++) {
                 Row rowOld = errors.get(i);

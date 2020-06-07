@@ -10,6 +10,7 @@ public interface RoomDao {
     List<Room> getLikeCode(String code);
     List<Room> getLikeName(String name);
     Room getByRoomCode(String roomCode);
+    Room getByRoomCodeAndLocationId(String roomCode, Long locationId);
     Room getById(Long id);
     List<Room> getAllRoom();
     List<Room> getRoomInList(List<Long> id);

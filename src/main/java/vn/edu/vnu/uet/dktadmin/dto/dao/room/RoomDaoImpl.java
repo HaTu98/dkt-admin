@@ -51,6 +51,11 @@ public class RoomDaoImpl implements RoomDao {
     }
 
     @Override
+    public Room getByRoomCodeAndLocationId(String roomCode, Long locationId) {
+        return roomRepository.findByRoomCodeAndLocationId(roomCode, locationId);
+    }
+
+    @Override
     public Room getById(Long id) {
         return roomRepository.findById(id).orElse(null);
     }

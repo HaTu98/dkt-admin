@@ -191,31 +191,32 @@ public class SubjectService {
         List<Subject> subjects = subjectDao.getAll();
 
         Workbook workbook = template();
-        Sheet sheet = workbook.getSheetAt(0);
-        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
 
-        writeXSSFSheet(sheet, subjects, cellStyle);
+        writeXSSFSheet(workbook, subjects);
         return workbook;
     }
 
-    private void writeXSSFSheet(Sheet sheet, List<Subject> subjects, CellStyle cellStyle) {
+    private void writeXSSFSheet(Workbook workbook, List<Subject> subjects) {
+        Sheet sheet = workbook.getSheetAt(0);
+        CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
+        CellStyle cellStyleRight = ExcelUtil.createRightCellStyle(workbook);
         for (int i = 0; i < subjects.size(); i++) {
             Subject subject = subjects.get(i);
             Row row = sheet.createRow(i + 4);
 
             Cell cellStt = row.createCell(0);
             cellStt.setCellValue(i+1);
-            cellStt.setCellStyle(cellStyle);
+            cellStt.setCellStyle(cellStyleRight);
 
             Cell cellSubjectName = row.createCell(1);
-            ExcelUtil.setCellValueAndStyle(cellSubjectName, subject.getSubjectName(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellSubjectName, subject.getSubjectName(), cellStyleLeft);
 
             Cell cellSubjectCode = row.createCell(2);
-            ExcelUtil.setCellValueAndStyle(cellSubjectCode, subject.getSubjectCode(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellSubjectCode, subject.getSubjectCode(), cellStyleLeft);
 
             String numberCredit = subject.getNumberOfCredit().toString();
             Cell cellNumberCredit = row.createCell(3);
-            ExcelUtil.setCellValueAndStyle(cellNumberCredit, numberCredit, cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellNumberCredit, numberCredit, cellStyleRight);
         }
     }
 

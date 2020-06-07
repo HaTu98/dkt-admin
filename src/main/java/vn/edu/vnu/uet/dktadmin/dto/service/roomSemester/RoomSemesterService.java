@@ -133,7 +133,8 @@ public class RoomSemesterService {
 
     private void writeXSSFSheet(Workbook workbook, List<RoomSemester> roomSemesters) {
         Sheet sheet = workbook.getSheetAt(0);
-        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
+        CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
+        CellStyle cellStyleRight = ExcelUtil.createRightCellStyle(workbook);
         List<Room> rooms = roomDao.getAllRoom();
         Map<Long, Room> roomMap = rooms.stream().collect(Collectors.toMap(Room::getId, x -> x));
 
@@ -146,27 +147,27 @@ public class RoomSemesterService {
 
                 Cell cellStt = row.createCell(0);
                 cellStt.setCellValue(i + 1);
-                cellStt.setCellStyle(cellStyle);
+                cellStt.setCellStyle(cellStyleRight);
 
                 Room room = roomMap.get(roomSemester.getRoomId());
                 Cell roomNameCell = row.createCell(1);
-                ExcelUtil.setCellValueAndStyle(roomNameCell, room.getRoomName(), cellStyle);
+                ExcelUtil.setCellValueAndStyle(roomNameCell, room.getRoomName(), cellStyleLeft);
 
                 Cell roomCodeCell = row.createCell(2);
-                ExcelUtil.setCellValueAndStyle(roomCodeCell, room.getRoomCode(), cellStyle);
+                ExcelUtil.setCellValueAndStyle(roomCodeCell, room.getRoomCode(), cellStyleLeft);
 
                 Location location = longLocationMap.get(room.getLocationId());
                 Cell locationCell = row.createCell(3);
-                ExcelUtil.setCellValueAndStyle(locationCell, location.getLocationName(), cellStyle);
+                ExcelUtil.setCellValueAndStyle(locationCell, location.getLocationName(), cellStyleLeft);
 
                 Cell numberComputerCell = row.createCell(4);
-                ExcelUtil.setCellValueAndStyle(numberComputerCell, roomSemester.getNumberOfComputer(), cellStyle);
+                ExcelUtil.setCellValueAndStyle(numberComputerCell, roomSemester.getNumberOfComputer(), cellStyleRight);
 
                 Cell preventiveComputerCell = row.createCell(5);
-                ExcelUtil.setCellValueAndStyle(preventiveComputerCell, roomSemester.getPreventiveComputer(), cellStyle);
+                ExcelUtil.setCellValueAndStyle(preventiveComputerCell, roomSemester.getPreventiveComputer(), cellStyleRight);
 
                 Cell descriptionCell = row.createCell(6);
-                ExcelUtil.setCellValueAndStyle(descriptionCell, room.getDescription(), cellStyle);
+                ExcelUtil.setCellValueAndStyle(descriptionCell, room.getDescription(), cellStyleLeft);
 
 
             } catch (Exception e) {

@@ -230,40 +230,42 @@ public class StudentService {
         List<Student> students = studentDao.getAll();
 
         Workbook workbook = template();
-        Sheet sheet = workbook.getSheetAt(0);
-        CellStyle cellStyle = ExcelUtil.createDefaultCellStyle(workbook);
 
-        writeXSSFSheet(sheet, students, cellStyle);
+        writeXSSFSheet(workbook, students);
         return workbook;
     }
 
-    private void writeXSSFSheet(Sheet sheet, List<Student> students, CellStyle cellStyle) {
+    private void writeXSSFSheet(Workbook workbook, List<Student> students) {
+        Sheet sheet = workbook.getSheetAt(0);
+        CellStyle cellStyleCenter = ExcelUtil.createCenterCellStyle(workbook);
+        CellStyle cellStyleLeft = ExcelUtil.createLeftCellStyle(workbook);
+        CellStyle cellStyleRight = ExcelUtil.createRightCellStyle(workbook);
         for (int i = 0; i < students.size(); i++) {
             Student student = students.get(i);
             Row row = sheet.createRow(i + 4);
 
             Cell cellStt = row.createCell(0);
             cellStt.setCellValue(i+1);
-            cellStt.setCellStyle(cellStyle);
+            cellStt.setCellStyle(cellStyleRight);
 
             Cell cellFullName = row.createCell(1);
-            ExcelUtil.setCellValueAndStyle(cellFullName, student.getFullName(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellFullName, student.getFullName(), cellStyleLeft);
 
             Cell cellMSSV = row.createCell(2);
-            ExcelUtil.setCellValueAndStyle(cellMSSV, student.getStudentCode(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellMSSV, student.getStudentCode(), cellStyleRight);
 
             Cell cellBirthDay = row.createCell(3);
-            ExcelUtil.setCellValueAndStyle(cellBirthDay, student.getDateOfBirth(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellBirthDay, student.getDateOfBirth(), cellStyleCenter);
 
             Cell cellEmail = row.createCell(4);
-            ExcelUtil.setCellValueAndStyle(cellEmail, student.getEmail(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellEmail, student.getEmail(), cellStyleLeft);
 
             Cell cellCourse = row.createCell(5);
-            ExcelUtil.setCellValueAndStyle(cellCourse, student.getCourse(), cellStyle);
+            ExcelUtil.setCellValueAndStyle(cellCourse, student.getCourse(), cellStyleLeft);
 
             Cell getGender = row.createCell(6);
             String gender = Gender.getByValue(student.getGender()).getName();
-            ExcelUtil.setCellValueAndStyle(getGender, gender, cellStyle);
+            ExcelUtil.setCellValueAndStyle(getGender, gender, cellStyleLeft);
         }
     }
 

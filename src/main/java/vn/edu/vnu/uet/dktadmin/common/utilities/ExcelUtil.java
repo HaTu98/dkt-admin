@@ -56,7 +56,7 @@ public class ExcelUtil {
         }
     }
 
-    public static CellStyle createDefaultCellStyle(Workbook workbook) {
+    public static CellStyle createCenterCellStyle(Workbook workbook) {
         Font font = workbook.createFont();
         font.setFontName("Arial");
         font.setFontHeightInPoints((short) 11);
