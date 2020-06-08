@@ -41,7 +41,7 @@ public class AuthenticationService {
         String password = request.getPassword();
         if (isAdminInMemory(username,password)) {
             DktAdmin dktAdmin = DktAdmin.builder()
-                    .id(0l)
+                    .id(0L)
                     .email("")
                     .fullName("TuHV")
                     .username(username)
