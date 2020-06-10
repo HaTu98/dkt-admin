@@ -161,14 +161,17 @@ public class SubjectService {
     }
 
     public void validateUpdate(SubjectRequest request) {
+        if(request.getId() == null) {
+            throw new BaseException(400, "ID môn học không thế null");
+        }
         if (StringUtils.isEmpty(request.getSubjectCode())) {
-            throw new BadRequestException(400, "Mã môn học không thể null");
+            throw new BaseException(400, "Mã môn học không thể null");
         }
         if (StringUtils.isEmpty(request.getSubjectName())) {
-            throw new BadRequestException(400, "Tên môn học không thể null");
+            throw new BaseException(400, "Tên môn học không thể null");
         }
         if (StringUtils.isEmpty(request.getNumberOfCredit())) {
-            throw new BadRequestException(400, "Số tín chỉ không thể null");
+            throw new BaseException(400, "Số tín chỉ không thể null");
         }
     }
 

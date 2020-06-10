@@ -44,6 +44,7 @@ public class JwtTokenHelper {
                 .claim(USERNAME, admin.getUsername())
                 .claim(EMAIL, admin.getEmail())
                 .claim(ROLE, admin.getRole())
+                .claim(ID, admin.getId())
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
         return TOKEN_PREFIX + token;
@@ -66,6 +67,8 @@ public class JwtTokenHelper {
             String role = claims.get(ROLE).toString();
             String username = claims.get(USERNAME).toString();
             String email = claims.get(EMAIL).toString();
+            String id = claims.get(ID).toString();
+            String fullName = claims.get(FULL_NAME).toString();
             Collection authorities =
                     Arrays.stream(claims.get(ROLE).toString().split(","))
                             .map(SimpleGrantedAuthority::new)
@@ -73,6 +76,8 @@ public class JwtTokenHelper {
             DktAdmin admin = DktAdmin.builder()
                     .username(username)
                     .email(email)
+                    .id(Long.parseLong(id))
+                    .fullName(fullName)
                     .build();
             auth = new UsernamePasswordAuthenticationToken(admin,null,authorities);
         } catch (Exception e) {

@@ -24,7 +24,7 @@ public class AdminAccount {
         if (admin != null) return;
         admin = new Admin();
         admin.setUsername("admin");
-        admin.setPassword(passwordEncoder.encode("admin@123"));
+        admin.setPassword(passwordEncoder.encode("admin"));
         admin.setFullName("Admin");
         admin.setEmail("dkt.tuhv@gmail.com");
         admin.setCreatedAt(Instant.now());

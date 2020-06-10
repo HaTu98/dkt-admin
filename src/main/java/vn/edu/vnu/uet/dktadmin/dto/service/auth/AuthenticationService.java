@@ -78,9 +78,9 @@ public class AuthenticationService {
         Admin admin = adminDao.getById(dktAdmin.getId());
         boolean result = passwordEncoder.matches(password, admin.getPassword());
         if (!result) {
-            throw new UnAuthorizeException(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            throw new BaseException(400, "Password không hợp lệ");
         }
-        if (passwordNew.equals(passwordConfirm)) {
+        if (!passwordNew.equals(passwordConfirm)) {
             throw new BaseException(400, "Password new and PasswordConfirm not match!");
         }
         String passwordEncode = passwordEncoder.encode(passwordNew);
