@@ -102,7 +102,7 @@ public class AuthenticationService {
     }
 
     private LoginResponse generateLoginResponse(DktAdmin dktAdmin) {
-        String token = jwtTokenHelper.generateTokenStudent(dktAdmin);
+        String token = jwtTokenHelper.generateToken(dktAdmin);
         return LoginResponse.builder()
                 .token(token)
                 .build();

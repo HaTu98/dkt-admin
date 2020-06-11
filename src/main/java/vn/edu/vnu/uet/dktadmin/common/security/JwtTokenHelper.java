@@ -15,11 +15,12 @@ import vn.edu.vnu.uet.dktadmin.common.model.DktStudent;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenHelper {
-    static final long EXPIRATION_TIME = 864_000_000; // 10 days
+    static final long EXPIRATION_TIME = 86_400_000; // 10 days
     static String SECRET_KEY;
     static final String TOKEN_PREFIX = "Bearer ";
     static final String HEADER_STRING = "Authorization";
@@ -36,8 +37,10 @@ public class JwtTokenHelper {
         SECRET_KEY = secretKey;
     }
 
-    public String generateTokenStudent(DktAdmin admin) {
-        String token = null;
+    public String generateToken(DktAdmin admin) {
+        String token;
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
         admin.setRole("Admin");
         token = Jwts.builder()
                 .claim(FULL_NAME, admin.getFullName())
@@ -45,6 +48,7 @@ public class JwtTokenHelper {
                 .claim(EMAIL, admin.getEmail())
                 .claim(ROLE, admin.getRole())
                 .claim(ID, admin.getId())
+                .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
         return TOKEN_PREFIX + token;
