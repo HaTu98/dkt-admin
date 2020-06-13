@@ -1,5 +1,6 @@
 package vn.edu.vnu.uet.dktadmin.dto.service.studentSubject;
 
+import jdk.nashorn.internal.ir.IfNode;
 import ma.glasnost.orika.MapperFacade;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.common.enumType.Gender;
@@ -194,6 +196,7 @@ public class StudentSubjectService {
         File templateFile = new ClassPathResource(templatePath).getFile();
         FileInputStream templateInputStream = new FileInputStream(templateFile);
         Workbook workbook  = new XSSFWorkbook(templateInputStream);
+        if (CollectionUtils.isEmpty(studentSubjects)) return workbook;
         writeExcel(workbook, studentSubjects, subjectSemesterId);
         return workbook;
     }

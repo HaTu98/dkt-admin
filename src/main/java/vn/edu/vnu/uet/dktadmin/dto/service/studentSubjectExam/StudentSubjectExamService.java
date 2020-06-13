@@ -6,6 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import vn.edu.vnu.uet.dktadmin.common.exception.BadRequestException;
 import vn.edu.vnu.uet.dktadmin.common.utilities.Util;
 import vn.edu.vnu.uet.dktadmin.dto.dao.exam.ExamDao;
@@ -155,6 +156,7 @@ public class StudentSubjectExamService {
         File templateFile = new ClassPathResource(templatePath).getFile();
         FileInputStream templateInputStream = new FileInputStream(templateFile);
         Workbook workbook  = new XSSFWorkbook(templateInputStream);
+        if (CollectionUtils.isEmpty(studentSubjects)) return workbook;
         studentSubjectService.writeExcel(workbook, studentSubjects,subjectSemesterId);
         return workbook;
     }
