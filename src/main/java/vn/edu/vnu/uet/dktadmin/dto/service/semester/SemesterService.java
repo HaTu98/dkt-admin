@@ -72,6 +72,10 @@ public class SemesterService {
     }
 
     public SemesterResponse active(Long id) {
+        List<Semester> listActive = semesterDao.getActive();
+        if (!CollectionUtils.isEmpty(listActive)) {
+            throw new BadRequestException(400, "Không thể active Semester");
+        }
         Semester semester = semesterDao.getById(id);
         if (semester == null) {
             throw new BadRequestException(400, "Semester không tồn tại");

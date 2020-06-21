@@ -14,4 +14,5 @@ public interface SemesterDao {
     List<Semester> getSemesterIdIn(List<Long> ids);
     void deleteSemester(List<Semester> semesters);
     Semester getBySemesterName(String semesterName);
+    List<Semester> getActive();
 }

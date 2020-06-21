@@ -1,6 +1,7 @@
 package vn.edu.vnu.uet.dktadmin.dto.dao.semester;
 
 import org.springframework.stereotype.Service;
+import vn.edu.vnu.uet.dktadmin.common.Constant;
 import vn.edu.vnu.uet.dktadmin.dto.model.Semester;
 import vn.edu.vnu.uet.dktadmin.dto.repository.SemesterRepository;
 
@@ -57,5 +58,10 @@ public class SemesterDaoImpl implements SemesterDao{
     @Override
     public Semester getBySemesterName(String semesterName) {
         return semesterRepository.findBySemesterName(semesterName);
+    }
+
+    @Override
+    public List<Semester> getActive() {
+        return semesterRepository.findByStatus(Constant.REGISTERING);
     }
 }
