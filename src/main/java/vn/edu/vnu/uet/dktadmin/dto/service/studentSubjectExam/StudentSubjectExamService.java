@@ -152,7 +152,7 @@ public class StudentSubjectExamService {
         List<Long> studentSubjectIds = studentSubjectExams.stream()
                 .map(StudentSubjectExam::getStudentSubjectId).collect(Collectors.toList());
         List<StudentSubject> studentSubjects = studentSubjectDao.getStudentSubjectInList(studentSubjectIds);
-        String templatePath = "\\template\\excel\\export_student_subject.xlsx";
+        String templatePath = "\\template\\excel\\register_result_detail.xlsx";
         File templateFile = new ClassPathResource(templatePath).getFile();
         FileInputStream templateInputStream = new FileInputStream(templateFile);
         Workbook workbook  = new XSSFWorkbook(templateInputStream);
