@@ -28,4 +28,6 @@ public class Exam {
     private Long subjectId;
     private Long locationId;
     private LocalDateTime endTime;
+    @Version
+    private long version;
 }
